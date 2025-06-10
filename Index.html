@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogicLens - Code Debugger</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Loading indicator styles */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            visibility: hidden; /* Hidden by default */
+            opacity: 0;
+            transition: visibility 0s, opacity 0.3s ease;
+        }
+        .loading-overlay.visible {
+            visibility: visible;
+            opacity: 1;
+        }
+        .spinner {
+            border: 8px solid #f3f3f3; /* Light grey */
+            border-top: 8px solid #ff69b4; /* Pink */
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Styles for CodeMirror editor to fit theme */
+        .CodeMirror {
+            border: 1px solid #6a5acd; /* Matching border from textareas */
+            border-radius: 10px; /* Matching border-radius */
+            font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace; /* Monospace font */
+            font-size: 0.95rem; /* Slightly adjusted font size */
+            height: 400px; /* Fixed height for the editor */
+            background-color: #1a1a1a; /* Darker background for code */
+        }
+        /* Ensure CodeMirror's scrollbars match the theme if possible */
+        .CodeMirror-vscrollbar, .CodeMirror-hscrollbar {
+            background-color: #2a2a2a;
+        }
+        .CodeMirror-vscrollbar::-webkit-scrollbar-thumb,
+        .CodeMirror-hscrollbar::-webkit-scrollbar-thumb {
+            background-color: #9370db;
+            border-radius: 5px;
+        }
+        .CodeMirror-vscrollbar::-webkit-scrollbar-track,
+        .CodeMirror-hscrollbar::-webkit-scrollbar-track {
+            background-color: #2a2a2a;
+        }
+        /* Adjusting line numbers color */
+        .CodeMirror-linenumber {
+            color: #87ceeb !important; /* Sky blue for line numbers */
+        }
+        /* Styles for nav-link and hidden class */
+        .nav-link {
+            color: #efd8fb; 
+            transition: color 0.2s ease, background-color 0.2s ease;
+            font-size: 1.125rem; 
+            font-weight: 500;    
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            background-color: rgba(0, 0, 0, 0.2); 
+        }
+        .nav-link:hover {
+            color: #d1b8f5; 
+            background-color: rgba(147, 112, 219, 0.3);
+        }
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-purple-900 via-blue-900 to-black min-h-screen flex flex-col text-white">
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+
+    <header class="p-4 md:p-6 bg-purple-900 bg-opacity-70 shadow-lg rounded-b-xl mx-4 mt-4 md:mx-8 md:mt-8 flex justify-between items-center">
+        <h1 class="text-3xl md:text-4xl font-bold text-pink-300">LogicLens</h1>
+        <nav class="flex space-x-4 md:space-x-6">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="about.html" class="nav-link">About Us</a>
+            <a href="login.html" id="navLogin" class="nav-link">Login</a>
+            <a href="signup.html" id="navSignup" class="nav-link">Sign Up</a>
+            <a href="results.html#history" id="navHistory" class="nav-link hidden">History</a>
+            <span id="userEmailDisplay" class="text-white text-md font-medium hidden md:block"></span>
+            <button id="navLogout" class="nav-link hidden bg-red-600 hover:bg-red-700 px-3 py-1 rounded-md">Logout</button>
+        </nav>
+    </header>
+
+    <main class="flex-grow container mx-auto p-4 md:p-8 flex flex-col items-center justify-center">
+        <section class="bg-gray-800 bg-opacity-80 p-6 md:p-8 rounded-xl shadow-2xl w-full max-w-4xl">
+            <h2 class="text-2xl md:text-3xl font-semibold text-pink-300 mb-6 text-center">Enter Your Code for Debugging</h2>
+
+            <div class="mb-6">
+                <label for="languageSelect" class="block text-lg font-medium text-blue-300 mb-2">Select Language:</label>
+                <select id="languageSelect" class="w-full p-3 rounded-lg bg-gray-700 border border-purple-600 text-white focus:outline-none focus:ring-2 focus:ring-pink-500">
+                    <option value="python">Python</option>
+                    <option value="java">Java</option>
+                    <option value="javascript">JavaScript</option>
+                </select>
+            </div>
+
+            <div class="mb-6">
+                <label for="codeEditor" class="block text-lg font-medium text-blue-300 mb-2">Or Upload a Code File:</label>
+                <input type="file" id="codeFileUpload" accept=".py,.java,.js,.txt" class="w-full p-3 rounded-lg bg-gray-700 border border-purple-600 text-white focus:outline-none focus:ring-2 focus:ring-pink-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100">
+            </div>
+
+            <div class="mb-6">
+                <label for="codeEditor" class="block text-lg font-medium text-blue-300 mb-2">Enter Your Code:</label>
+                <div id="codeEditor"></div>
+            </div>
+            
+            <button id="debugButton" class="w-full py-3 px-6 rounded-lg bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold text-lg hover:from-pink-600 hover:to-purple-700 transition duration-300 ease-in-out shadow-lg mt-6">
+                Debug Code
+            </button>
+
+        </section>
+    </main>
+
+    <footer class="p-4 md:p-6 bg-black bg-opacity-70 shadow-inner rounded-t-xl mx-4 mb-4 md:mx-8 md:mb-8 text-center text-gray-400 text-sm">
+        &copy; 2025 LogicLens. All rights reserved.
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+
+    <script type="module">
+        // Import Firebase modules for client-side authentication
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        // Firebase Client-side Configuration (Hardcoded for local development)
+        const firebaseConfig = {
+          apiKey: "AIzaSyCaSUNkEUPveP1m9X4HmMHsrl570GXUCDg",
+          authDomain: "logiclens-882c6.firebaseapp.com",
+          projectId: "logiclens-882c6",
+          storageBucket: "logiclens-882c6.firebasestorage.app",
+          messagingSenderId: "522388336403",
+          appId: "1:522388336403:web:a597fcc2c8bf526a3f74e6",
+          measurementId: "G-N528RTE02G"
+        };
+        const appId = firebaseConfig.projectId; // Using projectId for consistency with backend artifact paths
+
+        let app;
+        let auth;
+        let currentUserId = null; // To store authenticated user's ID
+        let editor; // Declare editor globally so it can be accessed
+
+        // Initialize Firebase on client-side if config is available
+        if (Object.keys(firebaseConfig).length > 0) {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            console.log("Firebase client-side initialized.");
+
+            // Listen for auth state changes
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    currentUserId = user.uid;
+                    // Store in sessionStorage on successful login/auth
+                    sessionStorage.setItem('loggedInUserId', user.uid);
+                    sessionStorage.setItem('loggedInUserEmail', user.email || 'Anonymous User'); // Use email if available
+                    console.log("Client-side Firebase Auth state changed: Logged in", user.uid);
+                } else {
+                    currentUserId = null;
+                    sessionStorage.removeItem('loggedInUserId');
+                    sessionStorage.removeItem('loggedInUserEmail');
+                    sessionStorage.removeItem('idToken'); // Clear token on logout
+                    console.log("Client-side Firebase Auth state changed: Logged out");
+                }
+                updateNavForAuthState(); // Update navigation bar based on auth state
+            });
+
+        } else {
+            console.warn("Firebase config not available. Client-side authentication will not function.");
+        }
+
+
+        // Function to update navigation visibility based on authentication status
+        function updateNavForAuthState() {
+            const loggedInUserId = sessionStorage.getItem('loggedInUserId');
+            const loggedInUserEmail = sessionStorage.getItem('loggedInUserEmail');
+            
+            const navLogin = document.getElementById('navLogin');
+            const navSignup = document.getElementById('navSignup');
+            const navHistory = document.getElementById('navHistory');
+            const navLogout = document.getElementById('navLogout');
+            const userEmailDisplay = document.getElementById('userEmailDisplay');
+
+            if (loggedInUserId) { // Check for loggedInUserId, not just presence of value
+                navLogin.classList.add('hidden');
+                navSignup.classList.add('hidden');
+                navHistory.classList.remove('hidden');
+                navLogout.classList.remove('hidden');
+                userEmailDisplay.classList.remove('hidden');
+                userEmailDisplay.textContent = `(${loggedInUserEmail})`;
+
+                // Ensure listeners are only added once
+                if (!navLogout.hasListener) {
+                    navLogout.addEventListener('click', async function(e) {
+                        e.preventDefault();
+                        if (auth) {
+                            try {
+                                await signOut(auth); // Sign out from Firebase client
+                                console.log("Firebase client-side signed out.");
+                            } catch (error) {
+                                console.error("Error signing out from Firebase client:", error);
+                            }
+                        }
+                        sessionStorage.clear(); // Clear all session data
+                        alert('You have been logged out.');
+                        window.location.href = 'index.html'; // Redirect to home after logout
+                    });
+                    navLogout.hasListener = true;
+                }
+                if (!navHistory.hasListener) {
+                    navHistory.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        window.location.href = 'results.html#history'; // Navigate to history section
+                    });
+                    navHistory.hasListener = true;
+                }
+
+            } else {
+                navLogin.classList.remove('hidden');
+                navSignup.classList.remove('hidden');
+                navHistory.classList.add('hidden');
+                navLogout.classList.add('hidden');
+                userEmailDisplay.classList.add('hidden');
+                userEmailDisplay.textContent = '';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize CodeMirror
+            editor = CodeMirror(document.getElementById('codeEditor'), {
+                value: 'console.log("Hello LogicLens!");\n// Write your code here...',
+                mode: 'javascript', // Default mode
+                theme: 'dracula', // Use the dracula theme
+                lineNumbers: true, // Show line numbers
+                indentUnit: 4, // Tab size
+                tabSize: 4,
+                indentWithTabs: false,
+                autoCloseBrackets: true,
+                matchBrackets: true,
+                extraKeys: {
+                    "Ctrl-Space": "autocomplete" // Example for future autocomplete
+                }
+            });
+
+            // Update CodeMirror mode when language selection changes
+            document.getElementById('languageSelect').addEventListener('change', function() {
+                const selectedLanguage = this.value;
+                let mode;
+                switch (selectedLanguage) {
+                    case 'python':
+                        mode = 'python';
+                        break;
+                    case 'java':
+                        mode = 'text/x-java'; // CodeMirror mode for Java
+                        break;
+                    case 'javascript':
+                        mode = 'javascript';
+                        break;
+                    default:
+                        mode = 'text/plain';
+                }
+                editor.setOption('mode', mode);
+            });
+
+            // Handle file upload
+            document.getElementById('codeFileUpload').addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        editor.setValue(e.target.result); // Set editor content to file content
+                        
+                        // Attempt to infer language from file extension
+                        const fileName = file.name;
+                        let inferredLanguage = '';
+                        if (fileName.endsWith('.py')) {
+                            inferredLanguage = 'python';
+                        } else if (fileName.endsWith('.java')) {
+                            inferredLanguage = 'java';
+                        } else if (fileName.endsWith('.js')) {
+                            inferredLanguage = 'javascript';
+                        }
+                        
+                        if (inferredLanguage) {
+                            const languageSelect = document.getElementById('languageSelect');
+                            languageSelect.value = inferredLanguage; // Set dropdown
+                            editor.setOption('mode', inferredLanguage === 'java' ? 'text/x-java' : inferredLanguage); // Set CodeMirror mode
+                        }
+                    };
+                    reader.onerror = function() {
+                        alert('Error reading file: ' + reader.error.message);
+                        console.error('Error reading file:', reader.error);
+                    };
+                    reader.readAsText(file);
+                }
+            });
+
+            // Adjust editor size when window resizes
+            const resizeObserver = new ResizeObserver(entries => {
+                for (let entry of entries) {
+                    if (entry.target === document.getElementById('codeEditor')) {
+                        editor.refresh(); // Tell CodeMirror to re-calculate its size
+                    }
+                }
+            });
+            resizeObserver.observe(document.getElementById('codeEditor'));
+
+            updateNavForAuthState(); // Initial call to set nav state
+        });
+
+        document.getElementById('debugButton').addEventListener('click', async function() {
+            const language = document.getElementById('languageSelect').value;
+            const code = editor.getValue(); // Get code from CodeMirror editor
+            const loadingOverlay = document.getElementById('loadingOverlay');
+
+            if (code.trim() === '') {
+                alert('Please enter some code to debug or upload a file.'); 
+                return;
+            }
+
+            loadingOverlay.classList.add('visible'); // Show loading indicator
+
+            try {
+                const backendUrl = 'http://127.0.0.1:5000/debug-code'; 
+                
+                const headers = {
+                    'Content-Type': 'application/json'
+                };
+
+                // Attach token if user is logged in
+                const idToken = sessionStorage.getItem('idToken');
+                if (idToken) {
+                    headers['x-access-token'] = idToken;
+                }
+
+                const response = await fetch(backendUrl, {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify({ code: code, language: language })
+                });
+
+                const result = await response.json(); 
+
+                if (response.ok) {
+                    if (result.debug_output) {
+                        sessionStorage.setItem('debugResults', JSON.stringify(result.debug_output));
+                        sessionStorage.setItem('debugLanguage', language);
+                        sessionStorage.setItem('debugInputCode', code); // Store input code for history saving
+                        window.location.href = 'results.html';
+                    } else {
+                        alert('Error: No debug output received from the backend.');
+                        console.error('Backend response missing debug_output:', result);
+                    }
+                } else {
+                    alert('Error from backend: ' + (result.error || 'Unknown error occurred on the server.'));
+                    console.error('Backend error:', result.error);
+                }
+            } catch (error) {
+                alert('An error occurred: ' + error.message + '. Please ensure the backend server is running and accessible.');
+                console.error('Frontend fetch error:', error);
+            } finally {
+                loadingOverlay.classList.remove('visible');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogicLens - About Us</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Additional styling for the about page content */
+        .about-content {
+            background-color: rgba(30, 30, 30, 0.85);
+            box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border-radius: 20px;
+            padding: 2.5rem;
+            width: 95%;
+            max-width: 800px;
+            margin: 2rem auto;
+            border: 1px solid rgba(147, 112, 219, 0.4);
+            text-align: center;
+        }
+        .about-content h2 {
+            color: #ff69b4; /* Hot pink for section titles */
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        .about-content p {
+            color: #e0e0e0;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+        .about-content ul {
+            list-style-type: disc;
+            margin: 1.5rem auto;
+            max-width: 600px;
+            text-align: left;
+            padding-left: 2rem;
+            color: #e0e0e0;
+        }
+        .about-content li {
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+        .about-content a {
+            color: #87ceeb; /* Sky blue for links */
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .about-content a:hover {
+            color: #ff69b4; /* Pink on hover */
+            text-decoration: underline;
+        }
+        /* Styles for nav-link and hidden class */
+        .nav-link {
+            color: #efd8fb; 
+            transition: color 0.2s ease, background-color 0.2s ease;
+            font-size: 1.125rem; 
+            font-weight: 500;    
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            background-color: rgba(0, 0, 0, 0.2); 
+        }
+        .nav-link:hover {
+            color: #d1b8f5; 
+            background-color: rgba(147, 112, 219, 0.3);
+        }
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-purple-900 via-blue-900 to-black min-h-screen flex flex-col text-white">
+    <header class="p-4 md:p-6 bg-purple-900 bg-opacity-70 shadow-lg rounded-b-xl mx-4 mt-4 md:mx-8 md:mt-8 flex justify-between items-center">
+        <h1 class="text-3xl md:text-4xl font-bold text-pink-300">LogicLens</h1>
+        <nav class="flex space-x-4 md:space-x-6">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="about.html" class="nav-link">About Us</a>
+            <a href="login.html" id="navLogin" class="nav-link">Login</a>
+            <a href="signup.html" id="navSignup" class="nav-link">Sign Up</a>
+            <a href="results.html#history" id="navHistory" class="nav-link hidden">History</a>
+            <span id="userEmailDisplay" class="text-white text-md font-medium hidden md:block"></span>
+            <button id="navLogout" class="nav-link hidden bg-red-600 hover:bg-red-700 px-3 py-1 rounded-md">Logout</button>
+        </nav>
+    </header>
+
+    <main class="flex-grow container mx-auto p-4 md:p-8 flex flex-col items-center justify-center">
+        <section class="about-content">
+            <h2>About LogicLens</h2>
+            <p>Welcome to LogicLens, your personal code debugging assistant designed to bring clarity and calm to your coding journey. We believe that debugging shouldn't be a frustrating experience, but an insightful process.</p>
+            <p>Our platform leverages advanced AI to provide detailed analysis, identify problems, explain causes, suggest precise solutions, and offer prevention tips for various programming languages. Whether you're a seasoned developer or just starting out, LogicLens aims to make your debugging process smoother and more efficient.</p>
+            <h3>Our Mission</h3>
+            <p>To empower developers with intelligent debugging insights, fostering a deeper understanding of code and promoting best practices.</p>
+            <h3>Key Features</h3>
+            <ul>
+                <li>Intelligent Code Analysis powered by Gemini AI</li>
+                <li>Structured Debugging Reports (Summary, Problems, Causes, Solutions, Prevention)</li>
+                <li>Syntax-highlighted Corrected Code</li>
+                <li>Support for Python, Java, and JavaScript</li>
+                <li>User-friendly interface with a distinct aesthetic vibe</li>
+            </ul>
+            <p>Thank you for choosing LogicLens. Happy coding!</p>
+            <p>For any inquiries, feel free to <a href="mailto:contact@logiclens.com">contact us</a>.</p>
+        </section>
+    </main>
+
+    <footer class="p-4 md:p-6 bg-black bg-opacity-70 shadow-inner rounded-t-xl mx-4 mb-4 md:mx-8 md:mb-8 text-center text-gray-400 text-sm">
+        &copy; 2025 LogicLens. All rights reserved.
+    </footer>
+
+    <script type="module">
+        // Import Firebase modules for client-side authentication
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        // Firebase Client-side Configuration (Hardcoded for local development)
+        const firebaseConfig = {
+          apiKey: "AIzaSyCaSUNkEUPveP1m9X4HmMHsrl570GXUCDg",
+          authDomain: "logiclens-882c6.firebaseapp.com",
+          projectId: "logiclens-882c6",
+          storageBucket: "logiclens-882c6.firebasestorage.app",
+          messagingSenderId: "522388336403",
+          appId: "1:522388336403:web:a597fcc2c8bf526a3f74e6",
+          measurementId: "G-N528RTE02G"
+        };
+        const appId = firebaseConfig.projectId; // Using projectId for consistency with backend artifact paths
+
+        let app;
+        let auth;
+
+        // Initialize Firebase on client-side if config is available
+        if (Object.keys(firebaseConfig).length > 0) {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            console.log("Firebase client-side initialized for about.html.");
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    sessionStorage.setItem('loggedInUserId', user.uid);
+                    sessionStorage.setItem('loggedInUserEmail', user.email || 'Anonymous User');
+                    console.log("About: Client-side Firebase Auth state changed: Logged in", user.uid);
+                } else {
+                    sessionStorage.removeItem('loggedInUserId');
+                    sessionStorage.removeItem('loggedInUserEmail');
+                    sessionStorage.removeItem('idToken');
+                    console.log("About: Client-side Firebase Auth state changed: Logged out");
+                }
+                updateNavForAuthState(); // Update navigation bar based on auth state
+            });
+
+        } else {
+            console.warn("Firebase config not available for about.html. Client-side authentication will not function.");
+        }
+
+
+        // Function to update navigation visibility based on authentication status
+        function updateNavForAuthState() {
+            const loggedInUserId = sessionStorage.getItem('loggedInUserId');
+            const loggedInUserEmail = sessionStorage.getItem('loggedInUserEmail');
+            
+            const navLogin = document.getElementById('navLogin');
+            const navSignup = document.getElementById('navSignup');
+            const navHistory = document.getElementById('navHistory');
+            const navLogout = document.getElementById('navLogout');
+            const userEmailDisplay = document.getElementById('userEmailDisplay');
+
+            if (loggedInUserId) { // Check for loggedInUserId, not just presence of value
+                navLogin.classList.add('hidden');
+                navSignup.classList.add('hidden');
+                navHistory.classList.remove('hidden');
+                navLogout.classList.remove('hidden');
+                userEmailDisplay.classList.remove('hidden');
+                userEmailDisplay.textContent = `(${loggedInUserEmail})`;
+
+                // Ensure listeners are only added once
+                if (!navLogout.hasListener) {
+                    navLogout.addEventListener('click', async function(e) {
+                        e.preventDefault();
+                        if (auth) {
+                            try {
+                                await signOut(auth); // Sign out from Firebase client
+                                console.log("Firebase client-side signed out.");
+                            } catch (error) {
+                                console.error("Error signing out from Firebase client:", error);
+                            }
+                        }
+                        sessionStorage.clear(); // Clear all session data
+                        alert('You have been logged out.');
+                        window.location.href = 'index.html'; // Redirect to home after logout
+                    });
+                    navLogout.hasListener = true;
+                }
+                if (!navHistory.hasListener) {
+                    navHistory.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        window.location.href = 'results.html#history'; // Navigate to history section
+                    });
+                    navHistory.hasListener = true;
+                }
+
+            } else {
+                navLogin.classList.remove('hidden');
+                navSignup.classList.remove('hidden');
+                navHistory.classList.add('hidden');
+                navLogout.classList.add('hidden');
+                userEmailDisplay.classList.add('hidden');
+                userEmailDisplay.textContent = '';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            updateNavForAuthState(); // Initial call to set nav state
+        });
+    </script>
+</body>
+</html>

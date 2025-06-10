@@ -1,0 +1,224 @@
+/* General Body and Container Styles */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #1a1a1a; /* Dark background */
+    color: #f0f0f0; /* Light text */
+    line-height: 1.6;
+}
+
+/* Header and Navigation Bar Styles */
+header {
+    background-color: #2a0050; /* Darker purple for header */
+    padding: 1.5rem 2rem;
+    border-radius: 0 0 15px 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    gap: 1rem; /* Space between items */
+}
+
+header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #ff69b4; /* Hot pink accent */
+}
+
+nav {
+    display: flex;
+    gap: 1rem; /* Space between nav links */
+    align-items: center;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+}
+
+.nav-link {
+    color: #efd8fb; /* Light purple */
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 500;
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    background-color: rgba(147, 112, 219, 0.15); /* Slightly transparent purple */
+}
+
+.nav-link:hover {
+    background-color: rgba(147, 112, 219, 0.3); /* Darker transparent purple on hover */
+    color: #ffffff;
+}
+
+/* Logout button specific styling */
+#navLogout {
+    background-color: #dc2626; /* A strong red */
+    color: #ffffff; /* White text */
+    padding: 0.75rem 1.25rem; /* Consistent padding with other nav links */
+    border-radius: 8px;
+    font-weight: 600; /* Slightly bolder */
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    min-width: unset; /* Remove min-width if set elsewhere */
+    width: auto; /* Allow content to define width */
+}
+
+#navLogout:hover {
+    background-color: #b91c1c; /* Darker red on hover */
+    transform: translateY(-1px); /* Slight lift effect */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+}
+
+/* User email display in header */
+#userEmailDisplay {
+    color: #e0e0e0;
+    font-size: 0.95rem;
+    margin-left: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+}
+
+/* Main Content Section Styles (General) */
+main {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 1rem;
+}
+
+section {
+    background-color: rgba(30, 30, 30, 0.85); /* Slightly lighter dark gray, transparent */
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(147, 112, 219, 0.4); /* Purple border */
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 900px;
+    margin: 2rem auto;
+}
+
+section h2 {
+    color: #F9A8D4; /* Matching header pink - Corrected from #pink-300 */
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+/* Form element styles */
+label {
+    color: #93C5FD; /* Light blue for labels - Corrected from #blue-3001 */
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"],
+select,
+textarea {
+    width: 100%;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #6a5acd; /* Medium purple border */
+    background-color: #1e1e1e; /* Dark input background */
+    color: #f0f0f0;
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="text"]:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: #ff69b4; /* Hot pink on focus */
+    box-shadow: 0 0 0 3px rgba(255, 105, 180, 0.3); /* Pink glow */
+}
+
+/* Button Styles (General) */
+button[type="submit"],
+.button-primary {
+    display: block;
+    width: 100%;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    background: linear-gradient(to right, #ff69b4, #9370db); /* Pink to purple gradient */
+    color: #ffffff;
+    font-size: 1.25rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-position 0.3s ease;
+    background-size: 200% 100%; /* For hover gradient effect */
+    background-position: left center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+button[type="submit"]:hover,
+.button-primary:hover {
+    background-position: right center; /* Shift gradient on hover */
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Footer Styles */
+footer {
+    background-color: #0d0d0d; /* Even darker for footer */
+    padding: 1.5rem 2rem;
+    border-radius: 15px 15px 0 0;
+    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.4);
+    text-align: center;
+    color: #a0a0a0; /* Lighter gray text */
+    font-size: 0.9rem;
+}
+
+/* Utility for hiding elements */
+.hidden {
+    display: none !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    header, nav {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    nav {
+        margin-top: 1rem;
+        gap: 0.75rem;
+    }
+
+    header h1 {
+        font-size: 2rem;
+    }
+
+    .nav-link {
+        width: 100%; /* Full width on mobile */
+        text-align: center;
+    }
+
+    section {
+        padding: 1.5rem;
+    }
+
+    section h2 {
+        font-size: 1.8rem;
+    }
+
+    button[type="submit"],
+    .button-primary {
+        font-size: 1.1rem;
+        padding: 0.8rem 1rem;
+    }
+}
