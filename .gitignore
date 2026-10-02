@@ -11,6 +11,9 @@ contracts/cache/
 # Client build
 client/dist/
 
+# Runtime data
+server/data/
+
 # Logs
 *.log
 npm-debug.log*
