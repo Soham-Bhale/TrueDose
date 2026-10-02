@@ -1,0 +1,33 @@
+{
+  "name": "truedose-platform",
+  "version": "1.0.0",
+  "description": "Blockchain-Based Pharmaceutical Supply Chain Management & Medicine Verification System",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\" -n \"SERVER,CLIENT\" -c \"blue,green\"",
+    "dev:full": "concurrently \"npm run hardhat:node\" \"npm run server\" \"npm run client\" -n \"NODE,SERVER,CLIENT\" -c \"yellow,blue,green\"",
+    "install:all": "npm install --prefix contracts && npm install --prefix server && npm install --prefix client",
+    "compile:contracts": "npm run compile --prefix contracts",
+    "deploy:contracts": "npm run deploy:local --prefix contracts",
+    "hardhat:node": "npx --prefix contracts hardhat node",
+    "server": "npm start --prefix server",
+    "server:dev": "npm run dev --prefix server",
+    "client": "npm run dev --prefix client",
+    "build:client": "npm run build --prefix client"
+  },
+  "keywords": [
+    "blockchain",
+    "pharmaceutical",
+    "supply-chain",
+    "medicine-verification",
+    "anti-counterfeit",
+    "smart-contracts",
+    "solidity",
+    "ethereum",
+    "react"
+  ],
+  "author": "TrueDose Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
