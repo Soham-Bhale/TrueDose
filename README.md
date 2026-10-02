@@ -124,7 +124,16 @@ Visit the application at:
 - 🔌 **Backend Health Check:** [http://localhost:5000/api/health](http://localhost:5000/api/health)
 - 🔍 **Direct Batch API:** [http://localhost:5000/api/verify/PCM001](http://localhost:5000/api/verify/PCM001)
 
-*(Optional: To run an independent local Hardhat Ethereum node, run `npm run hardhat:node` in a separate terminal.)*
+### 🧪 Automated Testing & Logical Error Invariant Suite
+Execute the master automated testing suite covering all 50 smart contract and API logical error invariants:
+```bash
+# Run all 50 tests (EVM Smart Contract + REST API + State Machine):
+npm test
+
+# Run individual test suites:
+npm run test:contracts   # 21 EVM smart contract invariants
+npm run test:api         # 29 API & state machine invariants
+```
 
 ---
 

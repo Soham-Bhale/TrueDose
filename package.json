@@ -12,7 +12,11 @@
     "server": "npm start --prefix server",
     "server:dev": "npm run dev --prefix server",
     "client": "npm run dev --prefix client",
-    "build:client": "npm run build --prefix client"
+    "build:client": "npm run build --prefix client",
+    "test": "node scripts/test-all.js",
+    "test:all": "node scripts/test-all.js",
+    "test:contracts": "npm test --prefix contracts",
+    "test:api": "node server/test/api.test.js"
   },
   "keywords": [
     "blockchain",
