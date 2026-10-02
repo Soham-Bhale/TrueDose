@@ -1,34 +1,24 @@
 # Dependencies
 node_modules/
-*/node_modules/
+contracts/node_modules/
+server/node_modules/
+client/node_modules/
 
-# Production builds
-dist/
-build/
-client/dist/
-
-# Hardhat artifacts & cache
+# Hardhat build artifacts
 contracts/artifacts/
 contracts/cache/
-contracts/typechain/
-contracts/typechain-types/
 
-# Local databases & run data
-server/data/
+# Client build
+client/dist/
 
-# Environment files
+# Logs
+*.log
+npm-debug.log*
+
+# Environment
 .env
 .env.local
-.env.*.local
 
-# Logs & Debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-*.log
-
-# OS & Editor
+# OS files
 .DS_Store
 Thumbs.db
-.vscode/
-.idea/
