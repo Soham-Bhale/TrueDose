@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import {
   Plus, Truck, QrCode, ShieldAlert, ShoppingBag, Eye, RefreshCw,
   Clock, CheckCircle, AlertTriangle, Building, Search, ArrowRight, UserCheck,
-  Award, ShieldCheck, MapPin, Send, AlertOctagon
+  Award, ShieldCheck, MapPin, Send, AlertOctagon, Thermometer, Database,
+  FileCheck, Sparkles, Check, CheckCircle2, Package, Layers
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import CreateBatchModal from '../components/CreateBatchModal';
@@ -11,7 +12,7 @@ import QRCodeModal from '../components/QRCodeModal';
 import CertificateModal from '../components/CertificateModal';
 
 export default function DashboardPage({ onNavigateToVerify }) {
-  const { currentUser } = useAuth();
+  const { currentUser, switchRole, demoUsers, investigationCount, refreshStats } = useAuth();
   const [batches, setBatches] = useState([]);
   const [investigations, setInvestigations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,7 +25,7 @@ export default function DashboardPage({ onNavigateToVerify }) {
   const [certTargetBatch, setCertTargetBatch] = useState(null);
   const [dispenseLoading, setDispenseLoading] = useState(null);
 
-  const fetchBatches = async () => {
+  const fetchDashboardData = async () => {
     setLoading(true);
     try {
       const [batchesRes, statsRes] = await Promise.all([
@@ -44,7 +45,7 @@ export default function DashboardPage({ onNavigateToVerify }) {
   };
 
   useEffect(() => {
-    fetchBatches();
+    fetchDashboardData();
   }, [currentUser]);
 
   // Pharmacy dispense action
@@ -64,7 +65,7 @@ export default function DashboardPage({ onNavigateToVerify }) {
       });
       const data = await res.json();
       if (res.ok) {
-        fetchBatches();
+        fetchDashboardData();
       } else {
         alert(data.error || "Failed to dispense");
       }
@@ -92,7 +93,7 @@ export default function DashboardPage({ onNavigateToVerify }) {
       const data = await res.json();
       if (res.ok) {
         alert(`EMERGENCY RECALL ISSUED for batch ${batchId}. All nodes quarantined.`);
-        fetchBatches();
+        fetchDashboardData();
       } else {
         alert(data.error || "Failed to recall");
       }
@@ -110,18 +111,38 @@ export default function DashboardPage({ onNavigateToVerify }) {
         body: JSON.stringify({ status: newStatus })
       });
       if (res.ok) {
-        fetchBatches();
+        fetchDashboardData();
+        refreshStats();
       }
     } catch (err) {
       console.error("Update investigation failed:", err);
     }
   };
 
-  // Filter batches based on search
+  // Filter batches based on active role view and search
   const filteredBatches = batches.filter(b => {
-    return b.batchId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch =
+      b.batchId.toLowerCase().includes(searchTerm.toLowerCase()) ||
       b.medicineName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       b.currentOwnerName.toLowerCase().includes(searchTerm.toLowerCase());
+
+    if (!matchesSearch) return false;
+
+    // Role-specific filtering for realism:
+    if (currentUser.role === 'manufacturer') {
+      return b.manufacturerName?.toLowerCase().includes('abc') || b.stage === 'Manufactured';
+    }
+    if (currentUser.role === 'distributor') {
+      return b.currentOwnerRole === 'distributor' || b.stage === 'DistributorReceived' || b.stage === 'Manufactured';
+    }
+    if (currentUser.role === 'wholesaler') {
+      return b.currentOwnerRole === 'wholesaler' || b.stage === 'WholesalerReceived' || b.stage === 'DistributorReceived';
+    }
+    if (currentUser.role === 'pharmacy') {
+      return b.currentOwnerRole === 'pharmacy' || b.stage === 'PharmacyReceived' || b.stage === 'SoldToCustomer';
+    }
+    // Admin sees all batches across the country
+    return true;
   });
 
   const getStageBadge = (stage) => {
@@ -145,36 +166,76 @@ export default function DashboardPage({ onNavigateToVerify }) {
 
   return (
     <div className="py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-6 animate-in fade-in duration-300">
-      {/* Role Banner */}
+      {/* Universal Interactive Role Switcher Ribbon */}
+      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-2.5 shadow-xl">
+        <div className="flex items-center justify-between px-3 py-1.5 border-b border-slate-800/80 mb-2">
+          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Switch Active Supply Chain Portal View:
+          </span>
+          <span className="text-[10px] text-emerald-400 font-mono">1-Click Role Simulation</span>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+          {demoUsers.filter(u => u.role !== 'customer').map((user) => {
+            const isSelected = currentUser.role === user.role;
+            const hasAlerts = user.role === 'admin' && investigationCount > 0;
+
+            return (
+              <button
+                key={user.role}
+                onClick={() => switchRole(user.role)}
+                className={`p-3 rounded-xl text-left border transition relative flex items-start gap-2.5 ${
+                  isSelected
+                    ? 'bg-slate-800 border-emerald-500 shadow-md shadow-emerald-500/10 ring-1 ring-emerald-500/50'
+                    : 'bg-slate-950/60 border-slate-800 hover:bg-slate-800/50 hover:border-slate-700'
+                }`}
+              >
+                <span className="text-xl shrink-0 mt-0.5">{user.icon}</span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-1">
+                    <span className={`text-xs font-bold truncate ${isSelected ? 'text-white' : 'text-slate-300'}`}>
+                      {user.badge}
+                    </span>
+                    {hasAlerts && (
+                      <span className="px-1.5 py-0.5 rounded-full bg-red-500 text-white text-[9px] font-black animate-pulse">
+                        {investigationCount} 🚨
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-slate-500 truncate">{user.name}</p>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Role-Specific Header Banner */}
       <div className="bg-slate-800/80 border border-slate-700 rounded-2xl p-6 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center space-x-4">
-          <div className="w-12 h-12 rounded-2xl bg-slate-900 border border-slate-700 flex items-center justify-center text-2xl shadow-inner">
-            {currentUser.role === 'manufacturer' && '👨‍💼'}
-            {currentUser.role === 'distributor' && '🚚'}
-            {currentUser.role === 'wholesaler' && '🏪'}
-            {currentUser.role === 'pharmacy' && '💊'}
-            {currentUser.role === 'admin' && '👨‍💻'}
-            {currentUser.role === 'customer' && '👤'}
+          <div className="w-14 h-14 rounded-2xl bg-slate-900 border border-slate-700 flex items-center justify-center text-3xl shadow-inner shrink-0">
+            {currentUser.icon}
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold text-white">{currentUser.name}</h1>
-              <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${currentUser.color || 'bg-slate-700'}`}>
+              <h1 className="text-xl sm:text-2xl font-black text-white">{currentUser.name}</h1>
+              <span className={`px-2.5 py-0.5 rounded-lg text-[10px] font-bold uppercase border ${currentUser.color || 'bg-slate-700'}`}>
                 {currentUser.badge}
               </span>
             </div>
-            <p className="text-xs text-slate-400 flex items-center gap-2 mt-0.5">
-              <span>{currentUser.organization}</span>
-              <span>•</span>
-              <span className="font-mono text-emerald-400 truncate max-w-[200px]">{currentUser.ethAddress || 'Public Viewer'}</span>
+            <p className="text-xs text-slate-300 font-medium mt-1">
+              {currentUser.headline}
+            </p>
+            <p className="text-[11px] text-slate-500 font-mono truncate max-w-md mt-0.5">
+              Ethereum ID: <strong className="text-emerald-400">{currentUser.ethAddress || 'Public Node'}</strong>
             </p>
           </div>
         </div>
 
         {/* Primary Action Buttons */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5 shrink-0">
           <button
-            onClick={fetchBatches}
+            onClick={fetchDashboardData}
             className="p-2.5 bg-slate-900 hover:bg-slate-700 border border-slate-700 rounded-xl text-slate-300 hover:text-white transition"
             title="Refresh Batches"
           >
@@ -187,69 +248,272 @@ export default function DashboardPage({ onNavigateToVerify }) {
               className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-emerald-600/20"
             >
               <Plus className="w-4 h-4" />
-              <span>Create New Batch</span>
+              <span>Mint New Batch (Genesis)</span>
+            </button>
+          )}
+
+          {currentUser.role === 'pharmacy' && (
+            <button
+              onClick={() => onNavigateToVerify('PCM001')}
+              className="px-4 py-2.5 bg-pink-600 hover:bg-pink-500 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-pink-600/20"
+            >
+              <QrCode className="w-4 h-4" />
+              <span>Customer QR Verifier</span>
             </button>
           )}
         </div>
       </div>
 
-      {/* Admin Incident Investigation Panel */}
-      {currentUser.role === 'admin' && investigations.length > 0 && (
-        <div className="bg-red-950/20 border-2 border-red-500/40 rounded-2xl p-6 shadow-xl space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="p-2 bg-red-500/20 text-red-400 rounded-lg border border-red-500/30">
-                <ShieldAlert className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider">
-                  Active Counterfeit Investigations & Citizen Alerts
-                </h3>
-                <p className="text-xs text-red-300/80">Reports flagged by consumers during QR scanning</p>
-              </div>
-            </div>
-            <span className="px-2.5 py-1 rounded-full bg-red-500/20 text-red-300 text-xs font-mono font-bold">
-              {investigations.length} Actionable Report{investigations.length > 1 ? 's' : ''}
-            </span>
-          </div>
-
-          <div className="grid gap-3">
-            {investigations.map((rep) => (
-              <div key={rep.id} className="p-4 bg-slate-900/80 border border-red-500/30 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono font-bold text-red-400">{rep.id}</span>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-red-500/10 text-red-300 border border-red-500/20">
-                      BATCH: {rep.batchId}
+      {/* ============================================================== */}
+      {/* 1. ADMIN / REGULATORY COMMAND CENTER VIEW */}
+      {/* ============================================================== */}
+      {currentUser.role === 'admin' && (
+        <div className="space-y-6">
+          {/* Active Counterfeit Investigations Card */}
+          <div className="bg-red-950/20 border-2 border-red-500/60 rounded-2xl p-6 shadow-2xl space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-red-500/30 pb-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-red-500/20 text-red-400 rounded-xl border border-red-500/30 animate-pulse">
+                  <ShieldAlert className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-white flex items-center gap-2">
+                    <span>🚨 Active Counterfeit Investigations & Citizen Alerts</span>
+                    <span className="px-2 py-0.5 rounded-full bg-red-500 text-white text-[10px] font-mono font-bold">
+                      {investigations.length} CASES PENDING
                     </span>
-                    <span className="text-slate-400">• Store: <strong className="text-white">{rep.storeName}</strong></span>
-                  </div>
-                  <p className="text-slate-300 text-[11px]">"{rep.description}"</p>
-                  <div className="flex items-center gap-3 text-[10px] text-slate-500 font-mono">
-                    <span className="flex items-center gap-1"><MapPin className="w-3 h-3 text-slate-400" /> {rep.location}</span>
-                    <span>• Status: <strong className="text-amber-400">{rep.status}</strong></span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 shrink-0">
-                  <button
-                    onClick={() => handleUpdateInvestigation(rep.id, "INSPECTOR_ON_SITE")}
-                    className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-amber-300 rounded-lg font-semibold transition"
-                  >
-                    Dispatch Inspector
-                  </button>
-                  <button
-                    onClick={() => handleUpdateInvestigation(rep.id, "STORE_QUARANTINED")}
-                    className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg font-bold transition shadow-sm"
-                  >
-                    Quarantine Store
-                  </button>
+                  </h3>
+                  <p className="text-xs text-red-300/80">Real-time alerts submitted by citizens & pharmacists upon scanning unverified batches</p>
                 </div>
               </div>
-            ))}
+
+              <span className="text-[11px] text-slate-400 font-mono">
+                Enforcement Directorate: <strong className="text-emerald-400">ACTIVE</strong>
+              </span>
+            </div>
+
+            {investigations.length === 0 ? (
+              <div className="p-8 text-center text-slate-400 text-xs">
+                No active counterfeit investigations reported at this time.
+              </div>
+            ) : (
+              <div className="grid gap-3">
+                {investigations.map((rep) => (
+                  <div
+                    key={rep.id}
+                    className="p-4 bg-slate-900/90 border border-red-500/40 rounded-xl flex flex-col lg:flex-row lg:items-center justify-between gap-4 text-xs hover:border-red-500 transition shadow-lg"
+                  >
+                    <div className="space-y-1.5 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-mono font-black text-red-400 text-sm">{rep.id}</span>
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-red-500/20 text-red-300 border border-red-500/30">
+                          FLAGGED BATCH: {rep.batchId}
+                        </span>
+                        <span className="text-slate-400">
+                          Suspect Pharmacy: <strong className="text-white text-sm">{rep.storeName}</strong>
+                        </span>
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-amber-500/20 text-amber-300">
+                          {rep.status}
+                        </span>
+                      </div>
+
+                      <p className="text-slate-200 text-xs bg-slate-950/60 p-2.5 rounded-lg border border-slate-800">
+                        "{rep.description}"
+                      </p>
+
+                      <div className="flex flex-wrap items-center gap-4 text-[11px] text-slate-400 font-mono pt-1">
+                        <span className="flex items-center gap-1">
+                          <MapPin className="w-3.5 h-3.5 text-red-400 shrink-0" />
+                          <span>{rep.location}</span>
+                        </span>
+                        <span>• Contact: <strong className="text-slate-300">{rep.reporterContact}</strong></span>
+                        <span>• Filed: {new Date(rep.filedAt).toLocaleString()}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button
+                        onClick={() => handleUpdateInvestigation(rep.id, "INSPECTOR_ON_SITE")}
+                        className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-amber-300 rounded-xl font-bold transition border border-slate-700 text-xs"
+                      >
+                        🚨 Dispatch Inspector
+                      </button>
+                      <button
+                        onClick={() => handleUpdateInvestigation(rep.id, "STORE_QUARANTINED")}
+                        className="px-3.5 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold transition shadow-md shadow-red-600/30 text-xs"
+                      >
+                        🛑 Quarantine Store
+                      </button>
+                      <button
+                        onClick={() => handleUpdateInvestigation(rep.id, "CASE_RESOLVED_SEIZED")}
+                        className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition text-xs"
+                      >
+                        ✓ Resolved
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
+
+      {/* ============================================================== */}
+      {/* 2. ROLE-SPECIFIC WORKSPACE METRICS */}
+      {/* ============================================================== */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {currentUser.role === 'manufacturer' && (
+          <>
+            <div className="p-4 bg-slate-800/60 border border-slate-700 rounded-2xl">
+              <span className="text-[11px] text-slate-400 block font-medium">Factory Batches Formulated</span>
+              <span className="text-2xl font-black text-emerald-400 font-mono mt-1 block">
+                {batches.filter(b => b.manufacturerName?.includes('ABC')).length}
+              </span>
+              <span className="text-[10px] text-slate-500">Good Manufacturing Practice (GMP)</span>
+            </div>
+            <div className="p-4 bg-slate-800/60 border border-slate-700 rounded-2xl">
+              <span className="text-[11px] text-slate-400 block font-medium">Ready for Dispatch</span>
+              <span className="text-2xl font-black text-amber-400 font-mono mt-1 block">
+                {batches.filter(b => b.stage === 'Manufactured').length}
+              </span>
+              <span className="text-[10px] text-slate-500">Awaiting Distributor Transshipment</span>
+            </div>
+            <div className="p-4 bg-slate-800/60 border border-slate-700 rounded-2xl">
+              <span className="text-[11px] text-slate-400 block font-medium">Active Downstream Fleet</span>
+              <span className="text-2xl font-black text-blue-400 font-mono mt-1 block">
+                {batches.filter(b => b.stage !== 'Manufactured' && b.stage !== 'SoldToCustomer').length}
+              </span>
+              <span className="text-[10px] text-slate-500">In Transit & Wholesale Depots</span>
+            </div>
+            <div className="p-4 bg-slate-800/60 border border-slate-700 rounded-2xl">
+              <span className="text-[11px] text-slate-400 block font-medium">Total Units Produced</span>
+              <span className="text-2xl font-black text-purple-400 font-mono mt-1 block">9,200</span>
+              <span className="text-[10px] text-slate-500">Tablets & Capsules Certified</span>
+            </div>
+          </>
+        )}
+
+        {currentUser.role === 'distributor' && (
+          <>
+            <div className="p-4 bg-slate-800/60 border border-slate-700 rounded-2xl">
+              <span className="text-[11px] text-slate-400 block font-medium">Batches in Transshipment</span>
+              <span className="text-2xl font-black text-amber-400 font-mono mt-1 block">
+                {batches.filter(b => b.stage === 'DistributorReceived' || b.stage === 'Manufactured').length}
+              </span>
+              <span className="text-[10px] text-slate-500">Hub 12 Logistics Terminal</span>
+            </div>
+            <div className="p-4 bg-slate-800/60 border border-slate-700 rounded-2xl">
+              <span className="text-[11px] text-slate-400 block font-medium">Cold-Chain Reefer Status</span>
+              <span className="text-2xl font-black text-emerald-400 font-mono mt-1 block flex items-center gap-1.5">
+                <Thermometer className="w-5 h-5 text-blue-400" /> 4.2°C
+              </span>
+              <span className="text-[10px] text-emerald-400">100% Cold-Chain Compliant</span>
+            </div>
+            <div className="p-4 bg-slate-800/60 border border-slate-700 rounded-2xl">
+              <span className="text-[11px] text-slate-400 block font-medium">Awaiting Wholesaler Delivery</span>
+              <span className="text-2xl font-black text-purple-400 font-mono mt-1 block">
+                {batches.filter(b => b.stage === 'DistributorReceived').length}
+              </span>
+              <span className="text-[10px] text-slate-500">Ready for Transfer Action</span>
+            </div>
+            <div className="p-4 bg-slate-800/60 border border-slate-700 rounded-2xl">
+              <span className="text-[11px] text-slate-400 block font-medium">Fleet Transit Security</span>
+              <span className="text-2xl font-black text-blue-400 font-mono mt-1 block">SECURE</span>
+              <span className="text-[10px] text-slate-500">Smart Seals Verified</span>
+            </div>
+          </>
+        )}
+
+        {currentUser.role === 'wholesaler' && (
+          <>
+            <div className="p-4 bg-slate-800/60 border border-slate-700 rounded-2xl">
+              <span className="text-[11px] text-slate-400 block font-medium">Depot Pallet Inventory</span>
+              <span className="text-2xl font-black text-purple-400 font-mono mt-1 block">
+                {batches.filter(b => b.stage === 'WholesalerReceived').length}
+              </span>
+              <span className="text-[10px] text-slate-500">Regional Depot 9, Bangalore</span>
+            </div>
+            <div className="p-4 bg-slate-800/60 border border-slate-700 rounded-2xl">
+              <span className="text-[11px] text-slate-400 block font-medium">Allocated to Pharmacies</span>
+              <span className="text-2xl font-black text-pink-400 font-mono mt-1 block">
+                {batches.filter(b => b.stage === 'PharmacyReceived' || b.stage === 'SoldToCustomer').length}
+              </span>
+              <span className="text-[10px] text-slate-500">Retail Distribution Channels</span>
+            </div>
+            <div className="p-4 bg-slate-800/60 border border-slate-700 rounded-2xl">
+              <span className="text-[11px] text-slate-400 block font-medium">Quality Verification Status</span>
+              <span className="text-2xl font-black text-emerald-400 font-mono mt-1 block">VERIFIED</span>
+              <span className="text-[10px] text-emerald-400">All Lots Cryptographically Cleared</span>
+            </div>
+            <div className="p-4 bg-slate-800/60 border border-slate-700 rounded-2xl">
+              <span className="text-[11px] text-slate-400 block font-medium">Storage Compliance</span>
+              <span className="text-2xl font-black text-blue-400 font-mono mt-1 block">OPTIMAL</span>
+              <span className="text-[10px] text-slate-500">Cleanroom Temperature Controlled</span>
+            </div>
+          </>
+        )}
+
+        {currentUser.role === 'pharmacy' && (
+          <>
+            <div className="p-4 bg-slate-800/60 border border-slate-700 rounded-2xl">
+              <span className="text-[11px] text-slate-400 block font-medium">In-Stock on Pharmacy Shelves</span>
+              <span className="text-2xl font-black text-pink-400 font-mono mt-1 block">
+                {batches.filter(b => b.stage === 'PharmacyReceived').length}
+              </span>
+              <span className="text-[10px] text-slate-500">Available to Dispense to Patients</span>
+            </div>
+            <div className="p-4 bg-slate-800/60 border border-slate-700 rounded-2xl">
+              <span className="text-[11px] text-slate-400 block font-medium">Dispensed to Patients</span>
+              <span className="text-2xl font-black text-emerald-400 font-mono mt-1 block">
+                {batches.filter(b => b.stage === 'SoldToCustomer').length}
+              </span>
+              <span className="text-[10px] text-emerald-400">Logged on Blockchain</span>
+            </div>
+            <div className="p-4 bg-slate-800/60 border border-slate-700 rounded-2xl">
+              <span className="text-[11px] text-slate-400 block font-medium">Prescription Audit Status</span>
+              <span className="text-2xl font-black text-blue-400 font-mono mt-1 block">100% OK</span>
+              <span className="text-[10px] text-slate-500">Anti-Diversion Protocols Active</span>
+            </div>
+            <div className="p-4 bg-slate-800/60 border border-slate-700 rounded-2xl">
+              <span className="text-[11px] text-slate-400 block font-medium">Customer Verification Slips</span>
+              <span className="text-2xl font-black text-amber-400 font-mono mt-1 block">ENABLED</span>
+              <span className="text-[10px] text-slate-500">Direct Packaging QR Verification</span>
+            </div>
+          </>
+        )}
+
+        {currentUser.role === 'admin' && (
+          <>
+            <div className="p-4 bg-slate-800/60 border border-slate-700 rounded-2xl">
+              <span className="text-[11px] text-slate-400 block font-medium">National Batch Registry</span>
+              <span className="text-2xl font-black text-white font-mono mt-1 block">
+                {batches.length}
+              </span>
+              <span className="text-[10px] text-emerald-400">100% On-Chain Authenticated</span>
+            </div>
+            <div className="p-4 bg-slate-800/60 border border-slate-700 rounded-2xl">
+              <span className="text-[11px] text-slate-400 block font-medium">Citizen Reports Received</span>
+              <span className="text-2xl font-black text-red-400 font-mono mt-1 block">
+                {investigations.length}
+              </span>
+              <span className="text-[10px] text-red-300">Enforcement Cases Tracked</span>
+            </div>
+            <div className="p-4 bg-slate-800/60 border border-slate-700 rounded-2xl">
+              <span className="text-[11px] text-slate-400 block font-medium">Quarantined Lots</span>
+              <span className="text-2xl font-black text-amber-400 font-mono mt-1 block">
+                {batches.filter(b => b.isRecalled).length}
+              </span>
+              <span className="text-[10px] text-slate-500">Recalls Enforced Worldwide</span>
+            </div>
+            <div className="p-4 bg-slate-800/60 border border-slate-700 rounded-2xl">
+              <span className="text-[11px] text-slate-400 block font-medium">Consortium Validator Health</span>
+              <span className="text-2xl font-black text-emerald-400 font-mono mt-1 block">5 NODES</span>
+              <span className="text-[10px] text-emerald-400">Proof of Authority Consensus</span>
+            </div>
+          </>
+        )}
+      </div>
 
       {/* Search and Filter */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -265,11 +529,11 @@ export default function DashboardPage({ onNavigateToVerify }) {
         </div>
 
         <div className="text-xs text-slate-400 font-medium">
-          Showing <strong>{filteredBatches.length}</strong> registered medicine batches
+          Showing <strong>{filteredBatches.length}</strong> batches in <strong className="text-emerald-400">{currentUser.badge}</strong> workspace
         </div>
       </div>
 
-      {/* Batches Table */}
+      {/* Batches Table with Role Context */}
       <div className="bg-slate-800/60 border border-slate-700/80 rounded-2xl overflow-hidden shadow-2xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs text-slate-300">
@@ -278,16 +542,16 @@ export default function DashboardPage({ onNavigateToVerify }) {
                 <th className="px-5 py-3.5">Batch Identifier</th>
                 <th className="px-5 py-3.5">Medicine & Dosage</th>
                 <th className="px-5 py-3.5">Current Stage</th>
-                <th className="px-5 py-3.5">Custodian</th>
+                <th className="px-5 py-3.5">Current Custodian</th>
                 <th className="px-5 py-3.5">Expiry Date</th>
-                <th className="px-5 py-3.5 text-right">Supply Chain Actions</th>
+                <th className="px-5 py-3.5 text-right">Role Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800 font-mono">
               {filteredBatches.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-6 py-12 text-center text-slate-500 font-sans">
-                    No medicine batches found matching your search.
+                    No medicine batches found matching your role workspace filter.
                   </td>
                 </tr>
               ) : (
@@ -381,7 +645,7 @@ export default function DashboardPage({ onNavigateToVerify }) {
                               className="px-2.5 py-1.5 bg-pink-600 hover:bg-pink-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1 transition shadow-sm"
                             >
                               <ShoppingBag className="w-3.5 h-3.5" />
-                              <span>Dispense</span>
+                              <span>Dispense to Patient</span>
                             </button>
                           )}
 
@@ -392,7 +656,7 @@ export default function DashboardPage({ onNavigateToVerify }) {
                               className="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1 transition shadow-sm"
                             >
                               <Truck className="w-3.5 h-3.5" />
-                              <span>Transfer</span>
+                              <span>Transfer Custody</span>
                             </button>
                           )}
 
@@ -422,7 +686,7 @@ export default function DashboardPage({ onNavigateToVerify }) {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onSuccess={(newBatch) => {
-          fetchBatches();
+          fetchDashboardData();
           setQrTargetBatch(newBatch);
         }}
       />
@@ -432,7 +696,7 @@ export default function DashboardPage({ onNavigateToVerify }) {
         isOpen={!!transferTargetBatch}
         onClose={() => setTransferTargetBatch(null)}
         onSuccess={() => {
-          fetchBatches();
+          fetchDashboardData();
         }}
       />
 

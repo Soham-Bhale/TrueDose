@@ -54,7 +54,10 @@ function AppContent() {
       {/* Main Content Area */}
       <main className="flex-1">
         {activePage === 'verify' && (
-          <VerifyPage initialBatchId={initialBatchId} />
+          <VerifyPage
+            initialBatchId={initialBatchId}
+            onNavigateToAdmin={() => handlePageChange('dashboard')}
+          />
         )}
         {activePage === 'dashboard' && (
           <DashboardPage onNavigateToVerify={handleNavigateToVerify} />

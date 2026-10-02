@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { X, AlertTriangle, ShieldAlert, Send, CheckCircle2 } from 'lucide-react';
+import { X, AlertTriangle, ShieldAlert, Send, CheckCircle2, ArrowRight } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
-export default function ReportModal({ batchId, medicineName, isOpen, onClose, onSuccess }) {
+export default function ReportModal({ batchId, medicineName, isOpen, onClose, onSuccess, onNavigateToAdmin }) {
+  const { switchRole, refreshStats } = useAuth();
   const [formData, setFormData] = useState({
     storeName: '',
     location: '',
@@ -9,7 +11,7 @@ export default function ReportModal({ batchId, medicineName, isOpen, onClose, on
     reporterContact: ''
   });
   const [loading, setLoading] = useState(false);
-  const [submittedId, setSubmittedId] = useState(null);
+  const [submittedReport, setSubmittedReport] = useState(null);
   const [error, setError] = useState(null);
 
   if (!isOpen) return null;
@@ -36,12 +38,21 @@ export default function ReportModal({ batchId, medicineName, isOpen, onClose, on
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to submit report');
 
-      setSubmittedId(data.reportId);
+      setSubmittedReport(data.report);
+      refreshStats();
       setLoading(false);
       if (onSuccess) onSuccess(data.report);
     } catch (err) {
       setError(err.message);
       setLoading(false);
+    }
+  };
+
+  const handleGoToAdmin = () => {
+    switchRole('admin');
+    onClose();
+    if (onNavigateToAdmin) {
+      onNavigateToAdmin();
     }
   };
 
@@ -67,26 +78,48 @@ export default function ReportModal({ batchId, medicineName, isOpen, onClose, on
           </button>
         </div>
 
-        {submittedId ? (
-          <div className="p-8 text-center space-y-4">
-            <div className="w-14 h-14 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-full flex items-center justify-center mx-auto">
-              <CheckCircle2 className="w-8 h-8" />
+        {submittedReport ? (
+          <div className="p-8 text-center space-y-5 animate-in zoom-in-95 duration-200">
+            <div className="w-16 h-16 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-2xl flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/20">
+              <CheckCircle2 className="w-9 h-9" />
             </div>
             <div className="space-y-1">
-              <h4 className="text-lg font-bold text-white">Investigation Alert Dispatched</h4>
-              <p className="text-xs text-slate-300">
-                Your report has been securely registered in the TrueDose regulatory tracking system.
+              <h4 className="text-xl font-black text-white">Investigation Case Dispatched!</h4>
+              <p className="text-xs text-slate-300 max-w-sm mx-auto">
+                Your report has been logged to the National Drug Regulatory Authority. It is now active in the Regulator Command Center.
               </p>
             </div>
-            <div className="p-3 bg-slate-800 rounded-xl font-mono text-xs text-emerald-400 border border-slate-700">
-              Tracking Case ID: <strong>{submittedId}</strong>
+
+            <div className="p-4 bg-slate-800/80 rounded-xl font-mono text-xs text-left border border-slate-700 space-y-1.5">
+              <div className="flex justify-between">
+                <span className="text-slate-400">Case Tracking ID:</span>
+                <span className="font-bold text-red-400">{submittedReport.id}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Suspect Pharmacy:</span>
+                <span className="font-bold text-white">{submittedReport.storeName}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Flagged Batch ID:</span>
+                <span className="font-bold text-amber-400">{submittedReport.batchId}</span>
+              </div>
             </div>
-            <button
-              onClick={onClose}
-              className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition"
-            >
-              Done
-            </button>
+
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+              <button
+                onClick={onClose}
+                className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition"
+              >
+                Close
+              </button>
+              <button
+                onClick={handleGoToAdmin}
+                className="w-full py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-red-600/30"
+              >
+                <span>Switch to Regulator Admin Portal</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="p-6 space-y-4">

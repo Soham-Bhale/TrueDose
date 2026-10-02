@@ -10,7 +10,7 @@ import QRScannerModal from '../components/QRScannerModal';
 import CertificateModal from '../components/CertificateModal';
 import ReportModal from '../components/ReportModal';
 
-export default function VerifyPage({ initialBatchId }) {
+export default function VerifyPage({ initialBatchId, onNavigateToAdmin }) {
   const [batchIdInput, setBatchIdInput] = useState(initialBatchId || 'PCM001');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -498,6 +498,7 @@ export default function VerifyPage({ initialBatchId }) {
         medicineName={errorResult ? "Suspected Counterfeit Batch" : result?.medicineName}
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
+        onNavigateToAdmin={onNavigateToAdmin}
       />
     </div>
   );
