@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import {
   Plus, Truck, QrCode, ShieldAlert, ShoppingBag, Eye, RefreshCw,
-  Clock, CheckCircle, AlertTriangle, Building, Search, ArrowRight, UserCheck
+  Clock, CheckCircle, AlertTriangle, Building, Search, ArrowRight, UserCheck,
+  Award, ShieldCheck, MapPin, Send, AlertOctagon
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import CreateBatchModal from '../components/CreateBatchModal';
 import TransferModal from '../components/TransferModal';
 import QRCodeModal from '../components/QRCodeModal';
+import CertificateModal from '../components/CertificateModal';
 
 export default function DashboardPage({ onNavigateToVerify }) {
   const { currentUser } = useAuth();
   const [batches, setBatches] = useState([]);
+  const [investigations, setInvestigations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -18,19 +21,24 @@ export default function DashboardPage({ onNavigateToVerify }) {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [transferTargetBatch, setTransferTargetBatch] = useState(null);
   const [qrTargetBatch, setQrTargetBatch] = useState(null);
+  const [certTargetBatch, setCertTargetBatch] = useState(null);
   const [dispenseLoading, setDispenseLoading] = useState(null);
 
   const fetchBatches = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/batches');
-      const data = await res.json();
-      if (data.batches) {
-        setBatches(data.batches);
-      }
+      const [batchesRes, statsRes] = await Promise.all([
+        fetch('/api/batches'),
+        fetch('/api/stats')
+      ]);
+      const batchesData = await batchesRes.json();
+      const statsData = await statsRes.json();
+
+      if (batchesData.batches) setBatches(batchesData.batches);
+      if (statsData.investigations) setInvestigations(statsData.investigations);
       setLoading(false);
     } catch (err) {
-      console.error("Failed to load batches:", err);
+      console.error("Failed to load dashboard data:", err);
       setLoading(false);
     }
   };
@@ -93,16 +101,29 @@ export default function DashboardPage({ onNavigateToVerify }) {
     }
   };
 
-  // Filter batches based on search and role view
+  // Dispatch investigator to store
+  const handleUpdateInvestigation = async (reportId, newStatus) => {
+    try {
+      const res = await fetch(`/api/stats/reports/${reportId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+      });
+      if (res.ok) {
+        fetchBatches();
+      }
+    } catch (err) {
+      console.error("Update investigation failed:", err);
+    }
+  };
+
+  // Filter batches based on search
   const filteredBatches = batches.filter(b => {
-    const matchSearch =
-      b.batchId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    return b.batchId.toLowerCase().includes(searchTerm.toLowerCase()) ||
       b.medicineName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       b.currentOwnerName.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchSearch;
   });
 
-  // Role-specific badge styling
   const getStageBadge = (stage) => {
     switch (stage) {
       case 'Manufactured':
@@ -172,6 +193,64 @@ export default function DashboardPage({ onNavigateToVerify }) {
         </div>
       </div>
 
+      {/* Admin Incident Investigation Panel */}
+      {currentUser.role === 'admin' && investigations.length > 0 && (
+        <div className="bg-red-950/20 border-2 border-red-500/40 rounded-2xl p-6 shadow-xl space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 bg-red-500/20 text-red-400 rounded-lg border border-red-500/30">
+                <ShieldAlert className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+                  Active Counterfeit Investigations & Citizen Alerts
+                </h3>
+                <p className="text-xs text-red-300/80">Reports flagged by consumers during QR scanning</p>
+              </div>
+            </div>
+            <span className="px-2.5 py-1 rounded-full bg-red-500/20 text-red-300 text-xs font-mono font-bold">
+              {investigations.length} Actionable Report{investigations.length > 1 ? 's' : ''}
+            </span>
+          </div>
+
+          <div className="grid gap-3">
+            {investigations.map((rep) => (
+              <div key={rep.id} className="p-4 bg-slate-900/80 border border-red-500/30 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono font-bold text-red-400">{rep.id}</span>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-red-500/10 text-red-300 border border-red-500/20">
+                      BATCH: {rep.batchId}
+                    </span>
+                    <span className="text-slate-400">• Store: <strong className="text-white">{rep.storeName}</strong></span>
+                  </div>
+                  <p className="text-slate-300 text-[11px]">"{rep.description}"</p>
+                  <div className="flex items-center gap-3 text-[10px] text-slate-500 font-mono">
+                    <span className="flex items-center gap-1"><MapPin className="w-3 h-3 text-slate-400" /> {rep.location}</span>
+                    <span>• Status: <strong className="text-amber-400">{rep.status}</strong></span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => handleUpdateInvestigation(rep.id, "INSPECTOR_ON_SITE")}
+                    className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-amber-300 rounded-lg font-semibold transition"
+                  >
+                    Dispatch Inspector
+                  </button>
+                  <button
+                    onClick={() => handleUpdateInvestigation(rep.id, "STORE_QUARANTINED")}
+                    className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg font-bold transition shadow-sm"
+                  >
+                    Quarantine Store
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Search and Filter */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="relative w-full sm:w-80">
@@ -213,7 +292,6 @@ export default function DashboardPage({ onNavigateToVerify }) {
                 </tr>
               ) : (
                 filteredBatches.map((batch) => {
-                  const isOwner = currentUser.ethAddress && batch.currentOwner.toLowerCase() === currentUser.ethAddress.toLowerCase();
                   const isExpired = new Date() > new Date(batch.expiryDate);
 
                   return (
@@ -268,6 +346,15 @@ export default function DashboardPage({ onNavigateToVerify }) {
                       {/* Actions */}
                       <td className="px-5 py-4 text-right font-sans">
                         <div className="flex items-center justify-end gap-2">
+                          {/* Quality CoA Button */}
+                          <button
+                            onClick={() => setCertTargetBatch(batch)}
+                            className="p-1.5 bg-slate-900 hover:bg-slate-700 text-slate-300 hover:text-emerald-400 rounded-lg border border-slate-700 transition"
+                            title="View Quality Certificate (IPFS CoA)"
+                          >
+                            <Award className="w-4 h-4 text-amber-400" />
+                          </button>
+
                           {/* QR Code Button */}
                           <button
                             onClick={() => setQrTargetBatch(batch)}
@@ -353,6 +440,12 @@ export default function DashboardPage({ onNavigateToVerify }) {
         batch={qrTargetBatch}
         isOpen={!!qrTargetBatch}
         onClose={() => setQrTargetBatch(null)}
+      />
+
+      <CertificateModal
+        batch={certTargetBatch}
+        isOpen={!!certTargetBatch}
+        onClose={() => setCertTargetBatch(null)}
       />
     </div>
   );

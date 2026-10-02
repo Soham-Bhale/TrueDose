@@ -2,10 +2,13 @@ import React, { useState, useEffect } from 'react';
 import {
   Search, Camera, ShieldCheck, AlertTriangle, XCircle, CheckCircle2,
   Clock, MapPin, Building2, ExternalLink, Copy, Check, Sparkles, ChevronRight,
-  Pill, AlertOctagon, HelpCircle, FileCheck
+  Pill, AlertOctagon, HelpCircle, FileCheck, Award, Thermometer, ShieldAlert,
+  Hash
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import QRScannerModal from '../components/QRScannerModal';
+import CertificateModal from '../components/CertificateModal';
+import ReportModal from '../components/ReportModal';
 
 export default function VerifyPage({ initialBatchId }) {
   const [batchIdInput, setBatchIdInput] = useState(initialBatchId || 'PCM001');
@@ -13,14 +16,17 @@ export default function VerifyPage({ initialBatchId }) {
   const [result, setResult] = useState(null);
   const [errorResult, setErrorResult] = useState(null);
   const [copiedHash, setCopiedHash] = useState(null);
+
+  // Modals
   const [isScannerOpen, setIsScannerOpen] = useState(false);
+  const [isCertModalOpen, setIsCertModalOpen] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
   useEffect(() => {
     if (initialBatchId) {
       setBatchIdInput(initialBatchId);
       performVerification(initialBatchId);
     } else {
-      // Default verify PCM001 so the page looks lively immediately
       performVerification('PCM001');
     }
   }, [initialBatchId]);
@@ -38,12 +44,10 @@ export default function VerifyPage({ initialBatchId }) {
       const data = await res.json();
 
       if (!res.ok) {
-        // Counterfeit or not found
         setErrorResult(data);
       } else {
         setResult(data);
         if (data.status === 'GENUINE_AUTHENTIC') {
-          // Trigger celebration confetti
           try {
             confetti({
               particleCount: 50,
@@ -154,7 +158,7 @@ export default function VerifyPage({ initialBatchId }) {
             }}
             className="px-2.5 py-1 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 font-mono transition"
           >
-            AMX404 (In Transit)
+            AMX404 (Cold Chain)
           </button>
           <button
             type="button"
@@ -189,7 +193,7 @@ export default function VerifyPage({ initialBatchId }) {
 
       {/* Counterfeit / Error Alert State */}
       {!loading && errorResult && (
-        <div className="max-w-3xl mx-auto bg-red-950/40 border-2 border-red-500/80 rounded-2xl p-6 sm:p-8 space-y-4 shadow-2xl animate-in zoom-in-95 duration-200">
+        <div className="max-w-3xl mx-auto bg-red-950/40 border-2 border-red-500/80 rounded-2xl p-6 sm:p-8 space-y-5 shadow-2xl animate-in zoom-in-95 duration-200">
           <div className="flex items-start gap-4">
             <div className="p-3 bg-red-500/20 rounded-xl border border-red-500/30 text-red-400 shrink-0">
               <AlertOctagon className="w-8 h-8" />
@@ -211,9 +215,18 @@ export default function VerifyPage({ initialBatchId }) {
             <p className="text-slate-300">{errorResult.recommendation}</p>
           </div>
 
-          <div className="text-xs text-slate-400 font-mono border-t border-red-500/20 pt-3 flex items-center justify-between">
-            <span>Query Batch ID: <strong className="text-white">{errorResult.batchId}</strong></span>
-            <span>Blockchain Status: <span className="text-red-400">UNREGISTERED / REJECTED</span></span>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-red-500/20 text-xs">
+            <div className="font-mono text-slate-400">
+              Query Batch: <strong className="text-white">{errorResult.batchId}</strong> • Status: <span className="text-red-400 font-bold">REJECTED</span>
+            </div>
+
+            <button
+              onClick={() => setIsReportModalOpen(true)}
+              className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-red-600/30"
+            >
+              <ShieldAlert className="w-4 h-4" />
+              <span>Report Counterfeit to Drug Controller</span>
+            </button>
           </div>
         </div>
       )}
@@ -268,19 +281,74 @@ export default function VerifyPage({ initialBatchId }) {
               </div>
             </div>
 
-            {/* Expiry Badge */}
-            <div className="sm:text-right shrink-0">
-              <div className="text-xs text-slate-400 font-medium">Expiration Date</div>
-              <div className={`text-base font-bold font-mono ${result.isExpired ? 'text-red-400' : 'text-emerald-400'}`}>
-                {new Date(result.expiryDate).toLocaleDateString()}
+            {/* Quick Actions & Expiry */}
+            <div className="flex flex-col sm:items-end gap-2">
+              <div className="sm:text-right shrink-0">
+                <div className="text-xs text-slate-400 font-medium">Expiration Date</div>
+                <div className={`text-base font-bold font-mono ${result.isExpired ? 'text-red-400' : 'text-emerald-400'}`}>
+                  {new Date(result.expiryDate).toLocaleDateString()}
+                </div>
+                <span className={`text-[11px] font-semibold ${result.isExpired ? 'text-red-400' : 'text-slate-400'}`}>
+                  {result.isExpired ? '⚠️ EXPIRED' : `${result.daysUntilExpiry} days remaining`}
+                </span>
               </div>
-              <span className={`text-[11px] font-semibold ${result.isExpired ? 'text-red-400' : 'text-slate-400'}`}>
-                {result.isExpired
-                  ? '⚠️ EXPIRED'
-                  : `${result.daysUntilExpiry} days remaining`}
-              </span>
+
+              <div className="flex items-center gap-2 mt-1">
+                <button
+                  onClick={() => setIsCertModalOpen(true)}
+                  className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition"
+                >
+                  <Award className="w-3.5 h-3.5" />
+                  <span>Quality Lab CoA (IPFS)</span>
+                </button>
+
+                <button
+                  onClick={() => setIsReportModalOpen(true)}
+                  className="px-3 py-1.5 bg-slate-800 hover:bg-red-950/60 text-slate-400 hover:text-red-400 border border-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition"
+                >
+                  <ShieldAlert className="w-3.5 h-3.5" />
+                  <span>Report</span>
+                </button>
+              </div>
             </div>
           </div>
+
+          {/* Cold-Chain IoT Telemetry Box */}
+          {result.telemetry && (
+            <div className="bg-slate-800/60 border border-slate-700/80 rounded-2xl p-5 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center space-x-3.5">
+                <div className="p-2.5 bg-blue-500/20 text-blue-400 rounded-xl border border-blue-500/30">
+                  <Thermometer className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                    <span>IoT Cold-Chain Telemetry</span>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-blue-500/20 text-blue-300">
+                      LIVE SENSOR NODE
+                    </span>
+                  </h4>
+                  <p className="text-xs text-slate-400">
+                    Continuous reefer sensor readings verified on logistics transit
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4 text-xs font-mono">
+                <div className="text-center px-3 py-1.5 bg-slate-900/60 rounded-xl border border-slate-700">
+                  <span className="text-slate-400 text-[10px] block">Temperature</span>
+                  <span className="font-bold text-blue-400 text-sm">{result.telemetry.currentTemperatureCelsius}°C</span>
+                </div>
+                <div className="text-center px-3 py-1.5 bg-slate-900/60 rounded-xl border border-slate-700">
+                  <span className="text-slate-400 text-[10px] block">Humidity</span>
+                  <span className="font-bold text-slate-200 text-sm">{result.telemetry.humidityPercent}%</span>
+                </div>
+                <div className="text-center px-3 py-1.5 bg-slate-900/60 rounded-xl border border-slate-700">
+                  <span className="text-slate-400 text-[10px] block">Cold-Chain Status</span>
+                  <span className="font-bold text-emerald-400 text-xs">PASSED ✓</span>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Medicine Specifications Card */}
           <div className="bg-slate-800/60 border border-slate-700/80 rounded-2xl p-6 shadow-xl space-y-4">
@@ -296,7 +364,7 @@ export default function VerifyPage({ initialBatchId }) {
               </div>
               <div className="p-3 bg-slate-900/60 rounded-xl border border-slate-700/50">
                 <span className="text-slate-400 block text-[10px] uppercase">Production Volume</span>
-                <span className="font-bold text-slate-200 text-sm">{result.quantity.toLocaleString()} {result.unit || 'units'}</span>
+                <span className="font-bold text-slate-200 text-sm">{result.quantity?.toLocaleString()} {result.unit || 'units'}</span>
               </div>
               <div className="p-3 bg-slate-900/60 rounded-xl border border-slate-700/50">
                 <span className="text-slate-400 block text-[10px] uppercase">Manufacturing Date</span>
@@ -339,12 +407,10 @@ export default function VerifyPage({ initialBatchId }) {
             <div className="relative pl-6 sm:pl-8 space-y-6 before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-700">
               {result.history.map((step, idx) => (
                 <div key={idx} className="relative group">
-                  {/* Step icon dot */}
                   <div className="absolute -left-6 sm:-left-8 top-1.5 w-6 h-6 rounded-full bg-slate-900 border-2 border-emerald-500 flex items-center justify-center shadow-lg">
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                   </div>
 
-                  {/* Step Card */}
                   <div className="bg-slate-900/80 border border-slate-700/70 rounded-xl p-4 space-y-2 hover:border-emerald-500/40 transition">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                       <div className="flex items-center gap-2">
@@ -374,7 +440,6 @@ export default function VerifyPage({ initialBatchId }) {
                       </p>
                     )}
 
-                    {/* Tx Hash */}
                     {step.txHash && (
                       <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 pt-1 border-t border-slate-800">
                         <span className="text-slate-500 text-[10px] uppercase">Transaction Hash:</span>
@@ -411,7 +476,7 @@ export default function VerifyPage({ initialBatchId }) {
         </div>
       )}
 
-      {/* QR Scanner Modal */}
+      {/* Modals */}
       <QRScannerModal
         isOpen={isScannerOpen}
         onClose={() => setIsScannerOpen(false)}
@@ -419,6 +484,20 @@ export default function VerifyPage({ initialBatchId }) {
           setBatchIdInput(scannedId);
           performVerification(scannedId);
         }}
+      />
+
+      <CertificateModal
+        batch={result}
+        cert={result?.qualityCertificate}
+        isOpen={isCertModalOpen}
+        onClose={() => setIsCertModalOpen(false)}
+      />
+
+      <ReportModal
+        batchId={errorResult ? errorResult.batchId : result?.batchId}
+        medicineName={errorResult ? "Suspected Counterfeit Batch" : result?.medicineName}
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
       />
     </div>
   );

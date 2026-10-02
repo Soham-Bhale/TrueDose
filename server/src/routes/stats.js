@@ -8,6 +8,7 @@ router.get('/', (req, res) => {
   const batches = store.getBatches();
   const users = store.getUsers();
   const verifications = store.getVerifications();
+  const reports = store.getReports();
   const contractConfig = blockchain.getContractInfo();
 
   const totalBatches = batches.length;
@@ -51,8 +52,19 @@ router.get('/', (req, res) => {
       consensusType: "Proof of Authority (PoA) Consortium"
     },
     participants: roleCounts,
-    recentVerifications: verifications.slice(0, 10)
+    recentVerifications: verifications.slice(0, 10),
+    investigations: reports
   });
+});
+
+// PATCH /api/stats/reports/:id - Update investigation status
+router.patch('/reports/:id', (req, res) => {
+  const { status } = req.body;
+  const updated = store.updateReportStatus(req.params.id, status || "INVESTIGATOR_ON_SITE");
+  if (!updated) {
+    return res.status(404).json({ error: "Report not found" });
+  }
+  res.json({ message: "Investigation updated", report: updated });
 });
 
 module.exports = router;

@@ -257,6 +257,20 @@ const getInitialState = () => {
         scannerIp: "127.0.0.1",
         device: "Customer Mobile Browser"
       }
+    ],
+    reports: [
+      {
+        id: "REP-2026-101",
+        batchId: "FAKE999",
+        medicineName: "Suspected Counterfeit Paracetamol",
+        storeName: "Star City Chemist & Meds",
+        location: "Sector 14, Gurgaon, India",
+        reportType: "COUNTERFEIT_DETECTED",
+        description: "Customer scanned QR code on packaging box, blockchain verified as unregistered. Tamper seal was peeling off.",
+        reporterContact: "citizen-alert@truedose.org",
+        status: "INVESTIGATION_DISPATCHED",
+        filedAt: "2026-09-28T14:30:00Z"
+      }
     ]
   };
 };
@@ -269,7 +283,9 @@ function readDb() {
   }
   try {
     const raw = fs.readFileSync(DB_FILE, 'utf8');
-    return JSON.parse(raw);
+    const data = JSON.parse(raw);
+    if (!data.reports) data.reports = [];
+    return data;
   } catch (err) {
     console.error("Error reading db.json, re-initializing:", err);
     const initial = getInitialState();
@@ -313,5 +329,23 @@ module.exports = {
     writeDb(db);
     return scan;
   },
-  getVerifications: () => readDb().verifications
+  getVerifications: () => readDb().verifications,
+  getReports: () => readDb().reports || [],
+  saveReport: (report) => {
+    const db = readDb();
+    if (!db.reports) db.reports = [];
+    db.reports.unshift(report);
+    writeDb(db);
+    return report;
+  },
+  updateReportStatus: (id, status) => {
+    const db = readDb();
+    if (!db.reports) return null;
+    const report = db.reports.find(r => r.id === id);
+    if (report) {
+      report.status = status;
+      writeDb(db);
+    }
+    return report;
+  }
 };
