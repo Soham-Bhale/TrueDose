@@ -27,7 +27,7 @@ export default function ReportModal({ batchId, medicineName, isOpen, onClose, on
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           batchId: batchId || 'SUSPECT_BATCH',
-          medicineName: medicineName || 'Unknown Product',
+          medicineName: medicineName || 'Unknown Formulation',
           storeName: formData.storeName,
           location: formData.location,
           description: formData.description,
@@ -57,159 +57,152 @@ export default function ReportModal({ batchId, medicineName, isOpen, onClose, on
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-in fade-in duration-150">
+      <div className="relative w-full max-w-lg bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden">
         {/* Header */}
-        <div className="px-6 py-4 bg-red-950/40 border-b border-red-500/30 flex items-center justify-between">
+        <div className="px-6 py-4 bg-rose-50 border-b border-rose-100 flex items-center justify-between">
           <div className="flex items-center space-x-2.5">
-            <div className="p-2 bg-red-500/20 text-red-400 rounded-lg border border-red-500/30">
+            <div className="p-2 bg-white text-rose-700 rounded-lg border border-rose-200 shadow-2xs">
               <ShieldAlert className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-white text-base">Report Suspicious / Counterfeit Medicine</h3>
-              <p className="text-xs text-red-300/80">Direct dispatch to National Drug Enforcement Directorate</p>
+              <h3 className="font-bold text-slate-900 text-sm">Report Suspected Counterfeit Medicine</h3>
+              <p className="text-xs text-slate-500">Alert National Drug Regulatory & Enforcement Directorate</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition"
+            className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {submittedReport ? (
-          <div className="p-8 text-center space-y-5 animate-in zoom-in-95 duration-200">
-            <div className="w-16 h-16 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-2xl flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/20">
-              <CheckCircle2 className="w-9 h-9" />
+          <div className="p-8 text-center space-y-5 animate-in zoom-in-95 duration-150">
+            <div className="w-14 h-14 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl flex items-center justify-center mx-auto shadow-2xs">
+              <CheckCircle2 className="w-8 h-8" />
             </div>
             <div className="space-y-1">
-              <h4 className="text-xl font-black text-white">Investigation Case Dispatched!</h4>
-              <p className="text-xs text-slate-300 max-w-sm mx-auto">
+              <h4 className="text-lg font-bold text-slate-900">Investigation Case Filed</h4>
+              <p className="text-xs text-slate-600 max-w-sm mx-auto leading-relaxed">
                 Your report has been logged to the National Drug Regulatory Authority. It is now active in the Regulator Command Center.
               </p>
             </div>
 
-            <div className="p-4 bg-slate-800/80 rounded-xl font-mono text-xs text-left border border-slate-700 space-y-1.5">
+            <div className="p-4 bg-slate-50 rounded-xl font-mono text-xs text-left border border-slate-200 space-y-1.5">
               <div className="flex justify-between">
-                <span className="text-slate-400">Case Tracking ID:</span>
-                <span className="font-bold text-red-400">{submittedReport.id}</span>
+                <span className="text-slate-500">Case Identifier:</span>
+                <span className="font-bold text-rose-700">{submittedReport.id}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Suspect Pharmacy:</span>
-                <span className="font-bold text-white">{submittedReport.storeName}</span>
+                <span className="text-slate-500">Suspect Pharmacy:</span>
+                <span className="font-bold text-slate-900">{submittedReport.storeName}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Flagged Batch ID:</span>
-                <span className="font-bold text-amber-400">{submittedReport.batchId}</span>
+                <span className="text-slate-500">Status:</span>
+                <span className="font-bold text-amber-700">{submittedReport.status}</span>
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+            <div className="flex justify-center gap-3 pt-2">
               <button
                 onClick={onClose}
-                className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition"
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold transition"
               >
                 Close
               </button>
               <button
                 onClick={handleGoToAdmin}
-                className="w-full py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-red-600/30"
+                className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
               >
-                <span>Switch to Regulator Admin Portal</span>
-                <ArrowRight className="w-4 h-4" />
+                <span>View in Regulator Portal</span>
+                <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="p-6 space-y-4">
             {error && (
-              <div className="p-3 bg-red-950/40 border border-red-500/40 rounded-xl text-xs text-red-300 flex items-start gap-2">
-                <AlertTriangle className="w-4 h-4 shrink-0 text-red-400 mt-0.5" />
-                <span>{error}</span>
+              <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg text-xs text-rose-700">
+                {error}
               </div>
             )}
 
-            <div className="p-3 bg-slate-800/60 rounded-xl border border-slate-700/60 text-xs">
-              <span className="text-slate-400 block text-[10px] uppercase font-mono">Reported Batch Number</span>
-              <span className="font-bold text-red-400 text-sm font-mono">{batchId}</span>
-              <span className="text-slate-400 block text-[11px] mt-0.5">Product: {medicineName || 'Unverified Medicine'}</span>
+            <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 text-xs space-y-1">
+              <div className="flex justify-between font-mono">
+                <span className="text-slate-500">Flagged Batch:</span>
+                <span className="font-bold text-rose-700">{batchId || 'UNVERIFIED'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Product:</span>
+                <span className="font-semibold text-slate-900">{medicineName || 'Unknown Product'}</span>
+              </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
-                Store / Pharmacy Name <span className="text-red-400">*</span>
-              </label>
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-slate-700 uppercase">Pharmacy / Vendor Name</label>
               <input
                 type="text"
                 required
                 value={formData.storeName}
                 onChange={(e) => setFormData({ ...formData, storeName: e.target.value })}
-                placeholder="e.g. Star Meds & Chemist, MG Road"
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-red-500"
+                placeholder="e.g. CareWell Chemist, MG Road"
+                className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-rose-600"
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
-                City / Location
-              </label>
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-slate-700 uppercase">Store Location / City</label>
               <input
                 type="text"
+                required
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                 placeholder="e.g. Bangalore, Karnataka"
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-red-500"
+                className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-rose-600"
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
-                Incident Description & Observations
-              </label>
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-slate-700 uppercase">Observation Description</label>
               <textarea
+                required
                 rows={3}
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="e.g. Scanned QR code but blockchain returned counterfeit warning. Holographic seal on foil was missing."
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-red-500"
+                placeholder="Describe packaging defect, missing holographic seal, or failed barcode scan..."
+                className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-rose-600"
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
-                Your Contact Info (Optional / Anonymous)
-              </label>
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-slate-700 uppercase">Your Contact (Phone / Email)</label>
               <input
                 type="text"
+                required
                 value={formData.reporterContact}
                 onChange={(e) => setFormData({ ...formData, reporterContact: e.target.value })}
-                placeholder="Email or phone number for inspector follow-up"
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-red-500"
+                placeholder="e.g. inspector@fda.gov or +91 98765 43210"
+                className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-rose-600"
               />
             </div>
 
-            <div className="flex justify-end gap-3 pt-2">
+            <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition"
+                className="px-4 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-lg text-xs font-semibold transition"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="px-5 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-red-600/30"
+                className="px-5 py-2 bg-rose-700 hover:bg-rose-800 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
               >
-                {loading ? (
-                  <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
-                ) : (
-                  <>
-                    <Send className="w-3.5 h-3.5" />
-                    <span>Submit Official Alert</span>
-                  </>
-                )}
+                <Send className="w-3.5 h-3.5" />
+                <span>{loading ? 'Submitting...' : 'Submit Incident Report'}</span>
               </button>
             </div>
           </form>

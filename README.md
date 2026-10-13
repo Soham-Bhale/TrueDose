@@ -124,6 +124,21 @@ Visit the application at:
 - 🔌 **Backend Health Check:** [http://localhost:5000/api/health](http://localhost:5000/api/health)
 - 🔍 **Direct Batch API:** [http://localhost:5000/api/verify/PCM001](http://localhost:5000/api/verify/PCM001)
 
+### 🚀 One-Click Windows Launch (`run.bat`)
+For Windows users, a comprehensive startup and health-check script is provided at the project root:
+```cmd
+# Double click run.bat or execute in CMD/PowerShell:
+run.bat
+```
+`run.bat` automatically:
+1. Verifies **Node.js** (v18+) and **npm** installation.
+2. Checks and auto-installs missing dependencies across `root`, `contracts`, `server`, and `client`.
+3. Verifies and compiles Solidity smart contracts (`PharmaSupplyChain.sol`).
+4. Executes the **Master Automated Test Suite** (all 50 invariant tests).
+5. Launches concurrent backend and client services and **automatically opens your browser** to [http://localhost:5173](http://localhost:5173).
+
+---
+
 ### 🧪 Automated Testing & Logical Error Invariant Suite
 Execute the master automated testing suite covering all 50 smart contract and API logical error invariants:
 ```bash

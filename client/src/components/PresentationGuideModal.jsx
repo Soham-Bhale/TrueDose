@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Award, HelpCircle, CheckCircle2, ShieldCheck, AlertTriangle, Layers, ArrowRight, Zap, Database, Lock } from 'lucide-react';
+import { X, Award, HelpCircle, CheckCircle2, ShieldCheck, AlertTriangle, Layers, ArrowRight, Zap, Database, Lock, GraduationCap } from 'lucide-react';
 
 export default function PresentationGuideModal({ isOpen, onClose }) {
   const [activeTab, setActiveTab] = useState('demo');
@@ -7,42 +7,42 @@ export default function PresentationGuideModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-4xl bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-in fade-in duration-150">
+      <div className="relative w-full max-w-4xl bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="px-6 py-4 bg-slate-800/80 border-b border-slate-700 flex items-center justify-between">
+        <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-emerald-500/20 text-emerald-400 rounded-lg border border-emerald-500/30">
-              <Award className="w-5 h-5" />
+            <div className="p-2 bg-amber-50 text-amber-700 rounded-lg border border-amber-200 shadow-2xs">
+              <GraduationCap className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white">Project Presentation & Viva Defense Guide</h2>
-              <p className="text-xs text-slate-400">Everything you need to demonstrate and defend TrueDose to evaluators</p>
+              <h2 className="text-base font-bold text-slate-900">Project Presentation & Viva Defense Guide</h2>
+              <p className="text-xs text-slate-500">Structured demonstration flow and academic examiner defense arguments</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition"
+            className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex border-b border-slate-800 bg-slate-900/60 px-6 gap-2 pt-2">
+        <div className="flex border-b border-slate-200 bg-slate-50 px-6 gap-2 pt-2">
           {[
-            { id: 'demo', label: '🎯 1-Minute Live Demo Flow' },
-            { id: 'viva', label: '❓ "Why Blockchain vs MongoDB?"' },
-            { id: 'rules', label: '🛡️ Smart Contract Rules' },
-            { id: 'features', label: '✨ Project Contributions' }
+            { id: 'demo', label: '1-Minute Live Demonstration Flow' },
+            { id: 'viva', label: 'Defense: Why Blockchain vs MongoDB?' },
+            { id: 'rules', label: 'Smart Contract Business Rules' },
+            { id: 'features', label: 'Core Technical Contributions' }
           ].map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2.5 text-sm font-medium rounded-t-lg transition border-b-2 ${
+              className={`px-4 py-2 text-xs font-semibold rounded-t-lg transition border-b-2 ${
                 activeTab === tab.id
-                  ? 'border-emerald-500 text-emerald-400 bg-slate-800/60'
-                  : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/30'
+                  ? 'border-teal-700 text-teal-950 bg-white shadow-2xs'
+                  : 'border-transparent text-slate-500 hover:text-slate-800'
               }`}
             >
               {tab.label}
@@ -51,54 +51,54 @@ export default function PresentationGuideModal({ isOpen, onClose }) {
         </div>
 
         {/* Content Area */}
-        <div className="p-6 overflow-y-auto space-y-6 text-sm text-slate-300">
+        <div className="p-6 overflow-y-auto space-y-6 text-xs text-slate-600">
           {activeTab === 'demo' && (
             <div className="space-y-4">
-              <div className="p-4 bg-emerald-950/30 border border-emerald-500/30 rounded-xl">
-                <h3 className="font-semibold text-emerald-400 text-base mb-1">Recommended Presentation Script (Step-by-Step)</h3>
-                <p className="text-xs text-slate-300">
-                  Follow these 5 steps in front of your examiner to show a complete, living pharmaceutical supply chain:
+              <div className="p-4 bg-teal-50 border border-teal-200 rounded-xl">
+                <h3 className="font-bold text-teal-900 text-sm mb-1">Recommended Presentation Sequence</h3>
+                <p className="text-xs text-teal-800 leading-relaxed">
+                  Walk through these 5 chronological steps to illustrate end-to-end provenance:
                 </p>
               </div>
 
               <div className="grid gap-3">
-                <div className="p-3 bg-slate-800/60 rounded-xl border border-slate-700/60 flex items-start gap-3">
-                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xs shrink-0">1</span>
+                <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex items-start gap-3">
+                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-teal-100 text-teal-800 font-bold text-xs shrink-0">1</span>
                   <div>
-                    <p className="font-semibold text-white">Create Batch as ABC Pharma (Manufacturer)</p>
-                    <p className="text-xs text-slate-400 mt-0.5">Switch role to <strong>Manufacturer</strong> → Click <strong>"Create New Batch"</strong> → Enter Batch ID <code className="text-emerald-300">PCM001</code>, Medicine <em>Paracetamol 500mg</em>, Qty <em>5000</em>. Click <em>"Commit Batch to Blockchain"</em>.</p>
+                    <p className="font-bold text-slate-900 text-xs">Genesis: Register Batch as Manufacturer (ABC Pharma)</p>
+                    <p className="text-slate-600 mt-0.5 leading-relaxed">Switch role to <strong>Manufacturer</strong> → Click <strong>"Register New Batch"</strong> → Enter Batch ID <code className="text-teal-800 font-mono font-semibold">PCM001</code>, Medicine <em>Paracetamol 500mg</em>, Qty <em>5000</em>. Commit batch to blockchain.</p>
                   </div>
                 </div>
 
-                <div className="p-3 bg-slate-800/60 rounded-xl border border-slate-700/60 flex items-start gap-3">
-                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xs shrink-0">2</span>
+                <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex items-start gap-3">
+                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-teal-100 text-teal-800 font-bold text-xs shrink-0">2</span>
                   <div>
-                    <p className="font-semibold text-white">Transfer to Distributor & Wholesaler</p>
-                    <p className="text-xs text-slate-400 mt-0.5">Click <strong>"Transfer Batch"</strong> → Select <em>Apex Logistics (Distributor)</em>. Switch role to <strong>Distributor</strong> and forward to <em>Metro Wholesalers</em>. Each step writes an immutable event on EVM!</p>
+                    <p className="font-bold text-slate-900 text-xs">Sequential Custody: Dispatch to Distributor & Wholesaler</p>
+                    <p className="text-slate-600 mt-0.5 leading-relaxed">Click <strong>"Transfer"</strong> → Select <em>Apex Logistics (Distributor)</em>. Switch role to <strong>Distributor</strong> and forward to <em>Metro Wholesalers</em>. Each handoff emits an on-chain event with timestamp and signatures.</p>
                   </div>
                 </div>
 
-                <div className="p-3 bg-slate-800/60 rounded-xl border border-slate-700/60 flex items-start gap-3">
-                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xs shrink-0">3</span>
+                <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex items-start gap-3">
+                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-teal-100 text-teal-800 font-bold text-xs shrink-0">3</span>
                   <div>
-                    <p className="font-semibold text-white">Wholesaler delivers to Pharmacy & Pharmacy dispenses</p>
-                    <p className="text-xs text-slate-400 mt-0.5">Switch to <strong>Wholesaler</strong> → Transfer to <em>HealthPlus Pharmacy</em>. Switch to <strong>Pharmacy</strong> → Click <strong>"Dispense to Customer"</strong>. Medicine is now marked as reached consumer!</p>
+                    <p className="font-bold text-slate-900 text-xs">Retail Delivery & Dispensary Patient Sale</p>
+                    <p className="text-slate-600 mt-0.5 leading-relaxed">Switch to <strong>Wholesaler</strong> → Transfer to <em>HealthPlus Pharmacy</em>. Switch to <strong>Pharmacy</strong> → Click <strong>"Dispense"</strong>. Medicine is logged as reached consumer.</p>
                   </div>
                 </div>
 
-                <div className="p-3 bg-slate-800/60 rounded-xl border border-slate-700/60 flex items-start gap-3">
-                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xs shrink-0">4</span>
+                <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex items-start gap-3">
+                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-teal-100 text-teal-800 font-bold text-xs shrink-0">4</span>
                   <div>
-                    <p className="font-semibold text-white">Customer Scans QR Code</p>
-                    <p className="text-xs text-slate-400 mt-0.5">Click <strong>"Verify Medicine"</strong> → Search <code className="text-emerald-300">PCM001</code> or scan the QR code. Show the examiner the genuine certificate and the 4-stage blockchain ledger timeline with tx hashes!</p>
+                    <p className="font-bold text-slate-900 text-xs">Public Zero-Wallet Verification</p>
+                    <p className="text-slate-600 mt-0.5 leading-relaxed">Navigate to <strong>"Verify Medicine"</strong> → Search <code className="text-teal-800 font-mono font-semibold">PCM001</code> or scan the packaging QR. Display the genuine verification document and full sequential timeline.</p>
                   </div>
                 </div>
 
-                <div className="p-3 bg-slate-800/60 rounded-xl border border-slate-700/60 flex items-start gap-3">
-                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-red-500/20 text-red-400 font-bold text-xs shrink-0">5</span>
+                <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex items-start gap-3">
+                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-rose-100 text-rose-800 font-bold text-xs shrink-0">5</span>
                   <div>
-                    <p className="font-semibold text-white">Show Fake Batch & Expired Batch Edge Cases</p>
-                    <p className="text-xs text-slate-400 mt-0.5">Click the demo pills: <code className="text-red-300">FAKE999</code> (shows instant Counterfeit Alert: batch not found on chain) and <code className="text-amber-300">EXP902</code> (shows automatic Expiry Warning with safety block).</p>
+                    <p className="font-bold text-slate-900 text-xs">Demonstrate Edge Cases (Counterfeit & Expired)</p>
+                    <p className="text-slate-600 mt-0.5 leading-relaxed">Click test presets: <code className="text-rose-700 font-mono font-semibold">FAKE999</code> (illustrating unverified counterfeit rejection and regulatory reporting) and <code className="text-amber-700 font-mono font-semibold">EXP902</code> (illustrating automatic expiration safety lock).</p>
                   </div>
                 </div>
               </div>
@@ -107,33 +107,33 @@ export default function PresentationGuideModal({ isOpen, onClose }) {
 
           {activeTab === 'viva' && (
             <div className="space-y-4">
-              <div className="p-4 bg-blue-950/30 border border-blue-500/30 rounded-xl">
-                <h3 className="font-semibold text-blue-300 text-base mb-1">Guide/Examiner Question: "Why didn't you just use MongoDB?"</h3>
-                <p className="text-xs text-slate-300">
-                  Examiners ask this to test whether you truly understand the role of blockchain. Give this exact response:
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                <h3 className="font-bold text-blue-900 text-sm mb-1">Key Examiner Question: "Why not simply use MongoDB / SQL?"</h3>
+                <p className="text-xs text-blue-800 leading-relaxed">
+                  Examiners frequently ask this to test architectural depth. Provide this precise contrast:
                 </p>
               </div>
 
               <div className="grid md:grid-cols-2 gap-4">
-                <div className="p-4 bg-slate-800/40 rounded-xl border border-red-500/30">
-                  <div className="flex items-center gap-2 text-red-400 font-semibold mb-2">
-                    <Database className="w-4 h-4" /> Traditional Database (MongoDB / SQL)
+                <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                  <div className="flex items-center gap-2 text-rose-700 font-bold">
+                    <Database className="w-4 h-4" /> Traditional Centralized Database (MongoDB / SQL)
                   </div>
-                  <ul className="text-xs space-y-2 text-slate-300 list-disc list-inside">
-                    <li>Single point of failure & central control (any DBA or attacker with write permissions can alter history or delete records).</li>
-                    <li>No cryptographic non-repudiation: A manufacturer or distributor can deny having shipped or received a tainted batch.</li>
-                    <li>Disparate silos: Different companies don't trust sharing one company's private database.</li>
+                  <ul className="space-y-1.5 text-slate-600 list-disc list-inside">
+                    <li>Single point of compromise: Database administrators or compromised servers can secretly mutate history, dates, or ownership records without an audit trail.</li>
+                    <li>No cryptographic non-repudiation: A distributor can deny having handled a contaminated or diverted medicine lot.</li>
+                    <li>Lack of cross-organizational trust: Multiple competing pharmaceutical manufacturers and distributors refuse to rely on each other's private databases.</li>
                   </ul>
                 </div>
 
-                <div className="p-4 bg-slate-800/40 rounded-xl border border-emerald-500/30">
-                  <div className="flex items-center gap-2 text-emerald-400 font-semibold mb-2">
-                    <Lock className="w-4 h-4" /> TrueDose Blockchain Smart Contract
+                <div className="p-4 bg-slate-50 rounded-xl border border-teal-200 space-y-2">
+                  <div className="flex items-center gap-2 text-teal-800 font-bold">
+                    <Lock className="w-4 h-4" /> TrueDose Consortium Blockchain
                   </div>
-                  <ul className="text-xs space-y-2 text-slate-300 list-disc list-inside">
-                    <li><strong>Tamper-Evident History:</strong> Transactions are cryptographically chained; once recorded, past ownership transfers cannot be secretly rewritten.</li>
-                    <li><strong>Enforced State Machine:</strong> Smart contract code prevents unauthorized jumps (e.g. Pharmacy cannot manufacture; unauthorized party cannot transfer what they don't own).</li>
-                    <li><strong>Public Non-Repudiable Verification:</strong> End consumers and regulators independently verify provenance without needing access to any proprietary corporate server.</li>
+                  <ul className="space-y-1.5 text-slate-600 list-disc list-inside">
+                    <li><strong>Tamper-Evident Chaining:</strong> Records are sealed via cryptographic Merkle trees. Once written, past transactions cannot be secretly rewritten.</li>
+                    <li><strong>Enforced Code State Machine:</strong> Smart contract logic strictly enforces transition rules (e.g. non-owners cannot transfer; expired medicines cannot be sold).</li>
+                    <li><strong>Public Independent Verification:</strong> End consumers and hospital staff verify provenance directly against the ledger without requiring proprietary credentials.</li>
                   </ul>
                 </div>
               </div>
@@ -142,47 +142,47 @@ export default function PresentationGuideModal({ isOpen, onClose }) {
 
           {activeTab === 'rules' && (
             <div className="space-y-4">
-              <div className="p-4 bg-amber-950/30 border border-amber-500/30 rounded-xl">
-                <h3 className="font-semibold text-amber-300 text-base mb-1">Smart Contract Enforced Business Rules</h3>
-                <p className="text-xs text-slate-300">
-                  In our Solidity contract (<code className="text-amber-200">PharmaSupplyChain.sol</code>), these rules are enforced by code rather than trusting human operators:
+              <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                <h3 className="font-bold text-amber-900 text-sm mb-1">Smart Contract Enforced Invariants</h3>
+                <p className="text-xs text-amber-800 leading-relaxed">
+                  In our Solidity smart contract (<code className="font-mono">PharmaSupplyChain.sol</code>), these rules are enforced by code:
                 </p>
               </div>
 
-              <div className="space-y-2 text-xs">
-                <div className="p-3 bg-slate-800/40 rounded-lg border border-slate-700/60 flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+              <div className="space-y-2">
+                <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-teal-700 shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-semibold text-white">Rule 1: Role-Gated Genesis: </span>
-                    <span>Only approved manufacturers with verified licenses can call <code>createBatch()</code>.</span>
+                    <span className="font-bold text-slate-900">Rule 1: Role-Gated Genesis: </span>
+                    <span>Only licensed manufacturers with verified addresses can mint new medicine batches via <code>createBatch()</code>.</span>
                   </div>
                 </div>
-                <div className="p-3 bg-slate-800/40 rounded-lg border border-slate-700/60 flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-teal-700 shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-semibold text-white">Rule 2: Sequential Custody Transfer: </span>
-                    <span>Manufacturer → Distributor → Wholesaler → Pharmacy. Reversing or skipping stages (e.g. Pharmacy selling directly back to Manufacturer) is rejected by contract modifiers.</span>
+                    <span className="font-bold text-slate-900">Rule 2: Sequential Custody Pipeline: </span>
+                    <span>Transfers must follow the physical lifecycle: Manufacturer → Distributor → Wholesaler → Pharmacy. Unauthorized jumps are rejected.</span>
                   </div>
                 </div>
-                <div className="p-3 bg-slate-800/40 rounded-lg border border-slate-700/60 flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <div className="p-3 bg-slate-800/40 rounded-lg border border-slate-200 flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-teal-700 shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-semibold text-white">Rule 3: Current Custodian Ownership Guard: </span>
-                    <span>Only the address recorded as the current owner on the blockchain can transfer that batch.</span>
+                    <span className="font-bold text-slate-900">Rule 3: Current Custodian Ownership Guard: </span>
+                    <span>Only the address currently recorded as custodian on the blockchain is authorized to execute a handoff.</span>
                   </div>
                 </div>
-                <div className="p-3 bg-slate-800/40 rounded-lg border border-slate-700/60 flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-teal-700 shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-semibold text-white">Rule 4: Expiry Lock: </span>
+                    <span className="font-bold text-slate-900">Rule 4: Automatic Expiry Clearance Lock: </span>
                     <span>The smart contract compares the block timestamp with the batch expiry date and prevents distribution of expired medicines.</span>
                   </div>
                 </div>
-                <div className="p-3 bg-slate-800/40 rounded-lg border border-slate-700/60 flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-teal-700 shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-semibold text-white">Rule 5: Emergency Quarantine Recall: </span>
-                    <span>The regulatory authority or the issuing manufacturer can trigger an emergency recall on-chain that instantly flags every downstream unit in real-time.</span>
+                    <span className="font-bold text-slate-900">Rule 5: Emergency Quarantine Recall: </span>
+                    <span>The regulatory authority or the manufacturing entity can trigger an emergency recall on-chain, quarantining all downstream lots.</span>
                   </div>
                 </div>
               </div>
@@ -191,25 +191,25 @@ export default function PresentationGuideModal({ isOpen, onClose }) {
 
           {activeTab === 'features' && (
             <div className="space-y-4">
-              <div className="p-4 bg-purple-950/30 border border-purple-500/30 rounded-xl">
-                <h3 className="font-semibold text-purple-300 text-base mb-1">TrueDose Architectural Contribution</h3>
-                <p className="text-xs text-slate-300">
-                  What makes TrueDose a complete, production-ready prototype:
+              <div className="p-4 bg-slate-100 border border-slate-200 rounded-xl">
+                <h3 className="font-bold text-slate-900 text-sm mb-1">Key Architectural Highlights</h3>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Technical characteristics engineered into the TrueDose platform:
                 </p>
               </div>
 
-              <div className="grid md:grid-cols-3 gap-3 text-xs">
-                <div className="p-3 bg-slate-800/50 rounded-xl border border-slate-700/60">
-                  <div className="font-bold text-white mb-1">⚡ Hybrid Storage Model</div>
-                  <p className="text-slate-400">Stores critical state, owner, hashes, and audit history on-chain, while metadata, user licenses, and fast queries use high-speed backend storage to keep gas costs low.</p>
+              <div className="grid md:grid-cols-3 gap-3">
+                <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                  <div className="font-bold text-slate-900 mb-1">Hybrid On/Off-Chain Architecture</div>
+                  <p className="text-slate-600 leading-relaxed">Anchors state, custody, and verification hashes immutably on-chain while keeping telemetry and certificates in IPFS and indexed storage for low gas footprint.</p>
                 </div>
-                <div className="p-3 bg-slate-800/50 rounded-xl border border-slate-700/60">
-                  <div className="font-bold text-white mb-1">📱 Zero-Friction QR Verification</div>
-                  <p className="text-slate-400">Customers require NO Ethereum wallet, NO MetaMask, and NO crypto funds. They scan the packaging QR code with any camera or phone browser for instant verification.</p>
+                <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                  <div className="font-bold text-slate-900 mb-1">Zero-Wallet Citizen Verification</div>
+                  <p className="text-slate-600 leading-relaxed">Patients need no crypto knowledge or wallet extensions. Packaging QR codes verify instantly via browser.</p>
                 </div>
-                <div className="p-3 bg-slate-800/50 rounded-xl border border-slate-700/60">
-                  <div className="font-bold text-white mb-1">🚨 Multi-Threat Protection</div>
-                  <p className="text-slate-400">Protects against 3 distinct threats: Counterfeit fake batches (not found on-chain), Expired medicines (safety block), and Recalled contaminated lots (quarantine notice).</p>
+                <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                  <div className="font-bold text-slate-900 mb-1">Tri-Vector Safety Shield</div>
+                  <p className="text-slate-600 leading-relaxed">Comprehensive detection for counterfeit unlisted batches, expired pharmaceutical lots, and manufacturer emergency recalls.</p>
                 </div>
               </div>
             </div>
@@ -217,12 +217,12 @@ export default function PresentationGuideModal({ isOpen, onClose }) {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 bg-slate-800/60 border-t border-slate-800 flex justify-end">
+        <div className="px-6 py-3 bg-slate-50 border-t border-slate-200 flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition"
+            className="px-4 py-2 bg-teal-700 hover:bg-teal-800 text-white rounded-lg text-xs font-bold transition shadow-xs"
           >
-            Got it, Let's Demo!
+            Close Guide
           </button>
         </div>
       </div>

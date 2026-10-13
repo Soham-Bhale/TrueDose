@@ -2,6 +2,47 @@
 
 @layer base {
   body {
-    @apply bg-slate-900 text-slate-100 font-sans antialiased min-h-screen selection:bg-emerald-500 selection:text-white;
+    @apply bg-slate-50 text-slate-900 font-sans antialiased min-h-screen selection:bg-teal-600 selection:text-white;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Refined typography defaults */
+  h1, h2, h3, h4, h5, h6 {
+    @apply tracking-tight text-slate-900;
+  }
+}
+
+/* Custom subtle scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Printable Certificate & Packaging styling */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printable-certificate, #printable-certificate *, #printable-label, #printable-label * {
+    visibility: visible;
+  }
+  #printable-certificate, #printable-label {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
   }
 }
