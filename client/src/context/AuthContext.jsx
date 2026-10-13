@@ -110,10 +110,13 @@ export function AuthProvider({ children }) {
   }, []);
 
   const switchRole = (role) => {
-    const user = DEMO_USERS.find(u => u.role === role);
+    const user = DEMO_USERS.find(u => u.role.toLowerCase() === (role || '').toLowerCase());
     if (user) {
       setCurrentUser(user);
-      localStorage.setItem('truedose_demo_role', role);
+      try {
+        localStorage.setItem('truedose_demo_role', user.role);
+      } catch (e) {}
+      fetchStatsAndReports();
     }
   };
 

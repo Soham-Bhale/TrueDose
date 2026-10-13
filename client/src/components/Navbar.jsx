@@ -121,7 +121,15 @@ export default function Navbar({ activePage, setActivePage, onOpenGuide }) {
                   return (
                     <button
                       key={u.role}
-                      onClick={() => { switchRole(u.role); setDropdownOpen(false); }}
+                      onClick={() => {
+                        switchRole(u.role);
+                        if (u.role === 'customer') {
+                          setActivePage('verify');
+                        } else {
+                          setActivePage('dashboard');
+                        }
+                        setDropdownOpen(false);
+                      }}
                       className={`w-full flex items-center gap-3 px-3 py-2.5 text-left text-sm hover:bg-slate-50 transition-colors ${
                         active ? 'bg-teal-50' : ''
                       }`}

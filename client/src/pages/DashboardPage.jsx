@@ -116,6 +116,7 @@ export default function DashboardPage({ onNavigateToVerify }) {
   };
 
   const handleUpdateInvestigation = async (reportId, newStatus) => {
+    setInvestigations(prev => prev.map(r => r.id === reportId ? { ...r, status: newStatus } : r));
     try {
       const res = await fetch(`/api/stats/reports/${reportId}`, {
         method: 'PATCH',
@@ -125,6 +126,7 @@ export default function DashboardPage({ onNavigateToVerify }) {
       if (res.ok) { fetchDashboardData(); refreshStats(); }
     } catch (err) {
       console.error(err);
+      fetchDashboardData();
     }
   };
 
@@ -177,29 +179,39 @@ export default function DashboardPage({ onNavigateToVerify }) {
       {/* ── Role Switcher ─────────────────────────────────────────── */}
       <div className="bg-white border border-slate-200 rounded-lg p-3">
         <p className="text-[11px] text-slate-400 uppercase font-semibold tracking-wider mb-2 px-1">
-          Switch Role Workspace
+          Switch Role Workspace (Instant Role Simulation)
         </p>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
-          {demoUsers.filter(u => u.role !== 'customer').map(u => {
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+          {demoUsers.map(u => {
             const Icon = ROLE_ICONS[u.role] || Factory;
             const active = currentUser.role === u.role;
             return (
               <button
                 key={u.role}
-                onClick={() => switchRole(u.role)}
+                onClick={() => {
+                  if (u.role === 'customer') {
+                    switchRole('customer');
+                    if (onNavigateToVerify) onNavigateToVerify('PCM001');
+                  } else {
+                    switchRole(u.role);
+                  }
+                }}
                 className={`flex items-center gap-2 px-3 py-2.5 rounded-lg border text-left transition ${
                   active
-                    ? 'bg-teal-50 border-teal-500 text-teal-900'
-                    : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                    ? 'bg-teal-50 border-teal-600 text-teal-900 ring-2 ring-teal-600/20 shadow-xs'
+                    : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 hover:border-slate-300'
                 }`}
               >
-                <Icon className="w-4 h-4 shrink-0" />
-                <div className="min-w-0">
-                  <div className="text-xs font-semibold truncate">{u.badge}</div>
+                <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-teal-700' : 'text-slate-500'}`} />
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs font-bold truncate flex items-center justify-between">
+                    <span>{u.badge}</span>
+                    {active && <span className="text-[9px] text-teal-700 font-mono font-bold">ACTIVE</span>}
+                  </div>
                   <div className="text-[10px] text-slate-400 truncate">{u.name}</div>
                 </div>
                 {u.role === 'admin' && investigationCount > 0 && (
-                  <span className="ml-auto shrink-0 w-4 h-4 rounded-full bg-rose-600 text-white text-[9px] font-bold flex items-center justify-center">
+                  <span className="shrink-0 px-1.5 py-0.5 rounded-full bg-rose-600 text-white text-[9px] font-bold">
                     {investigationCount}
                   </span>
                 )}

@@ -6,11 +6,13 @@ import {
   FileCheck, Hash, Info, ArrowRight, ShieldX
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { useAuth } from '../context/AuthContext';
 import QRScannerModal from '../components/QRScannerModal';
 import CertificateModal from '../components/CertificateModal';
 import ReportModal from '../components/ReportModal';
 
 export default function VerifyPage({ initialBatchId, onNavigateToAdmin }) {
+  const { currentUser, switchRole, investigationCount } = useAuth();
   const [batchIdInput, setBatchIdInput] = useState(initialBatchId || 'PCM001');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -77,7 +79,31 @@ export default function VerifyPage({ initialBatchId, onNavigateToAdmin }) {
   };
 
   return (
-    <div className="py-10 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto space-y-8">
+    <div className="py-8 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto space-y-6">
+      {/* Active Role Indicator Bar */}
+      {currentUser && currentUser.role !== 'customer' && (
+        <div className="bg-white border border-slate-200 rounded-xl p-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span className="text-xs text-slate-700">
+              Active Role Workspace: <strong className="text-slate-900 font-bold">{currentUser.badge}</strong> — {currentUser.name}
+            </span>
+            {currentUser.role === 'admin' && investigationCount > 0 && (
+              <span className="px-2 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-bold animate-pulse">
+                {investigationCount} Active Counterfeit Case{investigationCount !== 1 ? 's' : ''}
+              </span>
+            )}
+          </div>
+          <button
+            onClick={() => onNavigateToAdmin && onNavigateToAdmin()}
+            className="px-3.5 py-1.5 bg-teal-700 hover:bg-teal-800 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition shadow-2xs self-end sm:self-auto"
+          >
+            <span>Open {currentUser.badge} Workspace</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
       {/* Top Banner */}
       <div className="text-center space-y-3">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 border border-teal-200/80 text-teal-800 text-xs font-semibold">
@@ -221,13 +247,27 @@ export default function VerifyPage({ initialBatchId, onNavigateToAdmin }) {
               Identifier: <strong className="text-slate-900">{errorResult.batchId}</strong> • Clearance: <span className="text-rose-700 font-bold">REJECTED</span>
             </div>
 
-            <button
-              onClick={() => setIsReportModalOpen(true)}
-              className="px-4 py-2.5 bg-rose-700 hover:bg-rose-800 text-white rounded-lg text-xs font-semibold transition flex items-center gap-2 shadow-xs"
-            >
-              <ShieldAlert className="w-4 h-4" />
-              <span>Report Counterfeit to Drug Controller</span>
-            </button>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                onClick={() => setIsReportModalOpen(true)}
+                className="px-4 py-2 bg-rose-700 hover:bg-rose-800 text-white rounded-lg text-xs font-semibold transition flex items-center gap-1.5 shadow-xs"
+              >
+                <ShieldAlert className="w-4 h-4" />
+                <span>Report Counterfeit to Drug Controller</span>
+              </button>
+              {investigationCount > 0 && (
+                <button
+                  onClick={() => {
+                    switchRole('admin');
+                    if (onNavigateToAdmin) onNavigateToAdmin();
+                  }}
+                  className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold transition flex items-center gap-1.5 shadow-xs"
+                >
+                  <ShieldAlert className="w-3.5 h-3.5 text-rose-400" />
+                  <span>View in Admin Portal ({investigationCount} Cases)</span>
+                </button>
+              )}
+            </div>
           </div>
         </div>
       )}
