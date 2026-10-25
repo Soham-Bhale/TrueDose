@@ -4,6 +4,14 @@
 
 ---
 
+### 📑 Official System Documentation & Engineering Report
+* 📄 **[Download Complete System Architecture & UI Specification Report (PDF)](LifeLedger_System_Architecture_and_UI_Specification_Report.pdf)** *(9-Page Detailed Engineering PDF)*
+* 📖 **[Read Online UI Specification & Button Directory](docs/UI_AND_WORKFLOW_SPECIFICATION.md)** *(Exhaustive button-by-button operational manual)*
+* 🏛️ **[System Architecture Diagram](docs/diagram_architecture.png)**
+* 🔄 **[Organ Custody Lifecycle Workflow Diagram](docs/diagram_workflow.png)**
+
+---
+
 ## 📌 1. Domain Problem Statement
 
 Every year, thousands of donor organs (Kidneys, Hearts, Livers, Lungs, Corneas) are lost or compromised due to supply-chain failures and lack of trust between independent medical entities:
