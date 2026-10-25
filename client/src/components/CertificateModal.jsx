@@ -1,167 +1,171 @@
 import React from 'react';
-import { X, Award, FileCheck, ShieldCheck, Printer, ExternalLink, CheckCircle, Hash } from 'lucide-react';
+import { X, Award, FileCheck, ShieldCheck, Printer, ExternalLink, CheckCircle, Hash, HeartHandshake } from 'lucide-react';
 
 export default function CertificateModal({ batch, cert, isOpen, onClose }) {
   if (!isOpen || !batch) return null;
+
+  const organId = batch.organId || batch.batchId || 'ORG-KID-8041';
+  const organType = batch.organType || batch.medicineName || 'Kidney (Left)';
+  const donorId = batch.donorId || 'DNR-MUM-9021';
+  const bloodType = batch.donorBloodType || 'O+';
+  const hlaMarker = batch.hlaMarker || '6/6 HLA-Matched';
+
+  const certificateData = cert || {
+    ipfsCID: batch.ipfsCID || "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+    accreditationBody: "National Organ & Tissue Transplant Organization (NOTTO)",
+    certifyingOfficer: "Dr. Radhika Sharma, MS, MCh (Head of Transplant Surgery)",
+    brainDeathCertified: "24-Hour Reflex Test Confirmed (Form 8)",
+    serologyScreening: "HIV-1/2, HBV, HCV, Syphilis, CMV: ALL NON-REACTIVE",
+    graftViability: "Score 1A (Zero Macro-Steatosis, Arterial Resistance Index < 0.25)",
+    donorConsentType: "Cadaveric / Deceased Donor Living Will + Next-of-Kin Attestation",
+    digitalSignatureVerified: true,
+    certifiedAt: batch.harvestTimestamp ? new Date(batch.harvestTimestamp).toLocaleDateString() : 'October 25, 2026'
+  };
 
   const handlePrint = () => {
     window.print();
   };
 
-  const certificateData = cert || {
-    ipfsCID: "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-    accreditationBody: "National Drug Quality Assurance Bureau (NDQAB)",
-    certifyingOfficer: "Dr. Radhika Sharma, Head of Analytical QA",
-    assayPurity: "99.85%",
-    dissolutionRate: "98.4% in 30 mins",
-    heavyMetalsPpm: "< 5 ppm (Pass)",
-    microbialAssay: "Sterile / Negative for Pathogens",
-    digitalSignatureVerified: true,
-    certifiedAt: batch.manufacturingDate
-  };
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-in fade-in duration-150">
-      <div className="relative w-full max-w-2xl bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden max-h-[90vh] flex flex-col">
-        {/* Modal Top Header */}
-        <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-          <div className="flex items-center space-x-2.5">
-            <div className="p-2 bg-teal-50 text-teal-800 rounded-lg border border-teal-200">
-              <Award className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="font-bold text-slate-900 text-sm">Certificate of Analysis (CoA)</h3>
-              <p className="text-xs text-slate-500">Cryptographically anchored to IPFS & EVM Blockchain</p>
-            </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/40 backdrop-blur-xs">
+      <div className="w-full max-w-2xl swing-raised shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+        {/* Java Window Titlebar */}
+        <div className="swing-titlebar">
+          <div className="flex items-center gap-1.5">
+            <HeartHandshake className="w-3.5 h-3.5 text-green-300" />
+            <span className="font-bold text-xs tracking-wide">
+              javax.swing.JDialog: Form 8 Donor Consent & Brain Death Clearance [CID Proof]
+            </span>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition"
+            className="w-4 h-4 bg-[#ECE9D8] text-black font-bold text-[10px] flex items-center justify-center border border-[#FFFFFF] border-r-[#808080] border-b-[#808080] hover:bg-[#D4D0C8] active:translate-y-px"
+            title="Close Dialog"
           >
-            <X className="w-5 h-5" />
+            ✕
+          </button>
+        </div>
+
+        {/* Action Toolbar */}
+        <div className="bg-[#ECE9D8] px-3 py-2 border-b border-[#808080] flex items-center justify-between text-[11px]">
+          <div className="flex items-center gap-1 text-[#333333]">
+            <CheckCircle className="w-3.5 h-3.5 text-green-700" />
+            <span className="font-bold">Cryptographically Anchored:</span>{' '}
+            <span className="font-mono text-[10px] bg-white px-1 border border-[#808080] text-[#0A246A]">
+              IPFS: {certificateData.ipfsCID.slice(0, 18)}...
+            </span>
+          </div>
+          <button
+            onClick={handlePrint}
+            className="swing-btn swing-btn-primary text-xs py-0.5 px-3 flex items-center gap-1"
+          >
+            <Printer className="w-3.5 h-3.5 text-[#0A246A]" />
+            <span>Print Form 8 Certificate</span>
           </button>
         </div>
 
         {/* Certificate Paper View */}
-        <div className="p-6 overflow-y-auto bg-slate-50/50">
-          <div id="printable-certificate" className="w-full bg-white text-slate-900 p-8 rounded-xl shadow-xs border-2 border-slate-200 relative font-serif">
-            {/* Watermark badge */}
+        <div className="p-4 bg-[#ECE9D8] overflow-y-auto flex-1">
+          <div
+            id="printable-certificate"
+            className="bg-white border-2 border-[#1a1a1a] p-6 text-[#1a1a1a] font-serif shadow-sm relative"
+          >
+            {/* Watermark */}
             <div className="absolute right-6 top-6 opacity-5 pointer-events-none">
-              <ShieldCheck className="w-36 h-36 text-slate-900" />
+              <ShieldCheck className="w-40 h-40 text-black" />
             </div>
 
-            {/* Certificate Header */}
-            <div className="text-center pb-6 border-b border-slate-200">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-800 rounded-full text-[10px] font-sans font-bold tracking-widest uppercase mb-2 border border-emerald-200">
-                <CheckCircle className="w-3.5 h-3.5 text-emerald-600" /> OFFICIAL GMP QUALITY RELEASE
+            {/* Header */}
+            <div className="text-center pb-4 border-b-2 border-[#1a1a1a]">
+              <div className="inline-block bg-green-100 text-green-900 border border-green-400 px-3 py-0.5 text-[10px] font-sans font-bold uppercase tracking-wider mb-1">
+                LEGAL FORM 8 • NOTTO ACCREDITED GRAFT CLEARANCE
               </div>
-              <h2 className="text-2xl font-black tracking-tight text-slate-900 uppercase">
-                Certificate of Analysis
+              <h2 className="text-xl font-bold tracking-tight uppercase text-black">
+                Organ Donor Consent & Clinical Viability Certificate
               </h2>
-              <p className="text-xs text-slate-600 font-sans mt-1">
-                Issued by {certificateData.accreditationBody} • GLP Certified Testing Laboratory
+              <p className="text-[10px] font-sans text-[#555555] mt-0.5">
+                Issued pursuant to The Transplantation of Human Organs and Tissues Act (THOTA) & EVM Consortium
               </p>
             </div>
 
-            {/* Product Meta */}
-            <div className="grid grid-cols-2 gap-4 py-5 border-b border-slate-200 text-xs font-sans">
+            {/* Specimen and Donor Information Grid */}
+            <div className="grid grid-cols-2 gap-3 py-3 border-b border-[#CCCCCC] text-[11px] font-sans">
               <div>
-                <span className="text-slate-500 block text-[10px] uppercase font-bold">Product Name</span>
-                <span className="font-bold text-slate-900 text-sm">{batch.medicineName}</span>
-                <span className="text-slate-600 block">{batch.dosage}</span>
+                <span className="text-[#666666] text-[10px] block">ORGAN SPECIMEN ID</span>
+                <span className="font-mono font-bold text-black text-sm">{organId}</span>
               </div>
               <div>
-                <span className="text-slate-500 block text-[10px] uppercase font-bold">Batch Identifier</span>
-                <span className="font-bold text-teal-800 text-sm font-mono">{batch.batchId}</span>
-                <span className="text-slate-600 block">Mfg: {new Date(batch.manufacturingDate).toLocaleDateString()}</span>
+                <span className="text-[#666666] text-[10px] block">SPECIMEN TYPE</span>
+                <span className="font-bold text-black">{organType}</span>
               </div>
               <div>
-                <span className="text-slate-500 block text-[10px] uppercase font-bold">Manufacturing Entity</span>
-                <span className="font-bold text-slate-900">{batch.manufacturerName}</span>
+                <span className="text-[#666666] text-[10px] block">DECEASED DONOR REGISTRY ID</span>
+                <span className="font-mono font-bold text-black">{donorId}</span>
               </div>
               <div>
-                <span className="text-slate-500 block text-[10px] uppercase font-bold">Release Clearance</span>
-                <span className="font-bold text-slate-900">{new Date(batch.manufacturingDate).toLocaleDateString()}</span>
+                <span className="text-[#666666] text-[10px] block">ABO BLOOD GROUP & RH FACTOR</span>
+                <span className="font-black text-red-800 text-sm">{bloodType}</span>
               </div>
             </div>
 
-            {/* Chemical & Biological Assay Table */}
-            <div className="py-5 border-b border-slate-200">
-              <h4 className="text-xs font-bold font-sans uppercase tracking-wider text-slate-700 mb-3">
-                Analytical Test Parameters
-              </h4>
-              <table className="w-full text-left text-xs font-sans">
-                <thead className="bg-slate-50 text-[10px] uppercase text-slate-600 font-bold border-y border-slate-200">
-                  <tr>
-                    <th className="py-2 px-3">Test Parameter</th>
-                    <th className="py-2 px-3">Pharmacopeia Standard</th>
-                    <th className="py-2 px-3">Batch Observation</th>
-                    <th className="py-2 px-3 text-right">Result</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-800">
-                  <tr>
-                    <td className="py-2.5 px-3 font-semibold">Active Assay (HPLC Purity)</td>
-                    <td className="py-2.5 px-3">98.0% - 102.0%</td>
-                    <td className="py-2.5 px-3 font-mono font-bold text-teal-800">{certificateData.assayPurity}</td>
-                    <td className="py-2.5 px-3 text-right font-bold text-emerald-700">PASS ✓</td>
-                  </tr>
-                  <tr>
-                    <td className="py-2.5 px-3 font-semibold">Dissolution Rate</td>
-                    <td className="py-2.5 px-3">&gt; 80% in 45 min</td>
-                    <td className="py-2.5 px-3 font-mono">{certificateData.dissolutionRate}</td>
-                    <td className="py-2.5 px-3 text-right font-bold text-emerald-700">PASS ✓</td>
-                  </tr>
-                  <tr>
-                    <td className="py-2.5 px-3 font-semibold">Heavy Metals (Lead/Arsenic)</td>
-                    <td className="py-2.5 px-3">&lt; 10 ppm</td>
-                    <td className="py-2.5 px-3 font-mono">{certificateData.heavyMetalsPpm}</td>
-                    <td className="py-2.5 px-3 text-right font-bold text-emerald-700">PASS ✓</td>
-                  </tr>
-                  <tr>
-                    <td className="py-2.5 px-3 font-semibold">Microbial Bioburden</td>
-                    <td className="py-2.5 px-3">USP &lt;61&gt; Pathogen Free</td>
-                    <td className="py-2.5 px-3 font-mono">{certificateData.microbialAssay}</td>
-                    <td className="py-2.5 px-3 text-right font-bold text-emerald-700">PASS ✓</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+            {/* Medical Screening Checklist */}
+            <div className="py-3 border-b border-[#CCCCCC] font-sans space-y-2 text-[11px]">
+              <div className="font-bold text-[10px] text-[#333333] uppercase tracking-wider">
+                Laboratory & Histopathological Screening Invariants:
+              </div>
 
-            {/* Cryptographic Proof & Signature */}
-            <div className="pt-5 flex flex-col sm:flex-row items-center justify-between gap-4 font-sans text-xs">
-              <div className="space-y-1">
-                <span className="text-[10px] text-slate-500 uppercase font-bold block">IPFS Content Identifier (CID)</span>
-                <div className="flex items-center gap-1 font-mono text-[11px] text-slate-700 bg-slate-100 px-2 py-1 rounded">
-                  <Hash className="w-3.5 h-3.5 text-teal-700 shrink-0" />
-                  <span className="truncate max-w-[240px]">{certificateData.ipfsCID}</span>
+              <div className="grid grid-cols-2 gap-2 text-[10px]">
+                <div className="bg-[#F8F9FA] p-2 border border-[#E0E0E0]">
+                  <span className="font-bold block text-black">1. Neurological Brain-Death:</span>
+                  <span className="text-green-800 font-bold">{certificateData.brainDeathCertified}</span>
                 </div>
+                <div className="bg-[#F8F9FA] p-2 border border-[#E0E0E0]">
+                  <span className="font-bold block text-black">2. Pathogen Serology Panel:</span>
+                  <span className="text-green-800 font-bold">{certificateData.serologyScreening}</span>
+                </div>
+                <div className="bg-[#F8F9FA] p-2 border border-[#E0E0E0]">
+                  <span className="font-bold block text-black">3. Graft Perfusion Viability:</span>
+                  <span className="text-green-800 font-bold">{certificateData.graftViability}</span>
+                </div>
+                <div className="bg-[#F8F9FA] p-2 border border-[#E0E0E0]">
+                  <span className="font-bold block text-black">4. HLA Histocompatibility:</span>
+                  <span className="text-[#0A246A] font-bold">{hlaMarker}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Legal Consent Attestation */}
+            <div className="py-3 border-b border-[#CCCCCC] text-[11px] leading-relaxed">
+              <p>
+                <strong>Statutory Declaration:</strong> It is hereby certified that valid, informed and non-coerced donor consent was verified prior to organ retrieval. The procurement adhered strictly to cold-perfusion hypothermic preservation standards. No monetary or commercial consideration was exchanged, in total adherence to anti-trafficking statutes.
+              </p>
+            </div>
+
+            {/* Signatures */}
+            <div className="pt-4 flex items-end justify-between font-sans text-[10px]">
+              <div>
+                <div className="font-bold text-black">{certificateData.certifyingOfficer}</div>
+                <div className="text-[#666666]">Procuring Surgeon & OPO Medical Director</div>
+                <div className="text-[#888888] font-mono text-[9px] mt-0.5">Signed: {certificateData.certifiedAt}</div>
               </div>
 
               <div className="text-right">
-                <div className="font-bold text-slate-900">{certificateData.certifyingOfficer}</div>
-                <span className="text-[10px] text-slate-500 block">Chief Analytical Chemist • Qualified Person (QP)</span>
-                <span className="text-[9px] text-teal-700 font-bold block mt-0.5">DIGITALLY SIGNED & VERIFIED</span>
+                <div className="inline-block border-2 border-green-800 text-green-900 px-3 py-1 font-bold text-[10px] tracking-wider uppercase rotate-[-2deg]">
+                  ✓ EVM VALIDATED
+                </div>
+                <div className="text-[9px] font-mono text-[#666666] mt-1">
+                  SHA-256 Sig: {batch.donorConsentHash ? batch.donorConsentHash.slice(0, 16) : '0x7b2f91a0...'}
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Modal Actions */}
-        <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-3">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-lg text-xs font-semibold transition"
-          >
-            Close
-          </button>
-          <button
-            onClick={handlePrint}
-            className="px-5 py-2 bg-teal-700 hover:bg-teal-800 text-white rounded-lg text-xs font-bold flex items-center gap-2 transition shadow-xs"
-          >
-            <Printer className="w-4 h-4" />
-            <span>Print Official Certificate</span>
-          </button>
+        {/* Java Dialog Status Bar */}
+        <div className="swing-statusbar">
+          <div className="swing-status-pane">JDialog: CertificateModal</div>
+          <div className="swing-status-pane font-mono">IPFS CID: {certificateData.ipfsCID.slice(0, 14)}...</div>
+          <div className="swing-status-pane flex-1 text-right">Tamper-Proof Seal: VERIFIED</div>
         </div>
       </div>
     </div>

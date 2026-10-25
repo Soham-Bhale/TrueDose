@@ -5,43 +5,52 @@ const blockchain = require('../services/blockchain');
 
 // GET /api/stats
 router.get('/', (req, res) => {
-  const batches = store.getBatches();
+  const organs = store.getOrgans();
   const users = store.getUsers();
   const verifications = store.getVerifications();
   const reports = store.getReports();
   const contractConfig = blockchain.getContractInfo();
 
-  const totalBatches = batches.length;
-  const recalledBatches = batches.filter(b => b.isRecalled).length;
-  const soldBatches = batches.filter(b => b.stage === 'SoldToCustomer').length;
-  const inTransitBatches = batches.filter(b => b.stage !== 'Manufactured' && b.stage !== 'SoldToCustomer' && !b.isRecalled).length;
-  const manufacturedBatches = batches.filter(b => b.stage === 'Manufactured').length;
+  const totalOrgans = organs.length;
+  const quarantinedOrgans = organs.filter(o => o.isQuarantined || o.isRecalled).length;
+  const transplantedOrgans = organs.filter(o => o.stage === 'Transplanted' || o.stage === 'SoldToCustomer').length;
+  const inTransitOrgans = organs.filter(o => o.stage === 'InTransit' || o.stage === 'DistributorReceived').length;
+  const harvestedOrgans = organs.filter(o => o.stage === 'Harvested' || o.stage === 'Manufactured').length;
+  const hospitalReceivedOrgans = organs.filter(o => o.stage === 'HospitalReceived' || o.stage === 'PharmacyReceived').length;
 
   const totalVerifications = verifications.length;
   const authenticVerifications = verifications.filter(v => v.result === 'GENUINE_AUTHENTIC').length;
-  const expiredVerifications = verifications.filter(v => v.result === 'EXPIRED' || v.result === 'EXPIRING_SOON').length;
+  const quarantinedAlerts = verifications.filter(v => v.result === 'QUARANTINED' || v.result === 'ISCHEMIA_BREACHED').length;
   const counterfeitAlerts = verifications.filter(v => v.result === 'COUNTERFEIT_ALERT').length;
 
   const roleCounts = {
-    manufacturer: users.filter(u => u.role === 'manufacturer').length,
-    distributor: users.filter(u => u.role === 'distributor').length,
-    wholesaler: users.filter(u => u.role === 'wholesaler').length,
-    pharmacy: users.filter(u => u.role === 'pharmacy').length,
+    opo: users.filter(u => u.role === 'opo' || u.role === 'manufacturer').length,
+    logistics: users.filter(u => u.role === 'logistics' || u.role === 'distributor').length,
+    authority: users.filter(u => u.role === 'authority' || u.role === 'wholesaler').length,
+    hospital: users.filter(u => u.role === 'hospital' || u.role === 'pharmacy').length,
     admin: users.filter(u => u.role === 'admin').length,
   };
 
   res.json({
-    batches: {
-      total: totalBatches,
-      manufactured: manufacturedBatches,
-      inTransit: inTransitBatches,
-      dispensed: soldBatches,
-      recalled: recalledBatches
+    organs: {
+      total: totalOrgans,
+      harvested: harvestedOrgans,
+      inTransit: inTransitOrgans,
+      hospitalReceived: hospitalReceivedOrgans,
+      transplanted: transplantedOrgans,
+      quarantined: quarantinedOrgans
+    },
+    batches: { // alias for client compatibility
+      total: totalOrgans,
+      manufactured: harvestedOrgans,
+      inTransit: inTransitOrgans,
+      dispensed: transplantedOrgans,
+      recalled: quarantinedOrgans
     },
     scans: {
       total: totalVerifications,
       authentic: authenticVerifications,
-      expired: expiredVerifications,
+      expired: quarantinedAlerts,
       counterfeitAlerts: counterfeitAlerts
     },
     network: {
@@ -49,7 +58,7 @@ router.get('/', (req, res) => {
       chainId: contractConfig ? contractConfig.chainId : 1337,
       networkName: contractConfig ? contractConfig.network : "Hardhat / EVM",
       isLiveNode: blockchain.isNodeRunning(),
-      consensusType: "Proof of Authority (PoA) Consortium"
+      consensusType: "Proof of Authority (PoA) Medical Consortium"
     },
     participants: roleCounts,
     recentVerifications: verifications.slice(0, 10),
@@ -60,11 +69,11 @@ router.get('/', (req, res) => {
 // PATCH /api/stats/reports/:id - Update investigation status
 router.patch('/reports/:id', (req, res) => {
   const { status } = req.body;
-  const updated = store.updateReportStatus(req.params.id, status || "INVESTIGATOR_ON_SITE");
+  const updated = store.updateReportStatus(req.params.id, status || "INSPECTOR_DISPATCHED");
   if (!updated) {
-    return res.status(404).json({ error: "Report not found" });
+    return res.status(404).json({ error: "Investigation alert not found" });
   }
-  res.json({ message: "Investigation updated", report: updated });
+  res.json({ message: "Investigation alert status updated", report: updated });
 });
 
 module.exports = router;

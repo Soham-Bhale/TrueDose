@@ -1,5 +1,0 @@
-cd Desktop
-cd VibeCD_Website
-cd backend_server
-venv\Scripts\activate
-python app.py

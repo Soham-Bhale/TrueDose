@@ -5,52 +5,40 @@ const store = require('../services/store');
 const blockchain = require('../services/blockchain');
 const { authenticate, requireRole } = require('../middleware/auth');
 
-// GET /api/batches - list batches
+// GET /api/organs or /api/batches - list organs
 router.get('/', (req, res) => {
   const { role, owner } = req.query;
-  let batches = store.getBatches();
+  let organs = store.getOrgans();
 
   if (owner) {
-    batches = batches.filter(b => b.currentOwner.toLowerCase() === owner.toLowerCase());
+    organs = organs.filter(o => o.currentOwner.toLowerCase() === owner.toLowerCase());
   }
 
   res.json({
-    count: batches.length,
-    batches: batches
+    count: organs.length,
+    organs: organs,
+    batches: organs // backward compatibility
   });
 });
 
-// GET /api/batches/:batchId - single batch details
-router.get('/:batchId', (req, res) => {
-  const batch = store.getBatchById(req.params.batchId);
-  if (!batch) {
-    return res.status(404).json({ error: `Batch ${req.params.batchId} not found` });
+// GET /api/organs/:organId
+router.get('/:organId', (req, res) => {
+  const organ = store.getOrganById(req.params.organId);
+  if (!organ) {
+    return res.status(404).json({ error: `Organ ${req.params.organId} not found` });
   }
-  res.json({ batch });
+  res.json({ organ, batch: organ });
 });
 
-// GET /api/batches/:batchId/qrcode - generate QR code
-router.get('/:batchId/qrcode', async (req, res) => {
-  const { batchId } = req.params;
-  const batch = store.getBatchById(batchId);
-  if (!batch) {
-    return res.status(404).json({ error: `Batch ${batchId} not found` });
+// GET /api/organs/:organId/qrcode - generate Cryo-Carrier QR label
+router.get('/:organId/qrcode', async (req, res) => {
+  const { organId } = req.params;
+  const organ = store.getOrganById(organId);
+  if (!organ) {
+    return res.status(404).json({ error: `Organ ${organId} not found` });
   }
 
-  // URL pointing directly to frontend verification page
-  const clientHost = req.headers['x-forwarded-host'] || req.headers.host || 'localhost:5173';
-  const protocol = req.protocol === 'https' ? 'https' : 'http';
-  // Use port 5173 default for Vite
-  const verifyUrl = `http://localhost:5173/verify/${batchId}`;
-
-  const qrPayload = JSON.stringify({
-    truedose: "verified",
-    batchId: batch.batchId,
-    medicineName: batch.medicineName,
-    manufacturer: batch.manufacturerName,
-    exp: batch.expiryDate,
-    url: verifyUrl
-  });
+  const verifyUrl = `http://localhost:5173/verify/${organId}`;
 
   try {
     const dataUrl = await QRCode.toDataURL(verifyUrl, {
@@ -58,13 +46,14 @@ router.get('/:batchId/qrcode', async (req, res) => {
       margin: 2,
       width: 320,
       color: {
-        dark: '#0f172a',
+        dark: '#1e293b',
         light: '#ffffff'
       }
     });
 
     res.json({
-      batchId,
+      organId: organ.organId || organ.batchId,
+      batchId: organ.organId || organ.batchId,
       verifyUrl,
       qrDataUrl: dataUrl
     });
@@ -73,161 +62,156 @@ router.get('/:batchId/qrcode', async (req, res) => {
   }
 });
 
-// POST /api/batches - Manufacturer registers new batch
-router.post('/', authenticate, requireRole(['manufacturer', 'admin']), async (req, res) => {
+// POST /api/organs - OPO Harvest & Register Organ
+router.post('/', authenticate, requireRole(['opo', 'manufacturer', 'admin']), async (req, res) => {
   try {
-    const { batchId, medicineName, dosage, quantity, manufacturingDate, expiryDate, notes } = req.body;
+    const {
+      organId, batchId,
+      organType, medicineName,
+      donorId, donorBloodType, dosage,
+      hlaMarker,
+      ischemicLimitHours,
+      recipientId, recipientHospital,
+      preservationProtocol,
+      initialTemp,
+      notes
+    } = req.body;
 
-    if (!batchId || !medicineName || !quantity || !manufacturingDate || !expiryDate) {
-      return res.status(400).json({
-        error: "Missing required fields: batchId, medicineName, quantity, manufacturingDate, expiryDate"
-      });
-    }
+    const id = (organId || batchId || `ORG-${Math.floor(1000 + Math.random() * 9000)}`).trim().toUpperCase();
+    const type = organType || medicineName || "Kidney (Left)";
+    const bloodType = donorBloodType || (dosage ? dosage.split(' ')[0] : "O+");
+    const limit = Number(ischemicLimitHours) || 24;
 
-    const existing = store.getBatchById(batchId);
+    const existing = store.getOrganById(id);
     if (existing) {
-      return res.status(409).json({ error: `Batch ID '${batchId}' already exists in system` });
+      return res.status(409).json({ error: `Organ ID '${id}' already registered on ledger` });
     }
 
-    const newBatch = await blockchain.createBatch({
-      batchId: batchId.trim().toUpperCase(),
-      medicineName,
-      dosage,
-      quantity,
-      mfgDate: manufacturingDate,
-      expDate: expiryDate,
-      notes,
+    const newOrgan = await blockchain.harvestOrgan({
+      organId: id,
+      organType: type,
+      donorId: donorId || "DNR-MUM-9021",
+      donorBloodType: bloodType,
+      hlaMarker: hlaMarker || "6/6 HLA-Matched",
+      ischemicLimitHours: limit,
+      recipientId: recipientId || "RCP-7704",
+      recipientHospital: recipientHospital || "Transplant Surgical Center",
+      preservationProtocol: preservationProtocol || "Custodiol HTK Hypothermic Perfusion",
+      initialTemp: initialTemp || 2.8,
+      notes: notes || "Organ harvested and donor consent verified on blockchain",
       signerRole: req.user.role
     });
 
     res.status(201).json({
-      message: "Medicine batch registered successfully on blockchain!",
-      batch: newBatch
+      message: "Organ harvest & donor consent registered successfully on blockchain!",
+      organ: newOrgan,
+      batch: newOrgan
     });
   } catch (err) {
-    res.status(500).json({ error: "Failed to create batch", details: err.message });
+    res.status(500).json({ error: "Failed to harvest organ", details: err.message });
   }
 });
 
-// POST /api/batches/:batchId/transfer - Transfer batch along supply chain
-router.post('/:batchId/transfer', authenticate, async (req, res) => {
+// POST /api/organs/:organId/transfer - Transfer Custody along Medical Chain
+router.post('/:organId/transfer', authenticate, async (req, res) => {
   try {
-    const { batchId } = req.params;
-    const { toAddress, notes } = req.body;
+    const { organId } = req.params;
+    const { toAddress, notes, location, currentTemp } = req.body;
 
     if (!toAddress) {
-      return res.status(400).json({ error: "Recipient Ethereum address 'toAddress' is required" });
+      return res.status(400).json({ error: "Destination node address 'toAddress' is required" });
     }
 
-    const batch = store.getBatchById(batchId);
-    if (!batch) {
-      return res.status(404).json({ error: `Batch ${batchId} not found` });
+    const organ = store.getOrganById(organId);
+    if (!organ) {
+      return res.status(404).json({ error: `Organ ${organId} not found` });
     }
 
-    // Role-based rule verification:
-    // Only current owner or admin can initiate transfer
-    const isOwner = batch.currentOwner.toLowerCase() === req.user.ethAddress.toLowerCase();
+    // Custody permission check
+    const isOwner = organ.currentOwner.toLowerCase() === req.user.ethAddress.toLowerCase();
     const isAdmin = req.user.role === 'admin';
     if (!isOwner && !isAdmin) {
       return res.status(403).json({
-        error: `Unauthorized: You do not own batch ${batchId}. Current owner is ${batch.currentOwnerName} (${batch.currentOwner})`
+        error: `Unauthorized: You do not currently hold custody of ${organId}. Current custodian is ${organ.currentOwnerName}`
       });
     }
 
-    // Check expiration before transfer
-    const isExpired = new Date() > new Date(batch.expiryDate);
-    if (isExpired) {
+    if (organ.isQuarantined) {
       return res.status(400).json({
-        error: `Cannot transfer expired medicine! Batch expired on ${batch.expiryDate}`
+        error: `Organ ${organId} is under regulatory quarantine. Custody transfer prohibited.`
       });
     }
 
-    // Verify recipient participant
-    const recipient = store.getUserByAddress(toAddress);
-    if (!recipient) {
-      return res.status(400).json({
-        error: `Target address ${toAddress} is not registered as an authorized supply-chain entity`
-      });
-    }
-
-    // Enforce sequential supply chain transfers:
-    // Manufacturer -> Distributor -> Wholesaler -> Pharmacy
-    if (batch.stage === "Manufactured" && recipient.role !== "distributor") {
-      return res.status(400).json({
-        error: `Smart contract rule violation: Newly manufactured batches can only be transferred to an authorized Distributor, not '${recipient.role}'`
-      });
-    }
-    if (batch.stage === "DistributorReceived" && recipient.role !== "wholesaler") {
-      return res.status(400).json({
-        error: `Smart contract rule violation: Distributor can only transfer to an authorized Wholesaler, not '${recipient.role}'`
-      });
-    }
-    if (batch.stage === "WholesalerReceived" && recipient.role !== "pharmacy") {
-      return res.status(400).json({
-        error: `Smart contract rule violation: Wholesaler can only transfer to an authorized Pharmacy, not '${recipient.role}'`
-      });
-    }
-
-    const updatedBatch = await blockchain.transferBatch({
-      batchId,
+    const updatedOrgan = await blockchain.transferCustody({
+      organId: organ.organId || organ.batchId,
       toAddress,
-      toRole: recipient.role,
-      notes,
+      notes: notes || "Medical custody handoff logged on blockchain",
+      location: location || "Cold chain transit point",
+      currentTemp: currentTemp || organ.temperatureCelsius || 2.8,
       signerRole: req.user.role
     });
 
     res.json({
-      message: `Batch ${batchId} successfully transferred to ${recipient.name}!`,
-      batch: updatedBatch
+      message: `Custody of Organ ${organId} transferred successfully on-chain`,
+      organ: updatedOrgan,
+      batch: updatedOrgan
     });
   } catch (err) {
     res.status(500).json({ error: "Transfer failed", details: err.message });
   }
 });
 
-// POST /api/batches/:batchId/sell - Pharmacy dispenses medicine
-router.post('/:batchId/sell', authenticate, requireRole(['pharmacy', 'admin']), async (req, res) => {
+// POST /api/organs/:organId/sell or /transplant - Hospital surgical implantation completion
+router.post(['/:organId/sell', '/:organId/transplant'], authenticate, requireRole(['hospital', 'pharmacy', 'admin']), async (req, res) => {
   try {
-    const { batchId } = req.params;
+    const { organId } = req.params;
     const { notes } = req.body;
 
-    const updatedBatch = await blockchain.markAsSold({
-      batchId,
-      notes,
+    const organ = store.getOrganById(organId);
+    if (!organ) return res.status(404).json({ error: `Organ ${organId} not found` });
+
+    if (organ.isQuarantined) {
+      return res.status(400).json({ error: `Cannot transplant quarantined organ ${organId}` });
+    }
+
+    const updated = await blockchain.completeTransplant({
+      organId: organ.organId || organ.batchId,
+      surgicalNotes: notes || "Surgical implantation completed in OR. Graft reperfusion verified.",
       signerRole: req.user.role
     });
 
     res.json({
-      message: `Batch ${batchId} marked as dispensed to customer. Blockchain status updated.`,
-      batch: updatedBatch
+      message: `Organ ${organId} successfully grafted into recipient. Implantation logged on-chain.`,
+      organ: updated,
+      batch: updated
     });
   } catch (err) {
-    res.status(500).json({ error: "Failed to mark as sold", details: err.message });
+    res.status(500).json({ error: "Implantation sign-off failed", details: err.message });
   }
 });
 
-// POST /api/batches/:batchId/recall - Regulatory or Manufacturer recall
-router.post('/:batchId/recall', authenticate, requireRole(['admin', 'manufacturer']), async (req, res) => {
+// POST /api/organs/:organId/recall or /quarantine - Emergency Quarantine Order
+router.post(['/:organId/recall', '/:organId/quarantine'], authenticate, requireRole(['admin', 'authority', 'opo', 'manufacturer']), async (req, res) => {
   try {
-    const { batchId } = req.params;
+    const { organId } = req.params;
     const { reason } = req.body;
 
-    if (!reason) {
-      return res.status(400).json({ error: "Recall reason is required" });
-    }
+    const organ = store.getOrganById(organId);
+    if (!organ) return res.status(404).json({ error: `Organ ${organId} not found` });
 
-    const updatedBatch = await blockchain.recallBatch({
-      batchId,
-      reason,
+    const updated = await blockchain.quarantineOrgan({
+      organId: organ.organId || organ.batchId,
+      reason: reason || "Emergency regulatory quarantine ordered",
       signerRole: req.user.role
     });
 
     res.json({
-      message: `EMERGENCY RECALL ISSUED for batch ${batchId}. All nodes notified.`,
-      batch: updatedBatch
+      message: `REGULATORY QUARANTINE ISSUED: Organ ${organId} locked.`,
+      organ: updated,
+      batch: updated
     });
   } catch (err) {
-    res.status(500).json({ error: "Failed to recall batch", details: err.message });
+    res.status(500).json({ error: "Quarantine order failed", details: err.message });
   }
 });
 

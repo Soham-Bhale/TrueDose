@@ -2,33 +2,165 @@
 
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-900 font-sans antialiased min-h-screen selection:bg-teal-600 selection:text-white;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    background-color: #ECE9D8;
+    color: #1a1a1a;
+    font-family: Tahoma, "Segoe UI", "MS Sans Serif", Arial, sans-serif;
+    font-size: 12px;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    user-select: text;
+    -webkit-font-smoothing: subpixel-antialiased;
   }
-
-  /* Refined typography defaults */
-  h1, h2, h3, h4, h5, h6 {
-    @apply tracking-tight text-slate-900;
-  }
 }
 
-/* Custom subtle scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+/* Classic Java Swing / AWT 3D UI primitives */
+.swing-raised {
+  background-color: #ECE9D8;
+  border-top: 2px solid #FFFFFF;
+  border-left: 2px solid #FFFFFF;
+  border-bottom: 2px solid #808080;
+  border-right: 2px solid #808080;
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
+.swing-sunken {
+  background-color: #FFFFFF;
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-bottom: 2px solid #FFFFFF;
+  border-right: 2px solid #FFFFFF;
 }
 
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 9999px;
+.swing-panel-sunken {
+  background-color: #E2DFD2;
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-bottom: 2px solid #FFFFFF;
+  border-right: 2px solid #FFFFFF;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+.swing-etched {
+  border: 2px groove #E0DFD8;
+}
+
+.swing-btn {
+  background: #ECE9D8;
+  border-top: 2px solid #FFFFFF;
+  border-left: 2px solid #FFFFFF;
+  border-bottom: 2px solid #707070;
+  border-right: 2px solid #707070;
+  padding: 3px 10px;
+  font-family: Tahoma, "Segoe UI", sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: #1a1a1a;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.swing-btn:hover {
+  background-color: #F4F2E8;
+}
+
+.swing-btn:active, .swing-btn-active {
+  border-top: 2px solid #707070;
+  border-left: 2px solid #707070;
+  border-bottom: 2px solid #FFFFFF;
+  border-right: 2px solid #FFFFFF;
+  background-color: #DFDBD0;
+  padding-top: 4px;
+  padding-bottom: 2px;
+}
+
+.swing-btn-primary {
+  background-color: #DDE7F0;
+  border-top: 2px solid #FFFFFF;
+  border-left: 2px solid #FFFFFF;
+  border-bottom: 2px solid #4A6B8C;
+  border-right: 2px solid #4A6B8C;
+  color: #0A246A;
+  font-weight: bold;
+}
+
+.swing-btn-danger {
+  background-color: #F8E2E2;
+  border-top: 2px solid #FFFFFF;
+  border-left: 2px solid #FFFFFF;
+  border-bottom: 2px solid #8C4A4A;
+  border-right: 2px solid #8C4A4A;
+  color: #8C1A1A;
+}
+
+.swing-input {
+  background-color: #FFFFFF;
+  border-top: 2px solid #7A7A7A;
+  border-left: 2px solid #7A7A7A;
+  border-bottom: 2px solid #EBE9ED;
+  border-right: 2px solid #EBE9ED;
+  padding: 3px 6px;
+  font-family: Tahoma, "Segoe UI", sans-serif;
+  font-size: 11px;
+  color: #000000;
+  outline: none;
+}
+
+.swing-input:focus {
+  background-color: #FFFFF8;
+  border-top-color: #0A246A;
+  border-left-color: #0A246A;
+}
+
+.swing-th {
+  background-color: #ECE9D8;
+  border-top: 1px solid #FFFFFF;
+  border-left: 1px solid #FFFFFF;
+  border-bottom: 2px solid #808080;
+  border-right: 2px solid #808080;
+  padding: 4px 6px;
+  font-size: 11px;
+  font-weight: bold;
+  color: #2D2D2D;
+  text-align: left;
+  user-select: none;
+}
+
+.swing-titlebar {
+  background: linear-gradient(90deg, #0A246A 0%, #3A6EA5 70%, #A6CAF0 100%);
+  color: #FFFFFF;
+  font-family: Tahoma, "Segoe UI", sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 3px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+}
+
+.swing-statusbar {
+  background-color: #ECE9D8;
+  border-top: 2px solid #FFFFFF;
+  padding: 3px 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #333333;
+}
+
+.swing-status-pane {
+  background-color: #ECE9D8;
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-bottom: 1px solid #FFFFFF;
+  border-right: 1px solid #FFFFFF;
+  padding: 1px 6px;
+  font-size: 11px;
+  white-space: nowrap;
 }
 
 /* Printable Certificate & Packaging styling */

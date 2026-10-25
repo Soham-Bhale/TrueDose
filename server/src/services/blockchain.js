@@ -11,32 +11,57 @@ const ACCOUNTS = {
   admin: {
     address: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
     privateKey: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
-    name: "TrueDose Regulatory Authority",
+    name: "National Organ & Tissue Regulatory Authority (NOTTO / UNOS)",
     role: "Admin"
   },
+  opo: {
+    address: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+    privateKey: "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d",
+    name: "National Organ Procurement Network (Unit 4 Mumbai)",
+    role: "OPO"
+  },
+  logistics: {
+    address: "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+    privateKey: "0x5de4111afa1a4b94908f83103eb2f95808429d3383e58805f45979c4a782a134",
+    name: "AeroMed Specialized Organ Logistics",
+    role: "Logistics"
+  },
+  authority: {
+    address: "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+    privateKey: "0x7c852118294e51e653712a81e05800f419141751be58f605c371e15141b007a6",
+    name: "Regional Organ Allocation Directorate",
+    role: "Authority"
+  },
+  hospital: {
+    address: "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+    privateKey: "0x47e179ec346fa32143cfe29f857270777385a37e54297a1d36941fc5383433a",
+    name: "Apollo Multi-Specialty Transplant Surgical Center",
+    role: "Hospital"
+  },
+  // Backward compatibility aliases
   manufacturer: {
     address: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
     privateKey: "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d",
-    name: "ABC Pharma Ltd.",
-    role: "Manufacturer"
+    name: "National Organ Procurement Network",
+    role: "OPO"
   },
   distributor: {
     address: "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
     privateKey: "0x5de4111afa1a4b94908f83103eb2f95808429d3383e58805f45979c4a782a134",
-    name: "Apex Logistics & Distribution",
-    role: "Distributor"
+    name: "AeroMed Specialized Organ Logistics",
+    role: "Logistics"
   },
   wholesaler: {
     address: "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
     privateKey: "0x7c852118294e51e653712a81e05800f419141751be58f605c371e15141b007a6",
-    name: "Metro Health Wholesalers",
-    role: "Wholesaler"
+    name: "Regional Organ Allocation Directorate",
+    role: "Authority"
   },
   pharmacy: {
     address: "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
     privateKey: "0x47e179ec346fa32143cfe29f857270777385a37e54297a1d36941fc5383433a",
-    name: "HealthPlus Community Pharmacy",
-    role: "Pharmacy"
+    name: "Apollo Multi-Specialty Transplant Surgical Center",
+    role: "Hospital"
   }
 };
 
@@ -62,7 +87,6 @@ async function initBlockchain() {
   loadContractConfig();
 
   try {
-    // Probe HTTP endpoint quickly without throwing unhandled rejection
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 1200);
 
@@ -71,7 +95,7 @@ async function initBlockchain() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ jsonrpc: "2.0", method: "eth_blockNumber", params: [], id: 1 }),
       signal: controller.signal
-    }).catch(err => null);
+    }).catch(() => null);
 
     clearTimeout(timeoutId);
 
@@ -88,15 +112,14 @@ async function initBlockchain() {
       }
     } else {
       isNodeConnected = false;
-      console.log(`ℹ️ Local Ethereum node not active. Operating in resilient Zero-Config Mode with cryptographic ledger.`);
+      console.log(`ℹ️ Operating in resilient Zero-Config Mode with cryptographic SHA-256 ledger.`);
     }
   } catch (err) {
     isNodeConnected = false;
-    console.log(`ℹ️ Local Ethereum node not active. Operating in resilient Zero-Config Mode with cryptographic ledger.`);
+    console.log(`ℹ️ Operating in resilient Zero-Config Mode with cryptographic SHA-256 ledger.`);
   }
 }
 
-// Helper to get signer for role
 function getSigner(role) {
   const roleLower = (role || 'admin').toLowerCase();
   const acc = ACCOUNTS[roleLower] || ACCOUNTS.admin;
@@ -106,336 +129,321 @@ function getSigner(role) {
   return null;
 }
 
-// Generate realistic pseudo-txHash
 function generateTxHash() {
   return "0x" + Array.from({length: 64}, () => Math.floor(Math.random() * 16).toString(16)).join("");
 }
 
-// Smart Contract Operations with automatic on-chain + off-chain synchronization
-async function createBatch({ batchId, medicineName, dosage, quantity, mfgDate, expDate, notes, signerRole }) {
-  const mfgTimestamp = Math.floor(new Date(mfgDate).getTime() / 1000);
-  const expTimestamp = Math.floor(new Date(expDate).getTime() / 1000);
+// Harvest Organ
+async function harvestOrgan({
+  organId,
+  organType,
+  donorId,
+  donorBloodType,
+  hlaMarker,
+  ischemicLimitHours,
+  recipientId,
+  recipientHospital,
+  preservationProtocol,
+  initialTemp,
+  notes,
+  signerRole
+}) {
+  const safeOrganId = (organId || `ORG-${Math.floor(1000 + Math.random() * 9000)}`).toUpperCase();
   let txHash = generateTxHash();
-  let blockNumber = 101;
+  let blockNumber = 120;
+
+  const tempScaled = Math.round((Number(initialTemp) || 2.8) * 10);
 
   if (isNodeConnected && contract) {
     try {
-      const signer = getSigner(signerRole || 'manufacturer');
+      const signer = getSigner(signerRole || 'opo');
       const contractWithSigner = contract.connect(signer);
-      const tx = await contractWithSigner.createBatch(
-        batchId,
-        medicineName,
-        dosage || "Standard",
-        quantity,
-        mfgTimestamp,
-        expTimestamp,
-        notes || "Created batch"
+      const tx = await contractWithSigner.harvestOrgan(
+        safeOrganId,
+        organType || "Kidney (Left)",
+        donorId || "DNR-ANON",
+        donorBloodType || "O+",
+        hlaMarker || "6/6 HLA-Matched",
+        Number(ischemicLimitHours) || 24,
+        recipientId || "RCP-GENERAL",
+        recipientHospital || "Transplant Surgical Center",
+        preservationProtocol || "Custodiol HTK Hypothermic Perfusion",
+        tempScaled
       );
       const receipt = await tx.wait();
       txHash = receipt.hash;
       blockNumber = receipt.blockNumber;
-      console.log(`⛓️ On-chain createBatch tx confirmed: ${txHash}`);
+      console.log(`⛓️ On-chain harvestOrgan tx confirmed: ${txHash}`);
     } catch (err) {
       console.warn("On-chain tx failed, recording cryptographically in store:", err.message);
     }
   }
 
-  const mfgUser = store.getUserByEmail("manufacturer@abcpharma.com");
-  const newBatch = {
-    batchId,
-    medicineName,
-    dosage: dosage || "500 mg",
-    quantity: Number(quantity),
-    unit: "units",
-    manufacturerName: mfgUser?.name || "ABC Pharma Ltd.",
-    manufacturerAddress: mfgUser?.ethAddress || ACCOUNTS.manufacturer.address,
-    manufacturingDate: new Date(mfgDate).toISOString(),
-    expiryDate: new Date(expDate).toISOString(),
-    currentOwner: mfgUser?.ethAddress || ACCOUNTS.manufacturer.address,
-    currentOwnerName: mfgUser?.name || "ABC Pharma Ltd.",
-    currentOwnerRole: "manufacturer",
-    stage: "Manufactured",
+  const opoUser = store.getUserByRole("opo") || store.getUserByRole("manufacturer");
+  const newOrgan = {
+    organId: safeOrganId,
+    batchId: safeOrganId,
+    medicineName: `${organType || "Kidney"} Graft`,
+    organType: organType || "Kidney (Left)",
+    dosage: `${donorBloodType || "O+"} (${hlaMarker || "6/6 Match"})`,
+    quantity: 1,
+    unit: "organ",
+    donorId: donorId || "DNR-MUM-9021",
+    donorBloodType: donorBloodType || "O+",
+    hlaMarker: hlaMarker || "6/6 HLA-Matched",
+    harvestTimestamp: new Date().toISOString(),
+    ischemicLimitHours: Number(ischemicLimitHours) || 24,
+    preservationProtocol: preservationProtocol || "Custodiol HTK Hypothermic Perfusion",
+    temperatureCelsius: Number(initialTemp) || 2.8,
+    recipientId: recipientId || "RCP-7704",
+    recipientHospital: recipientHospital || "Transplant Surgical Center",
+    manufacturerName: opoUser?.name || "National Organ Procurement Network",
+    currentOwner: opoUser?.ethAddress || ACCOUNTS.opo.address,
+    currentOwnerName: opoUser?.name || "National Organ Procurement Network",
+    currentOwnerRole: "opo",
+    stage: "Harvested",
+    isQuarantined: false,
     isRecalled: false,
     recallReason: "",
-    storageConditions: "Store in cool dry conditions (15°C - 25°C)",
-    activeIngredients: `${medicineName} Active Pharmaceutical Ingredient`,
-    regulatoryCert: "GMP/CERT/2026/" + Math.floor(1000 + Math.random() * 9000),
+    storageConditions: "Continuous hypothermic perfusion 2.0°C - 4.0°C",
     blockchainTxHash: txHash,
     blockNumber: blockNumber,
+    legalConsentCID: "bafybeig" + Math.random().toString(36).substring(2, 15),
     history: [
       {
-        stage: "Manufactured",
-        from: "Production Line",
+        stage: "Harvested",
+        from: "Donor Surgical Suite",
         fromAddress: "0x0000000000000000000000000000000000000000",
-        to: mfgUser?.name || "ABC Pharma Ltd.",
-        toAddress: mfgUser?.ethAddress || ACCOUNTS.manufacturer.address,
-        roleFrom: "Genesis / QA",
-        roleTo: "Manufacturer",
+        to: opoUser?.name || "National Organ Procurement Network",
+        toAddress: opoUser?.ethAddress || ACCOUNTS.opo.address,
+        roleFrom: "Harvest Team",
+        roleTo: "Organ Procurement Org (OPO)",
         timestamp: new Date().toISOString(),
-        location: mfgUser?.location || "Industrial Area Unit 4, Mumbai, India",
-        notes: notes || "Batch formulated and QA certified on blockchain",
+        location: opoUser?.location || "Trauma Center OR, Mumbai",
+        notes: notes || "Organ retrieved, hypothermic perfusion started, donor consent verified on blockchain",
         txHash: txHash,
+        temperatureCelsius: Number(initialTemp) || 2.8,
         verifiedOnChain: true
       }
     ]
   };
 
-  store.saveBatch(newBatch);
-  return newBatch;
+  store.saveOrgan(newOrgan);
+  return newOrgan;
 }
 
-async function transferBatch({ batchId, toAddress, toRole, notes, signerRole }) {
-  const batch = store.getBatchById(batchId);
-  if (!batch) {
-    throw new Error(`Batch ${batchId} not found`);
+// Transfer Custody
+async function transferCustody({ organId, toAddress, notes, location, currentTemp, signerRole }) {
+  const organ = store.getOrganById(organId);
+  if (!organ) {
+    throw new Error(`Organ ${organId} not found`);
   }
-  if (batch.isRecalled) {
-    throw new Error(`Cannot transfer recalled batch ${batchId}`);
-  }
-
-  // Determine stage progression
-  let nextStage = "DistributorReceived";
-  let roleFrom = "Manufacturer";
-  let roleTo = "Distributor";
-
-  if (batch.stage === "Manufactured") {
-    nextStage = "DistributorReceived";
-    roleFrom = "Manufacturer";
-    roleTo = "Distributor";
-  } else if (batch.stage === "DistributorReceived") {
-    nextStage = "WholesalerReceived";
-    roleFrom = "Distributor";
-    roleTo = "Wholesaler";
-  } else if (batch.stage === "WholesalerReceived") {
-    nextStage = "PharmacyReceived";
-    roleFrom = "Wholesaler";
-    roleTo = "Pharmacy";
-  } else {
-    throw new Error(`Invalid stage transition from ${batch.stage}`);
+  if (organ.isQuarantined) {
+    throw new Error(`Cannot transfer quarantined organ ${organId}`);
   }
 
+  const tempVal = Number(currentTemp) || organ.temperatureCelsius || 2.8;
+  const tempScaled = Math.round(tempVal * 10);
   let txHash = generateTxHash();
 
   if (isNodeConnected && contract) {
     try {
-      const signer = getSigner(signerRole || roleFrom.toLowerCase());
+      const signer = getSigner(signerRole || organ.currentOwnerRole);
       const contractWithSigner = contract.connect(signer);
-      let tx;
-      if (nextStage === "DistributorReceived") {
-        tx = await contractWithSigner.transferToDistributor(batchId, toAddress, notes || "");
-      } else if (nextStage === "WholesalerReceived") {
-        tx = await contractWithSigner.transferToWholesaler(batchId, toAddress, notes || "");
-      } else if (nextStage === "PharmacyReceived") {
-        tx = await contractWithSigner.transferToPharmacy(batchId, toAddress, notes || "");
-      }
-      if (tx) {
-        const receipt = await tx.wait();
-        txHash = receipt.hash;
-        console.log(`⛓️ On-chain transfer tx confirmed: ${txHash}`);
-      }
+      const tx = await contractWithSigner.transferCustody(
+        organ.organId || organ.batchId,
+        toAddress,
+        notes || "Custody transferred",
+        location || "Transfer point",
+        tempScaled
+      );
+      const receipt = await tx.wait();
+      txHash = receipt.hash;
     } catch (err) {
-      console.warn("On-chain transfer failed, falling back to cryptographic local ledger:", err.message);
+      console.warn("On-chain transfer failed, saving cryptographically:", err.message);
     }
   }
 
-  // Find recipient details
-  const targetUser = store.getUserByAddress(toAddress) || {
-    name: roleTo === "Distributor" ? "Apex Logistics & Distribution" :
-          roleTo === "Wholesaler" ? "Metro Health Wholesalers" : "HealthPlus Community Pharmacy",
-    location: "Logistics Hub",
+  // Lookup receiver user by ethAddress
+  const allUsers = store.getUsers();
+  const receiver = allUsers.find(u => u.ethAddress.toLowerCase() === (toAddress || '').toLowerCase()) || {
+    name: "AeroMed Specialized Organ Logistics",
+    role: "logistics",
+    location: location || "Air Transit Terminal",
     ethAddress: toAddress
   };
 
-  const senderUser = store.getUserByAddress(batch.currentOwner) || {
-    name: batch.currentOwnerName,
-    ethAddress: batch.currentOwner
+  let nextStage = organ.stage;
+  if (organ.stage === "Harvested") nextStage = "InTransit";
+  else if (organ.stage === "InTransit") nextStage = "HospitalReceived";
+
+  const custodyHop = {
+    stage: nextStage,
+    from: organ.currentOwnerName,
+    fromAddress: organ.currentOwner,
+    to: receiver.name,
+    toAddress: receiver.ethAddress,
+    roleFrom: organ.currentOwnerRole.toUpperCase(),
+    roleTo: receiver.role.toUpperCase(),
+    timestamp: new Date().toISOString(),
+    location: location || receiver.location,
+    notes: notes || `Custody transferred to ${receiver.name}`,
+    txHash: txHash,
+    temperatureCelsius: tempVal,
+    verifiedOnChain: true
   };
 
-  batch.currentOwner = toAddress;
-  batch.currentOwnerName = targetUser.name;
-  batch.currentOwnerRole = roleTo.toLowerCase();
-  batch.stage = nextStage;
+  organ.currentOwner = receiver.ethAddress;
+  organ.currentOwnerName = receiver.name;
+  organ.currentOwnerRole = receiver.role;
+  organ.stage = nextStage;
+  organ.temperatureCelsius = tempVal;
+  organ.blockchainTxHash = txHash;
+  organ.history.push(custodyHop);
 
-  batch.history.push({
-    stage: nextStage,
-    from: senderUser.name,
-    fromAddress: senderUser.ethAddress || batch.currentOwner,
-    to: targetUser.name,
-    toAddress: toAddress,
-    roleFrom: roleFrom,
-    roleTo: roleTo,
-    timestamp: new Date().toISOString(),
-    location: targetUser.location,
-    notes: notes || `Transferred to ${roleTo}`,
-    txHash: txHash,
-    verifiedOnChain: true
-  });
-
-  store.saveBatch(batch);
-  return batch;
+  store.saveOrgan(organ);
+  return organ;
 }
 
-async function markAsSold({ batchId, notes, signerRole }) {
-  const batch = store.getBatchById(batchId);
-  if (!batch) throw new Error(`Batch ${batchId} not found`);
-  if (batch.isRecalled) throw new Error(`Cannot dispense recalled batch`);
-  if (batch.stage !== "PharmacyReceived") {
-    throw new Error(`Batch must be at Pharmacy before it can be sold (current stage: ${batch.stage})`);
-  }
+// Complete Transplant / Implantation
+async function completeTransplant({ organId, surgicalNotes, signerRole }) {
+  const organ = store.getOrganById(organId);
+  if (!organ) throw new Error(`Organ ${organId} not found`);
+  if (organ.isQuarantined) throw new Error(`Cannot transplant quarantined organ ${organId}`);
 
   let txHash = generateTxHash();
 
   if (isNodeConnected && contract) {
     try {
-      const signer = getSigner(signerRole || 'pharmacy');
-      const contractWithSigner = contract.connect(signer);
-      const tx = await contractWithSigner.markAsSold(batchId, notes || "Sold to patient");
+      const signer = getSigner(signerRole || 'hospital');
+      const tx = await contract.connect(signer).completeTransplant(
+        organ.organId || organ.batchId,
+        surgicalNotes || "Graft reperfusion successful"
+      );
       const receipt = await tx.wait();
       txHash = receipt.hash;
-      console.log(`⛓️ On-chain markAsSold tx confirmed: ${txHash}`);
-    } catch (err) {
-      console.warn("On-chain markAsSold fallback:", err.message);
+    } catch (e) {
+      console.warn("On-chain completeTransplant failed:", e.message);
     }
   }
 
-  batch.stage = "SoldToCustomer";
-  batch.history.push({
-    stage: "SoldToCustomer",
-    from: batch.currentOwnerName,
-    fromAddress: batch.currentOwner,
-    to: "End Consumer / Patient",
+  organ.stage = "Transplanted";
+  organ.blockchainTxHash = txHash;
+  organ.history.push({
+    stage: "Transplanted",
+    from: organ.currentOwnerName,
+    fromAddress: organ.currentOwner,
+    to: `Recipient Patient (${organ.recipientId || "Matched"})`,
     toAddress: "0x0000000000000000000000000000000000000000",
-    roleFrom: "Pharmacy",
-    roleTo: "Customer",
+    roleFrom: "HOSPITAL",
+    roleTo: "RECIPIENT",
     timestamp: new Date().toISOString(),
-    location: "Retail Dispensing Counter",
-    notes: notes || "Dispensed against verified prescription",
+    location: organ.recipientHospital || "Surgical Operating Suite",
+    notes: surgicalNotes || "Successful anastomosis and graft reperfusion confirmed in OR",
     txHash: txHash,
+    temperatureCelsius: organ.temperatureCelsius || 3.0,
     verifiedOnChain: true
   });
 
-  store.saveBatch(batch);
-  return batch;
+  store.saveOrgan(organ);
+  return organ;
 }
 
-async function recallBatch({ batchId, reason, signerRole }) {
-  const batch = store.getBatchById(batchId);
-  if (!batch) throw new Error(`Batch ${batchId} not found`);
+// Emergency Quarantine / Biohazard Hold
+async function quarantineOrgan({ organId, reason, signerRole }) {
+  const organ = store.getOrganById(organId);
+  if (!organ) throw new Error(`Organ ${organId} not found`);
 
   let txHash = generateTxHash();
 
   if (isNodeConnected && contract) {
     try {
       const signer = getSigner(signerRole || 'admin');
-      const contractWithSigner = contract.connect(signer);
-      const tx = await contractWithSigner.recallBatch(batchId, reason || "Regulatory Quarantine");
+      const tx = await contract.connect(signer).quarantineOrgan(
+        organ.organId || organ.batchId,
+        reason || "Regulatory quarantine order issued"
+      );
       const receipt = await tx.wait();
       txHash = receipt.hash;
-    } catch (err) {
-      console.warn("On-chain recall fallback:", err.message);
+    } catch (e) {
+      console.warn("On-chain quarantineOrgan failed:", e.message);
     }
   }
 
-  batch.isRecalled = true;
-  batch.recallReason = reason || "Emergency Quality Recall Notice";
-  batch.stage = "Recalled";
-  batch.history.push({
-    stage: "Recalled",
-    from: "TrueDose Regulatory Authority",
+  organ.isQuarantined = true;
+  organ.isRecalled = true;
+  organ.recallReason = reason || "Regulatory quarantine order issued";
+  organ.stage = "Quarantined";
+  organ.blockchainTxHash = txHash;
+  organ.history.push({
+    stage: "Quarantined",
+    from: "Regulatory Authority Directorate",
     fromAddress: ACCOUNTS.admin.address,
-    to: "Global Quarantine Repository",
+    to: "Biorepository Quarantine Facility",
     toAddress: "0x0000000000000000000000000000000000000000",
-    roleFrom: "Admin",
-    roleTo: "Quarantine",
+    roleFrom: "AUTHORITY",
+    roleTo: "QUARANTINE_HOLD",
     timestamp: new Date().toISOString(),
-    location: "National Drug Safety Unit",
-    notes: `RECALL ORDER: ${reason}`,
+    location: "Regional Medical Quarantine Facility",
+    notes: `EMERGENCY QUARANTINE: ${reason}`,
     txHash: txHash,
+    temperatureCelsius: organ.temperatureCelsius,
     verifiedOnChain: true
   });
 
-  store.saveBatch(batch);
-  return batch;
+  store.saveOrgan(organ);
+  return organ;
 }
 
-// Verification function
-async function verifyBatch(batchId) {
-  // Check if query exists in store
-  const batch = store.getBatchById(batchId);
-
-  if (!batch) {
-    return {
-      exists: false,
-      batchId: batchId,
-      status: "COUNTERFEIT_ALERT",
-      message: "Batch not found on blockchain or central ledger. Suspected counterfeit.",
-      verified: false
-    };
-  }
-
-  const now = new Date();
-  const exp = new Date(batch.expiryDate);
-  const isExpired = now > exp;
-  const daysUntilExpiry = Math.ceil((exp - now) / (1000 * 60 * 60 * 24));
-
-  let status = "GENUINE_AUTHENTIC";
-  if (batch.isRecalled) {
-    status = "RECALLED_DANGER";
-  } else if (isExpired) {
-    status = "EXPIRED";
-  } else if (daysUntilExpiry <= 30) {
-    status = "EXPIRING_SOON";
-  }
-
-  const verificationRecord = {
-    exists: true,
-    batchId: batch.batchId,
-    medicineName: batch.medicineName,
-    dosage: batch.dosage,
-    quantity: batch.quantity,
-    unit: batch.unit,
-    manufacturerName: batch.manufacturerName,
-    manufacturerAddress: batch.manufacturerAddress,
-    manufacturingDate: batch.manufacturingDate,
-    expiryDate: batch.expiryDate,
-    currentOwner: batch.currentOwner,
-    currentOwnerName: batch.currentOwnerName,
-    currentOwnerRole: batch.currentOwnerRole,
-    stage: batch.stage,
-    isRecalled: batch.isRecalled,
-    recallReason: batch.recallReason,
-    isExpired: isExpired,
-    daysUntilExpiry: daysUntilExpiry,
-    status: status,
-    blockchainTxHash: batch.blockchainTxHash,
-    contractAddress: contractConfig ? contractConfig.address : "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-    smartContractVerified: true,
-    history: batch.history,
-    storageConditions: batch.storageConditions,
-    activeIngredients: batch.activeIngredients,
-    regulatoryCert: batch.regulatoryCert
-  };
-
-  store.recordVerification({
-    id: "scan_" + Date.now(),
-    batchId: batch.batchId,
-    timestamp: new Date().toISOString(),
-    result: status,
-    medicineName: batch.medicineName
+// Backward-compatible aliases for legacy batch API endpoints
+async function createBatch(params) {
+  return harvestOrgan({
+    organId: params.batchId,
+    organType: params.medicineName,
+    donorId: "DNR-" + Math.floor(1000 + Math.random() * 9000),
+    donorBloodType: "O+",
+    hlaMarker: "6/6 HLA-Matched",
+    ischemicLimitHours: 24,
+    recipientId: "RCP-" + Math.floor(1000 + Math.random() * 9000),
+    recipientHospital: "Transplant Surgical Center",
+    preservationProtocol: "Custodiol HTK Perfusion",
+    initialTemp: 2.8,
+    notes: params.notes,
+    signerRole: params.signerRole
   });
+}
 
-  return verificationRecord;
+async function transferBatch(params) {
+  return transferCustody({
+    organId: params.batchId,
+    toAddress: params.toAddress,
+    notes: params.notes,
+    location: "Cold Chain Transfer",
+    currentTemp: 2.8,
+    signerRole: params.signerRole
+  });
+}
+
+async function sellBatch(batchId, notes, signerRole) {
+  return completeTransplant({ organId: batchId, surgicalNotes: notes, signerRole });
+}
+
+async function recallBatch(batchId, reason, signerRole) {
+  return quarantineOrgan({ organId: batchId, reason, signerRole });
 }
 
 module.exports = {
+  ACCOUNTS,
   initBlockchain,
+  isNodeRunning: () => isNodeConnected,
+  getContractInfo: () => contractConfig,
+  harvestOrgan,
+  transferCustody,
+  completeTransplant,
+  quarantineOrgan,
+  // Aliases
   createBatch,
   transferBatch,
-  markAsSold,
-  recallBatch,
-  verifyBatch,
-  loadContractConfig,
-  ACCOUNTS,
-  isNodeRunning: () => isNodeConnected,
-  getContractInfo: () => contractConfig
+  sellBatch,
+  recallBatch
 };

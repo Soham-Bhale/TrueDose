@@ -1,5 +1,7 @@
 {
   "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+  "network": "hardhat",
+  "chainId": 1337,
   "abi": [
     {
       "inputs": [],
@@ -12,112 +14,13 @@
         {
           "indexed": true,
           "internalType": "string",
-          "name": "batchId",
-          "type": "string"
-        },
-        {
-          "indexed": false,
-          "internalType": "string",
-          "name": "medicineName",
+          "name": "organId",
           "type": "string"
         },
         {
           "indexed": true,
           "internalType": "address",
-          "name": "manufacturer",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "string",
-          "name": "manufacturerName",
-          "type": "string"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "mfgDate",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "expDate",
-          "type": "uint256"
-        }
-      ],
-      "name": "BatchCreated",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "string",
-          "name": "batchId",
-          "type": "string"
-        },
-        {
-          "indexed": false,
-          "internalType": "string",
-          "name": "reason",
-          "type": "string"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "timestamp",
-          "type": "uint256"
-        }
-      ],
-      "name": "BatchRecalled",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "string",
-          "name": "batchId",
-          "type": "string"
-        },
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "receiver",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "enum PharmaSupplyChain.BatchState",
-          "name": "newState",
-          "type": "uint8"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "timestamp",
-          "type": "uint256"
-        }
-      ],
-      "name": "BatchReceived",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "string",
-          "name": "batchId",
-          "type": "string"
-        },
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "pharmacy",
+          "name": "authority",
           "type": "address"
         },
         {
@@ -127,7 +30,7 @@
           "type": "uint256"
         }
       ],
-      "name": "BatchSold",
+      "name": "AllocationCleared",
       "type": "event"
     },
     {
@@ -136,7 +39,7 @@
         {
           "indexed": true,
           "internalType": "string",
-          "name": "batchId",
+          "name": "organId",
           "type": "string"
         },
         {
@@ -170,7 +73,125 @@
           "type": "uint256"
         }
       ],
-      "name": "BatchTransferred",
+      "name": "CustodyTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "string",
+          "name": "organId",
+          "type": "string"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "hospital",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "HospitalReceived",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "string",
+          "name": "organId",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "organType",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "donorBloodType",
+          "type": "string"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "opo",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "OrganHarvested",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "string",
+          "name": "organId",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "reason",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "OrganQuarantined",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "string",
+          "name": "organId",
+          "type": "string"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "hospital",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "recipientId",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "OrganTransplanted",
       "type": "event"
     },
     {
@@ -190,7 +211,7 @@
         },
         {
           "indexed": false,
-          "internalType": "enum PharmaSupplyChain.Role",
+          "internalType": "enum LifeLedger.Role",
           "name": "role",
           "type": "uint8"
         },
@@ -225,7 +246,7 @@
           "type": "uint256"
         }
       ],
-      "name": "allBatchIds",
+      "name": "allOrganIds",
       "outputs": [
         {
           "internalType": "string",
@@ -240,61 +261,41 @@
       "inputs": [
         {
           "internalType": "string",
-          "name": "_batchId",
+          "name": "organId",
           "type": "string"
         },
         {
           "internalType": "string",
-          "name": "_medicineName",
-          "type": "string"
-        },
-        {
-          "internalType": "string",
-          "name": "_dosage",
-          "type": "string"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_quantity",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_manufacturingDate",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_expiryDate",
-          "type": "uint256"
-        },
-        {
-          "internalType": "string",
-          "name": "_initialNotes",
+          "name": "notes",
           "type": "string"
         }
       ],
-      "name": "createBatch",
+      "name": "clearAllocation",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "organId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "surgicalNotes",
+          "type": "string"
+        }
+      ],
+      "name": "completeTransplant",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
     },
     {
       "inputs": [],
-      "name": "getAllBatchCount",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getAllBatchIds",
+      "name": "getAllOrganIds",
       "outputs": [
         {
           "internalType": "string[]",
@@ -309,11 +310,11 @@
       "inputs": [
         {
           "internalType": "string",
-          "name": "_batchId",
+          "name": "organId",
           "type": "string"
         }
       ],
-      "name": "getBatchHistory",
+      "name": "getOrganHistory",
       "outputs": [
         {
           "components": [
@@ -361,9 +362,14 @@
               "internalType": "string",
               "name": "location",
               "type": "string"
+            },
+            {
+              "internalType": "int256",
+              "name": "temperatureScaled",
+              "type": "int256"
             }
           ],
-          "internalType": "struct PharmaSupplyChain.TransferRecord[]",
+          "internalType": "struct LifeLedger.CustodyHop[]",
           "name": "",
           "type": "tuple[]"
         }
@@ -374,51 +380,57 @@
     {
       "inputs": [
         {
-          "internalType": "address",
-          "name": "_account",
-          "type": "address"
+          "internalType": "string",
+          "name": "organId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "organType",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "donorId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "donorBloodType",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "hlaMarker",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "ischemicLimitHours",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "recipientId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "recipientHospital",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "preservationProtocol",
+          "type": "string"
+        },
+        {
+          "internalType": "int256",
+          "name": "initialTempScaled",
+          "type": "int256"
         }
       ],
-      "name": "getParticipant",
-      "outputs": [
-        {
-          "internalType": "string",
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "internalType": "string",
-          "name": "location",
-          "type": "string"
-        },
-        {
-          "internalType": "enum PharmaSupplyChain.Role",
-          "name": "role",
-          "type": "uint8"
-        },
-        {
-          "internalType": "bool",
-          "name": "isApproved",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "string",
-          "name": "_batchId",
-          "type": "string"
-        },
-        {
-          "internalType": "string",
-          "name": "_customerNotes",
-          "type": "string"
-        }
-      ],
-      "name": "markAsSold",
+      "name": "harvestOrgan",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -444,7 +456,7 @@
           "type": "string"
         },
         {
-          "internalType": "enum PharmaSupplyChain.Role",
+          "internalType": "enum LifeLedger.Role",
           "name": "role",
           "type": "uint8"
         },
@@ -461,16 +473,16 @@
       "inputs": [
         {
           "internalType": "string",
-          "name": "_batchId",
+          "name": "organId",
           "type": "string"
         },
         {
           "internalType": "string",
-          "name": "_reason",
+          "name": "reason",
           "type": "string"
         }
       ],
-      "name": "recallBatch",
+      "name": "quarantineOrgan",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -479,23 +491,23 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "_account",
+          "name": "userAddress",
           "type": "address"
         },
         {
           "internalType": "string",
-          "name": "_name",
+          "name": "name",
           "type": "string"
+        },
+        {
+          "internalType": "enum LifeLedger.Role",
+          "name": "role",
+          "type": "uint8"
         },
         {
           "internalType": "string",
-          "name": "_location",
+          "name": "location",
           "type": "string"
-        },
-        {
-          "internalType": "enum PharmaSupplyChain.Role",
-          "name": "_role",
-          "type": "uint8"
         }
       ],
       "name": "registerParticipant",
@@ -507,21 +519,31 @@
       "inputs": [
         {
           "internalType": "string",
-          "name": "_batchId",
+          "name": "organId",
           "type": "string"
         },
         {
           "internalType": "address",
-          "name": "_distributor",
+          "name": "to",
           "type": "address"
         },
         {
           "internalType": "string",
-          "name": "_notes",
+          "name": "notes",
           "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "location",
+          "type": "string"
+        },
+        {
+          "internalType": "int256",
+          "name": "currentTempScaled",
+          "type": "int256"
         }
       ],
-      "name": "transferToDistributor",
+      "name": "transferCustody",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -530,57 +552,11 @@
       "inputs": [
         {
           "internalType": "string",
-          "name": "_batchId",
-          "type": "string"
-        },
-        {
-          "internalType": "address",
-          "name": "_pharmacy",
-          "type": "address"
-        },
-        {
-          "internalType": "string",
-          "name": "_notes",
+          "name": "organId",
           "type": "string"
         }
       ],
-      "name": "transferToPharmacy",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "string",
-          "name": "_batchId",
-          "type": "string"
-        },
-        {
-          "internalType": "address",
-          "name": "_wholesaler",
-          "type": "address"
-        },
-        {
-          "internalType": "string",
-          "name": "_notes",
-          "type": "string"
-        }
-      ],
-      "name": "transferToWholesaler",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "string",
-          "name": "_batchId",
-          "type": "string"
-        }
-      ],
-      "name": "verifyBatch",
+      "name": "verifyOrgan",
       "outputs": [
         {
           "components": [
@@ -591,77 +567,97 @@
             },
             {
               "internalType": "string",
-              "name": "batchId",
+              "name": "organId",
               "type": "string"
             },
             {
               "internalType": "string",
-              "name": "medicineName",
+              "name": "organType",
               "type": "string"
             },
             {
               "internalType": "string",
-              "name": "dosage",
+              "name": "donorId",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "donorBloodType",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "hlaMarker",
               "type": "string"
             },
             {
               "internalType": "uint256",
-              "name": "quantity",
+              "name": "harvestTimestamp",
               "type": "uint256"
             },
             {
+              "internalType": "uint256",
+              "name": "ischemicLimitHours",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "recipientId",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "recipientHospital",
+              "type": "string"
+            },
+            {
               "internalType": "address",
-              "name": "manufacturer",
+              "name": "currentCustodian",
               "type": "address"
             },
             {
               "internalType": "string",
-              "name": "manufacturerName",
+              "name": "currentCustodianName",
               "type": "string"
             },
             {
-              "internalType": "uint256",
-              "name": "manufacturingDate",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "expiryDate",
-              "type": "uint256"
-            },
-            {
-              "internalType": "address",
-              "name": "currentOwner",
-              "type": "address"
-            },
-            {
-              "internalType": "enum PharmaSupplyChain.BatchState",
+              "internalType": "enum LifeLedger.OrganState",
               "name": "state",
               "type": "uint8"
             },
             {
               "internalType": "bool",
-              "name": "isRecalled",
+              "name": "isQuarantined",
               "type": "bool"
             },
             {
               "internalType": "string",
-              "name": "recallReason",
+              "name": "quarantineReason",
               "type": "string"
             },
             {
+              "internalType": "string",
+              "name": "preservationProtocol",
+              "type": "string"
+            },
+            {
+              "internalType": "int256",
+              "name": "latestTemperature",
+              "type": "int256"
+            },
+            {
               "internalType": "bool",
-              "name": "isExpired",
+              "name": "isIschemiaExpired",
               "type": "bool"
             },
             {
               "internalType": "uint256",
-              "name": "transferCount",
+              "name": "custodyHopsCount",
               "type": "uint256"
             }
           ],
-          "internalType": "struct PharmaSupplyChain.BatchVerificationView",
-          "name": "viewData",
+          "internalType": "struct LifeLedger.OrganVerificationView",
+          "name": "",
           "type": "tuple"
         }
       ],
@@ -669,20 +665,5 @@
       "type": "function"
     }
   ],
-  "network": "hardhat",
-  "chainId": 1337,
-  "deployedAt": "2026-10-02T11:46:51.475Z",
-  "accounts": {
-    "admin": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-    "manufacturer": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
-    "distributor": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
-    "wholesaler": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
-    "pharmacy": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
-    "other": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc"
-  },
-  "demoBatches": [
-    "PCM001",
-    "EXP902",
-    "AMX404"
-  ]
+  "deployedAt": "2026-10-25T10:26:44.608Z"
 }

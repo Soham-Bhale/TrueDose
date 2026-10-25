@@ -1,41 +1,43 @@
 import React, { useState } from 'react';
-import { X, ArrowRight, Truck, ShieldCheck, AlertCircle, CheckCircle } from 'lucide-react';
+import { X, ArrowRight, Truck, ShieldCheck, AlertCircle, CheckCircle, Thermometer, MapPin, Building2, Heart } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function TransferModal({ batch, isOpen, onClose, onSuccess }) {
-  const { currentUser, participants } = useAuth();
-  const [notes, setNotes] = useState('');
+  const { currentUser, demoUsers } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   if (!isOpen || !batch) return null;
 
-  // Determine expected recipient role based on current batch stage
-  let targetRole = 'distributor';
-  let targetTitle = 'Distributor';
-  if (batch.stage === 'Manufactured') {
-    targetRole = 'distributor';
-    targetTitle = 'Authorized Distributor';
-  } else if (batch.stage === 'DistributorReceived') {
-    targetRole = 'wholesaler';
-    targetTitle = 'Authorized Wholesaler';
-  } else if (batch.stage === 'WholesalerReceived') {
-    targetRole = 'pharmacy';
-    targetTitle = 'Authorized Pharmacy';
+  const organId = batch.organId || batch.batchId;
+  const organType = batch.organType || batch.medicineName || 'Organ';
+  const bloodType = batch.donorBloodType || 'O+';
+  const currentTemp = batch.latestTemperature || batch.temperatureCelsius || 2.4;
+
+  // Next recommended recipient node based on stage
+  let recommendedRole = 'logistics';
+  if (batch.stage === 'Harvested') {
+    recommendedRole = 'logistics';
+  } else if (batch.stage === 'InTransit') {
+    recommendedRole = 'authority';
+  } else if (batch.stage === 'AllocationCleared') {
+    recommendedRole = 'hospital';
+  } else {
+    recommendedRole = 'hospital';
   }
 
-  // Filter available registered participants for this target role
-  const eligibleRecipients = participants.filter(p => p.role.toLowerCase() === targetRole);
-  const defaultRecipient = eligibleRecipients[0] || {
-    name: targetRole === 'distributor' ? 'Apex Logistics & Distribution' :
-          targetRole === 'wholesaler' ? 'Metro Health Wholesalers' : 'HealthPlus Community Pharmacy',
-    ethAddress: targetRole === 'distributor' ? '0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC' :
-                targetRole === 'wholesaler' ? '0x90F79bf6EB2c4f870365E785982E1f101E93b906' :
-                '0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65',
-    location: 'Registered Supply Depot'
-  };
+  // Filter possible nodes
+  const availableRecipients = demoUsers.filter(u => u.role !== 'customer');
+  const defaultRecipient = availableRecipients.find(u => u.role === recommendedRole) || availableRecipients[0];
 
-  const [selectedAddress, setSelectedAddress] = useState(defaultRecipient.ethAddress);
+  const [toAddress, setToAddress] = useState(defaultRecipient?.ethAddress || '');
+  const [location, setLocation] = useState(
+    recommendedRole === 'logistics' ? 'Air Ambulance Terminal 1D, Cryo-Bay 4' :
+    recommendedRole === 'authority' ? 'NOTTO Central Allocation Directorate' :
+    'Apollo Transplant Surgical Suite #3'
+  );
+  const [temperature, setTemperature] = useState(currentTemp);
+  const [notes, setNotes] = useState(`Chain-of-custody handoff to authorized ${recommendedRole.toUpperCase()} node`);
 
   const handleTransfer = async (e) => {
     e.preventDefault();
@@ -43,25 +45,27 @@ export default function TransferModal({ batch, isOpen, onClose, onSuccess }) {
     setError(null);
 
     try {
-      const res = await fetch(`/api/batches/${batch.batchId}/transfer`, {
+      const res = await fetch(`/api/organs/${organId}/transfer`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-demo-role': currentUser.role
         },
         body: JSON.stringify({
-          toAddress: selectedAddress,
-          notes: notes || `Transferred to ${targetTitle} via secure supply channel`
+          toAddress,
+          location,
+          currentTemp: Number(temperature),
+          notes
         })
       });
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || 'Transfer failed');
+        throw new Error(data.error || 'Medical custody transfer failed');
       }
 
       setLoading(false);
-      onSuccess(data.batch);
+      if (onSuccess) onSuccess(data.organ || data.batch);
       onClose();
     } catch (err) {
       setError(err.message);
@@ -69,115 +73,197 @@ export default function TransferModal({ batch, isOpen, onClose, onSuccess }) {
     }
   };
 
+  const selectedNode = demoUsers.find(u => u.ethAddress.toLowerCase() === toAddress.toLowerCase());
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-in fade-in duration-150">
-      <div className="relative w-full max-w-lg bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden">
-        {/* Header */}
-        <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-          <div className="flex items-center space-x-2.5">
-            <div className="p-2 bg-teal-50 text-teal-800 rounded-lg border border-teal-200">
-              <Truck className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="font-bold text-slate-900 text-sm">Transfer Batch Custody</h3>
-              <p className="text-xs text-slate-500">Sign custody transfer on Ethereum smart contract</p>
-            </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/40 backdrop-blur-xs">
+      <div className="w-full max-w-xl swing-raised shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+        {/* Java Window Titlebar */}
+        <div className="swing-titlebar">
+          <div className="flex items-center gap-1.5">
+            <Truck className="w-3.5 h-3.5 text-blue-200" />
+            <span className="font-bold text-xs tracking-wide">
+              javax.swing.JDialog: Organ Custody Transfer Protocol [LifeLedger v2.0]
+            </span>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition"
+            className="w-4 h-4 bg-[#ECE9D8] text-black font-bold text-[10px] flex items-center justify-center border border-[#FFFFFF] border-r-[#808080] border-b-[#808080] hover:bg-[#D4D0C8] active:translate-y-px"
+            title="Close Dialog"
           >
-            <X className="w-5 h-5" />
+            ✕
           </button>
         </div>
 
-        <form onSubmit={handleTransfer} className="p-6 space-y-4">
+        {/* Dialog Header Banner */}
+        <div className="bg-[#ECE9D8] px-3 py-2 border-b border-[#808080] flex items-center justify-between text-[11px]">
+          <div>
+            <span className="font-bold text-[#0A246A]">Target Organ:</span>{' '}
+            <span className="font-mono font-bold bg-white px-1 border border-[#808080]">{organId}</span>{' '}
+            <span className="text-[#555555]">({organType} • {bloodType})</span>
+          </div>
+          <div className="text-[10px] bg-amber-100 text-amber-900 px-1.5 py-0.5 border border-amber-300 font-bold">
+            STAGE: {batch.stage}
+          </div>
+        </div>
+
+        {/* Scrollable Form Body */}
+        <form onSubmit={handleTransfer} className="p-3 overflow-y-auto space-y-3 bg-[#ECE9D8] flex-1">
           {error && (
-            <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg text-xs text-rose-700 flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0 text-rose-600 mt-0.5" />
-              <span>{error}</span>
+            <div className="p-2 swing-sunken bg-[#FFF0F0] border border-red-500 text-red-900 text-[11px] flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+              <div>
+                <strong>Handoff Rejection:</strong> {error}
+              </div>
             </div>
           )}
 
-          {/* Batch Context */}
-          <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 text-xs space-y-1">
-            <div className="flex justify-between font-mono">
-              <span className="text-slate-500">Selected Lot:</span>
-              <span className="font-bold text-slate-900">{batch.batchId}</span>
+          {/* Current Custodian Box */}
+          <fieldset className="p-2.5 swing-etched bg-[#ECE9D8]">
+            <legend className="px-1 text-[11px] font-bold text-[#0A246A]">
+              1. Releasing Custodian (Signer)
+            </legend>
+            <div className="text-[11px] space-y-1">
+              <div className="flex justify-between">
+                <span className="text-[#555555]">Authorized Node:</span>
+                <span className="font-bold text-[#111111]">{currentUser.name}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#555555]">Ethereum Signer Address:</span>
+                <span className="font-mono text-[10px] text-blue-900">{currentUser.ethAddress}</span>
+              </div>
             </div>
-            <div className="flex justify-between">
-              <span className="text-slate-500">Medicine:</span>
-              <span className="font-semibold text-slate-800">{batch.medicineName} ({batch.dosage})</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-500">Current Custodian:</span>
-              <span className="text-slate-800">{batch.currentOwnerName}</span>
-            </div>
-          </div>
+          </fieldset>
 
-          {/* Sequential Step Indicator */}
-          <div className="space-y-1">
-            <label className="text-[11px] font-bold text-slate-700 uppercase">
-              Designated Recipient Entity ({targetTitle})
-            </label>
-            <select
-              value={selectedAddress}
-              onChange={(e) => setSelectedAddress(e.target.value)}
-              className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-teal-600"
-            >
-              {eligibleRecipients.length > 0 ? (
-                eligibleRecipients.map((p) => (
-                  <option key={p.ethAddress} value={p.ethAddress}>
-                    {p.name} ({p.location}) - {p.ethAddress.slice(0, 10)}...
-                  </option>
-                ))
-              ) : (
-                <option value={defaultRecipient.ethAddress}>
-                  {defaultRecipient.name} ({defaultRecipient.location})
-                </option>
+          {/* Destination Node */}
+          <fieldset className="p-2.5 swing-etched bg-[#ECE9D8]">
+            <legend className="px-1 text-[11px] font-bold text-[#0A246A]">
+              2. Designated Receiving Node
+            </legend>
+            <div className="space-y-2">
+              <div>
+                <label className="block text-[10px] font-bold text-[#333333] mb-0.5">
+                  Select Consortium Entity:
+                </label>
+                <select
+                  value={toAddress}
+                  onChange={(e) => {
+                    setToAddress(e.target.value);
+                    const sel = demoUsers.find(u => u.ethAddress.toLowerCase() === e.target.value.toLowerCase());
+                    if (sel) {
+                      setNotes(`Custody handoff to ${sel.badge} (${sel.organization})`);
+                    }
+                  }}
+                  className="swing-input w-full font-bold text-[11px]"
+                >
+                  {availableRecipients.map(u => (
+                    <option key={u.ethAddress} value={u.ethAddress}>
+                      [{u.badge}] {u.name} — {u.organization}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {selectedNode && (
+                <div className="swing-sunken p-2 bg-[#F9F8F5] text-[10px] space-y-0.5">
+                  <div><strong>Operating Base:</strong> {selectedNode.location}</div>
+                  <div><strong>Public Address:</strong> <span className="font-mono">{selectedNode.ethAddress}</span></div>
+                </div>
               )}
-            </select>
-            <p className="text-[10px] text-slate-400">
-              Only authorized entities in role <span className="font-semibold text-slate-600">{targetRole}</span> are allowed by smart contract sequential validation rules.
-            </p>
-          </div>
+            </div>
+          </fieldset>
 
-          <div className="space-y-1">
-            <label className="text-[11px] font-bold text-slate-700 uppercase">Transit / Handoff Dispatch Notes</label>
-            <textarea
-              rows={2}
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="e.g. Dispatched via temperature-monitored refrigerated vehicle #MH-12-8821 with intact seals."
-              className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-teal-600"
-            />
-          </div>
+          {/* Transit Telemetry */}
+          <fieldset className="p-2.5 swing-etched bg-[#ECE9D8]">
+            <legend className="px-1 text-[11px] font-bold text-[#0A246A]">
+              3. Custodial Telemetry & Transit Location
+            </legend>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+              <div>
+                <label className="block text-[10px] font-bold text-[#333333] mb-0.5">
+                  Transfer Point / Milestone:
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  className="swing-input w-full text-[11px]"
+                  placeholder="e.g. Green Corridor Checkpoint #2"
+                />
+              </div>
 
-          <div className="p-3 bg-teal-50/70 border border-teal-200 rounded-lg text-xs text-teal-900 flex items-start gap-2">
-            <ShieldCheck className="w-4 h-4 text-teal-700 shrink-0 mt-0.5" />
-            <span className="text-[11px] leading-relaxed">
-              This action executes <code className="font-mono text-teal-800">transferBatch()</code> on the EVM. The recipient becomes the verified custodian and a new immutable block is appended.
-            </span>
-          </div>
+              <div>
+                <label className="block text-[10px] font-bold text-[#333333] mb-0.5">
+                  Cryo Container Temp (°C):
+                </label>
+                <div className="flex items-center gap-1">
+                  <input
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    max="10"
+                    required
+                    value={temperature}
+                    onChange={(e) => setTemperature(e.target.value)}
+                    className="swing-input w-full font-mono font-bold text-[11px] text-blue-900"
+                  />
+                  <span className="text-[10px] text-[#555555]">°C</span>
+                </div>
+              </div>
 
-          <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-lg text-xs font-semibold transition"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="px-5 py-2 bg-teal-700 hover:bg-teal-800 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
-            >
-              <ArrowRight className="w-4 h-4" />
-              <span>{loading ? 'Recording Transfer...' : 'Confirm Blockchain Handoff'}</span>
-            </button>
+              <div className="md:col-span-2">
+                <label className="block text-[10px] font-bold text-[#333333] mb-0.5">
+                  Handoff Attestation / Carrier Notes:
+                </label>
+                <textarea
+                  rows="2"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  className="swing-input w-full text-[11px] font-mono"
+                />
+              </div>
+            </div>
+          </fieldset>
+
+          {/* Footer Action Bar */}
+          <div className="pt-2 flex items-center justify-between border-t border-[#808080]">
+            <div className="text-[10px] text-[#555555] flex items-center gap-1">
+              <ShieldCheck className="w-3.5 h-3.5 text-blue-700" />
+              <span>Cryptographically signs custody transfer transaction</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={onClose}
+                className="swing-btn text-xs py-1 px-3"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={loading}
+                className="swing-btn swing-btn-primary text-xs py-1 px-4 flex items-center gap-1.5"
+              >
+                {loading ? (
+                  <span>Signing Transfer...</span>
+                ) : (
+                  <>
+                    <Truck className="w-3.5 h-3.5 text-blue-800" />
+                    <span>OK - Sign Medical Handoff</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </form>
+
+        {/* Java Dialog Status Bar */}
+        <div className="swing-statusbar">
+          <div className="swing-status-pane">JDialog: Transfer Protocol</div>
+          <div className="swing-status-pane">Smart Contract: transferCustody()</div>
+          <div className="swing-status-pane flex-1 text-right">Verification: Ready</div>
+        </div>
       </div>
     </div>
   );

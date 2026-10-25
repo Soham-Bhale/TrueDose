@@ -1,14 +1,14 @@
 @echo off
 setlocal enabledelayedexpansion
-title TrueDose: Decentralized Pharmaceutical Supply Chain
+title LifeLedger: Decentralized Organ Procurement and Transplant Custody Network
 
 :: Ensure execution from the directory where run.bat is located
 cd /d "%~dp0"
 
 cls
 echo ======================================================================
-echo   TrueDose: Decentralized Pharmaceutical Supply Chain Management
-echo   Tamper-Evident Medicine Provenance and Verification Platform
+echo   LifeLedger: Decentralized Organ Procurement and Transplant Network
+echo   Tamper-Evident Cold-Ischemia Tracking and Verification Platform
 echo ======================================================================
 echo.
 
@@ -61,7 +61,7 @@ if "!MISSING_DEPS!"=="1" (
 
 :: 4. Verify Smart Contract Artifacts
 echo [4/4] Checking smart contract compilation...
-if not exist "contracts\artifacts\contracts\PharmaSupplyChain.sol\PharmaSupplyChain.json" (
+if not exist "contracts\artifacts\contracts\LifeLedger.sol\LifeLedger.json" (
     echo       - Smart contracts not compiled yet. Compiling now...
     call npm run compile:contracts
     if !errorlevel! neq 0 (
@@ -71,17 +71,17 @@ if not exist "contracts\artifacts\contracts\PharmaSupplyChain.sol\PharmaSupplyCh
     )
     echo       - Smart contracts compiled successfully.
 ) else (
-    echo       - Smart contracts compiled and ready.
+    echo       - LifeLedger Solidity smart contracts compiled and ready.
 )
 
 :: Launch Platform
 echo.
 echo ======================================================================
-echo   Starting TrueDose Application Services
+echo   Starting LifeLedger Application Services
 echo ======================================================================
-echo   Web Portal:   http://localhost:5173
-echo   API Backend:  http://localhost:5000
-echo   Consortium:   EVM Proof-of-Authority Proofs Active
+echo   Web Workstation: http://localhost:5173
+echo   API Backend:     http://localhost:5000
+echo   Consortium:      EVM Proof-of-Authority Proofs Active
 echo ======================================================================
 echo.
 echo Opening browser in 3 seconds...

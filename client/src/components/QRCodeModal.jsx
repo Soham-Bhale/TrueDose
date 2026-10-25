@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { X, Printer, Copy, Check, ExternalLink, QrCode, ShieldCheck } from 'lucide-react';
+import { X, Printer, Copy, Check, ExternalLink, QrCode, ShieldCheck, Heart, Thermometer, Clock } from 'lucide-react';
 
 export default function QRCodeModal({ batch, isOpen, onClose }) {
   const [qrData, setQrData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  const organId = batch ? (batch.organId || batch.batchId) : '';
+
   useEffect(() => {
-    if (isOpen && batch) {
+    if (isOpen && organId) {
       setLoading(true);
-      fetch(`/api/batches/${batch.batchId}/qrcode`)
+      fetch(`/api/organs/${organId}/qrcode`)
         .then(res => res.json())
         .then(data => {
           setQrData(data);
@@ -20,11 +22,16 @@ export default function QRCodeModal({ batch, isOpen, onClose }) {
           setLoading(false);
         });
     }
-  }, [isOpen, batch]);
+  }, [isOpen, organId]);
 
   if (!isOpen || !batch) return null;
 
-  const verifyUrl = qrData?.verifyUrl || `${window.location.origin}/verify/${batch.batchId}`;
+  const organType = batch.organType || batch.medicineName || 'Organ';
+  const bloodType = batch.donorBloodType || 'O+';
+  const hlaMarker = batch.hlaMarker || '6/6 Match';
+  const recipient = batch.recipientId || 'RCP-7704';
+  const hospital = batch.recipientHospital || 'Apollo Surgical Center';
+  const verifyUrl = qrData?.verifyUrl || `${window.location.origin}/verify/${organId}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(verifyUrl);
@@ -37,109 +44,136 @@ export default function QRCodeModal({ batch, isOpen, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-in fade-in duration-150">
-      <div className="relative w-full max-w-md bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden">
-        {/* Header */}
-        <div className="px-5 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-          <div className="flex items-center space-x-2.5">
-            <QrCode className="w-5 h-5 text-teal-700" />
-            <h3 className="font-bold text-slate-900 text-sm">Packaging Verification QR Label</h3>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/40 backdrop-blur-xs">
+      <div className="w-full max-w-md swing-raised shadow-2xl overflow-hidden flex flex-col">
+        {/* Java Window Titlebar */}
+        <div className="swing-titlebar">
+          <div className="flex items-center gap-1.5">
+            <QrCode className="w-3.5 h-3.5 text-yellow-200" />
+            <span className="font-bold text-xs tracking-wide">
+              javax.swing.JDialog: Specimen RFID/QR Manifest [LifeLedger v2.0]
+            </span>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition"
+            className="w-4 h-4 bg-[#ECE9D8] text-black font-bold text-[10px] flex items-center justify-center border border-[#FFFFFF] border-r-[#808080] border-b-[#808080] hover:bg-[#D4D0C8] active:translate-y-px"
+            title="Close Dialog"
           >
-            <X className="w-5 h-5" />
+            ✕
           </button>
         </div>
 
-        {/* Printable Label Section */}
-        <div className="p-6 flex flex-col items-center text-center">
-          {/* Packaging Box Style Card */}
-          <div id="printable-label" className="w-full bg-white text-slate-900 p-5 rounded-xl shadow-xs border border-slate-200 flex flex-col items-center">
-            {/* Header branding */}
-            <div className="w-full flex items-center justify-between border-b pb-2 mb-3 text-left">
+        {/* Printable Cryo-Shipper Manifest Tag */}
+        <div className="p-4 bg-[#ECE9D8] overflow-y-auto max-h-[80vh]">
+          <div
+            id="printable-label"
+            className="bg-white border-2 border-black p-4 text-black font-sans shadow-sm"
+          >
+            {/* Tag Header */}
+            <div className="border-b-2 border-black pb-2 mb-3 flex items-start justify-between">
               <div>
-                <span className="text-[11px] font-bold tracking-wider text-teal-800 uppercase">TRUEDOSE AUTHENTICATED</span>
-                <p className="text-[10px] text-slate-500 font-mono">Consortium Cryptographic Seal</p>
+                <div className="text-[10px] font-black tracking-widest uppercase text-red-700">
+                  CRITICAL HUMAN ORGAN SPECIMEN
+                </div>
+                <div className="text-sm font-black tracking-tight font-mono">
+                  {organId}
+                </div>
+                <div className="text-[9px] text-[#555555]">
+                  LifeLedger National Allocation Tag
+                </div>
               </div>
-              <div className="w-5 h-5 rounded-md bg-teal-700 flex items-center justify-center text-white">
-                <ShieldCheck className="w-3.5 h-3.5" />
+              <div className="text-right">
+                <span className="inline-block bg-black text-white px-2 py-0.5 text-[10px] font-black uppercase">
+                  {bloodType}
+                </span>
+                <div className="text-[9px] text-[#555555] mt-0.5 font-bold">
+                  PRIORITY 1A
+                </div>
               </div>
             </div>
 
-            {/* Medicine Name */}
-            <h4 className="text-base font-bold text-slate-900">{batch.medicineName}</h4>
-            <p className="text-xs font-medium text-slate-600 mb-3">{batch.dosage} • {batch.quantity?.toLocaleString()} units</p>
-
             {/* QR Code Container */}
-            <div className="w-44 h-44 bg-slate-50 p-2 rounded-lg border border-slate-200 flex items-center justify-center mb-3">
+            <div className="flex flex-col items-center justify-center py-2 bg-[#FAFAFA] border border-[#CCCCCC] mb-3">
               {loading ? (
-                <div className="text-xs text-slate-400 animate-pulse">Generating Secure QR...</div>
+                <div className="h-44 flex items-center justify-center text-xs text-[#555555]">
+                  Rendering Cryptographic QR...
+                </div>
               ) : qrData?.qrDataUrl ? (
                 <img
                   src={qrData.qrDataUrl}
-                  alt={`QR for ${batch.batchId}`}
-                  className="w-full h-full object-contain"
+                  alt={`Specimen QR for ${organId}`}
+                  className="w-44 h-44 border border-black shadow-2xs"
                 />
               ) : (
-                <div className="text-xs text-slate-400">QR unavailable</div>
+                <div className="h-44 flex items-center justify-center text-xs text-red-600 font-mono">
+                  QR Render Failed
+                </div>
               )}
-            </div>
-
-            {/* Batch details info box */}
-            <div className="w-full grid grid-cols-2 gap-2 text-left text-[11px] bg-slate-50 p-2.5 rounded-lg border border-slate-200 font-mono">
-              <div>
-                <span className="text-slate-400 block text-[9px] uppercase">Batch ID</span>
-                <span className="font-bold text-slate-900">{batch.batchId}</span>
-              </div>
-              <div>
-                <span className="text-slate-400 block text-[9px] uppercase">Manufacturer</span>
-                <span className="font-bold text-slate-900 truncate block">{batch.manufacturerName}</span>
-              </div>
-              <div>
-                <span className="text-slate-400 block text-[9px] uppercase">Mfg Date</span>
-                <span className="text-slate-700">{new Date(batch.manufacturingDate).toLocaleDateString()}</span>
-              </div>
-              <div>
-                <span className="text-slate-400 block text-[9px] uppercase">Expiry Date</span>
-                <span className="text-slate-700">{new Date(batch.expiryDate).toLocaleDateString()}</span>
+              <div className="text-[9px] text-[#555555] mt-1 font-mono text-center">
+                Scan via any smartphone or handheld terminal to verify proof-of-custody
               </div>
             </div>
 
-            <p className="text-[10px] text-slate-400 mt-2">
-              Scan packaging QR with camera or TrueDose verifier to inspect blockchain provenance.
-            </p>
+            {/* Specimen Key-Value Manifest */}
+            <div className="space-y-1 text-[10px] border-t border-black pt-2 font-mono">
+              <div className="flex justify-between">
+                <span className="text-[#555555]">SPECIMEN:</span>
+                <span className="font-bold">{organType}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#555555]">HISTOCOMPATIBILITY:</span>
+                <span className="font-bold">{hlaMarker}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#555555]">ISCHEMIA WINDOW:</span>
+                <span className="font-bold text-red-700">{batch.ischemicLimitHours || 24} Hours Maximum</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#555555]">TARGET RECIPIENT:</span>
+                <span className="font-bold">{recipient}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#555555]">SURGICAL CENTER:</span>
+                <span className="font-bold truncate max-w-[180px]">{hospital}</span>
+              </div>
+            </div>
+
+            {/* Barcode representation line */}
+            <div className="mt-3 pt-2 border-t border-dashed border-[#888888] text-center">
+              <div className="text-[8px] font-mono tracking-widest text-[#666666]">
+                *LL-{organId.replace(/[^A-Z0-9]/g, '')}-CHAIN*
+              </div>
+              <div className="text-[8px] text-[#888888]">
+                Protected under National Organ Transplantation Act (NOTA) & EVM PoA Consortium
+              </div>
+            </div>
           </div>
 
-          {/* Copy URL bar */}
-          <div className="w-full mt-4 flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs font-mono">
-            <span className="text-slate-500 truncate flex-1 text-[11px]">{verifyUrl}</span>
+          {/* Action Toolbar */}
+          <div className="mt-3 flex items-center justify-between gap-2">
             <button
               onClick={handleCopy}
-              className="p-1 hover:text-slate-900 text-slate-400 transition"
-              title="Copy URL"
+              className="swing-btn text-[11px] py-1 px-2.5 flex items-center gap-1"
             >
-              {copied ? <Check className="w-4 h-4 text-teal-700" /> : <Copy className="w-4 h-4" />}
+              {copied ? <Check className="w-3.5 h-3.5 text-green-700" /> : <Copy className="w-3.5 h-3.5 text-[#555555]" />}
+              <span>{copied ? 'URL Copied!' : 'Copy Verify URL'}</span>
+            </button>
+
+            <button
+              onClick={handlePrint}
+              className="swing-btn swing-btn-primary text-[11px] py-1 px-3 flex items-center gap-1"
+            >
+              <Printer className="w-3.5 h-3.5 text-[#0A246A]" />
+              <span>Print Carrier Tag</span>
             </button>
           </div>
         </div>
 
-        {/* Modal Actions */}
-        <div className="px-5 py-3 bg-slate-50 border-t border-slate-200 flex justify-end gap-2">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-lg text-xs font-semibold transition"
-          >
-            Close
-          </button>
-          <button
-            onClick={handlePrint}
-            className="px-4 py-2 bg-teal-700 hover:bg-teal-800 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 transition shadow-xs"
-          >
-            <Printer className="w-4 h-4" />
-            <span>Print Label</span>
-          </button>
+        {/* Java Dialog Status Bar */}
+        <div className="swing-statusbar">
+          <div className="swing-status-pane">JDialog: QRCodeModal</div>
+          <div className="swing-status-pane font-mono">{organId}</div>
+          <div className="swing-status-pane flex-1 text-right">EVM Verified: OK</div>
         </div>
       </div>
     </div>

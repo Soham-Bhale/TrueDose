@@ -5,7 +5,7 @@ const morgan = require('morgan');
 const blockchain = require('./services/blockchain');
 
 const authRoutes = require('./routes/auth');
-const batchRoutes = require('./routes/batches');
+const organRoutes = require('./routes/batches');
 const verifyRoutes = require('./routes/verify');
 const statsRoutes = require('./routes/stats');
 
@@ -19,7 +19,8 @@ app.use(morgan('dev'));
 
 // Mount Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/batches', batchRoutes);
+app.use('/api/organs', organRoutes);
+app.use('/api/batches', organRoutes); // backward-compatible alias
 app.use('/api/verify', verifyRoutes);
 app.use('/api/stats', statsRoutes);
 
@@ -27,7 +28,7 @@ app.use('/api/stats', statsRoutes);
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'online',
-    system: 'TrueDose Blockchain Pharma Supply Chain',
+    system: 'LifeLedger Decentralized Organ Procurement & Transplant Network',
     timestamp: new Date().toISOString(),
     isNodeConnected: blockchain.isNodeRunning(),
     contractInfo: blockchain.getContractInfo()
@@ -47,9 +48,9 @@ async function startServer() {
   await blockchain.initBlockchain();
   app.listen(PORT, () => {
     console.log(`\n======================================================`);
-    console.log(`💊 TrueDose API Server running at http://localhost:${PORT}`);
+    console.log(`🫀 LifeLedger API Server running at http://localhost:${PORT}`);
     console.log(`🔗 Health check: http://localhost:${PORT}/api/health`);
-    console.log(`🔍 Public verify endpoint: http://localhost:${PORT}/api/verify/PCM001`);
+    console.log(`🔍 Public verify endpoint: http://localhost:${PORT}/api/verify/ORG-KID-8041`);
     console.log(`======================================================\n`);
   });
 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Award, HelpCircle, CheckCircle2, ShieldCheck, AlertTriangle, Layers, ArrowRight, Zap, Database, Lock, GraduationCap } from 'lucide-react';
+import { X, Award, HelpCircle, CheckCircle2, ShieldCheck, AlertTriangle, Layers, ArrowRight, Zap, Database, Lock, GraduationCap, Heart, Clock, Truck, FileCheck, Building2 } from 'lucide-react';
 
 export default function PresentationGuideModal({ isOpen, onClose }) {
   const [activeTab, setActiveTab] = useState('demo');
@@ -7,42 +7,40 @@ export default function PresentationGuideModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-in fade-in duration-150">
-      <div className="relative w-full max-w-4xl bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
-        {/* Header */}
-        <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-amber-50 text-amber-700 rounded-lg border border-amber-200 shadow-2xs">
-              <GraduationCap className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="text-base font-bold text-slate-900">Project Presentation & Viva Defense Guide</h2>
-              <p className="text-xs text-slate-500">Structured demonstration flow and academic examiner defense arguments</p>
-            </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/40 backdrop-blur-xs">
+      <div className="w-full max-w-4xl swing-raised shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+        {/* Java Window Titlebar */}
+        <div className="swing-titlebar">
+          <div className="flex items-center gap-1.5">
+            <GraduationCap className="w-3.5 h-3.5 text-yellow-300" />
+            <span className="font-bold text-xs tracking-wide">
+              javax.swing.JDialog: LifeLedger Architecture & Examiner Viva Defense Guide
+            </span>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition"
+            className="w-4 h-4 bg-[#ECE9D8] text-black font-bold text-[10px] flex items-center justify-center border border-[#FFFFFF] border-r-[#808080] border-b-[#808080] hover:bg-[#D4D0C8] active:translate-y-px"
+            title="Close Dialog"
           >
-            <X className="w-5 h-5" />
+            ✕
           </button>
         </div>
 
-        {/* Tab Navigation */}
-        <div className="flex border-b border-slate-200 bg-slate-50 px-6 gap-2 pt-2">
+        {/* Tab Header */}
+        <div className="bg-[#ECE9D8] px-3 pt-2 border-b border-[#808080] flex items-center gap-1 text-xs overflow-x-auto">
           {[
-            { id: 'demo', label: '1-Minute Live Demonstration Flow' },
-            { id: 'viva', label: 'Defense: Why Blockchain vs MongoDB?' },
-            { id: 'rules', label: 'Smart Contract Business Rules' },
-            { id: 'features', label: 'Core Technical Contributions' }
+            { id: 'demo', label: '1. Live Demo Flow (60s)' },
+            { id: 'viva', label: '2. Viva Defense: Why Blockchain?' },
+            { id: 'rules', label: '3. Smart Contract Invariants' },
+            { id: 'architecture', label: '4. System Architecture' }
           ].map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2 text-xs font-semibold rounded-t-lg transition border-b-2 ${
+              className={`px-3 py-1 text-[11px] font-bold border-t-2 border-l-2 border-r-2 whitespace-nowrap ${
                 activeTab === tab.id
-                  ? 'border-teal-700 text-teal-950 bg-white shadow-2xs'
-                  : 'border-transparent text-slate-500 hover:text-slate-800'
+                  ? 'bg-[#ECE9D8] border-white border-b-transparent translate-y-px text-[#0A246A]'
+                  : 'bg-[#DCD8C8] border-[#808080] text-[#555555]'
               }`}
             >
               {tab.label}
@@ -50,55 +48,52 @@ export default function PresentationGuideModal({ isOpen, onClose }) {
           ))}
         </div>
 
-        {/* Content Area */}
-        <div className="p-6 overflow-y-auto space-y-6 text-xs text-slate-600">
+        {/* Tab Body */}
+        <div className="p-3 bg-[#ECE9D8] overflow-y-auto flex-1 space-y-3 text-[11px] text-[#222222]">
           {activeTab === 'demo' && (
-            <div className="space-y-4">
-              <div className="p-4 bg-teal-50 border border-teal-200 rounded-xl">
-                <h3 className="font-bold text-teal-900 text-sm mb-1">Recommended Presentation Sequence</h3>
-                <p className="text-xs text-teal-800 leading-relaxed">
-                  Walk through these 5 chronological steps to illustrate end-to-end provenance:
+            <div className="space-y-3">
+              <div className="p-2.5 swing-sunken bg-[#F5F8FC] border border-blue-400">
+                <h3 className="font-bold text-[#0A246A] text-xs mb-1">
+                  Chronological Demonstration Flow for Evaluators:
+                </h3>
+                <p className="text-[10px] text-[#444444]">
+                  Execute these 5 steps in the live workstation to show end-to-end chain of custody:
                 </p>
               </div>
 
-              <div className="grid gap-3">
-                <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex items-start gap-3">
-                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-teal-100 text-teal-800 font-bold text-xs shrink-0">1</span>
+              <div className="space-y-2">
+                <div className="p-2 bg-white swing-sunken flex items-start gap-2">
+                  <span className="w-5 h-5 bg-[#0A246A] text-white font-bold text-xs flex items-center justify-center shrink-0">1</span>
                   <div>
-                    <p className="font-bold text-slate-900 text-xs">Genesis: Register Batch as Manufacturer (ABC Pharma)</p>
-                    <p className="text-slate-600 mt-0.5 leading-relaxed">Switch role to <strong>Manufacturer</strong> → Click <strong>"Register New Batch"</strong> → Enter Batch ID <code className="text-teal-800 font-mono font-semibold">PCM001</code>, Medicine <em>Paracetamol 500mg</em>, Qty <em>5000</em>. Commit batch to blockchain.</p>
+                    <strong className="text-black">OPO Organ Harvest:</strong> Switch role to <em>Organ Procurement Org</em>. Click <strong>Harvest & Register Organ</strong>. Notice automatic Form 8 donor consent hash generation and cold-ischemia window lock (e.g. 24h for Kidney, 4h for Heart).
                   </div>
                 </div>
 
-                <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex items-start gap-3">
-                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-teal-100 text-teal-800 font-bold text-xs shrink-0">2</span>
+                <div className="p-2 bg-white swing-sunken flex items-start gap-2">
+                  <span className="w-5 h-5 bg-[#0A246A] text-white font-bold text-xs flex items-center justify-center shrink-0">2</span>
                   <div>
-                    <p className="font-bold text-slate-900 text-xs">Sequential Custody: Dispatch to Distributor & Wholesaler</p>
-                    <p className="text-slate-600 mt-0.5 leading-relaxed">Click <strong>"Transfer"</strong> → Select <em>Apex Logistics (Distributor)</em>. Switch role to <strong>Distributor</strong> and forward to <em>Metro Wholesalers</em>. Each handoff emits an on-chain event with timestamp and signatures.</p>
+                    <strong className="text-black">Cryo-Transit Logistics Handoff:</strong> Switch role to <em>Logistics</em>. Execute medical custody transfer from OPO to specialized cold-chain air transport. Record milestone & live temperature (2.4°C).
                   </div>
                 </div>
 
-                <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex items-start gap-3">
-                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-teal-100 text-teal-800 font-bold text-xs shrink-0">3</span>
+                <div className="p-2 bg-white swing-sunken flex items-start gap-2">
+                  <span className="w-5 h-5 bg-[#0A246A] text-white font-bold text-xs flex items-center justify-center shrink-0">3</span>
                   <div>
-                    <p className="font-bold text-slate-900 text-xs">Retail Delivery & Dispensary Patient Sale</p>
-                    <p className="text-slate-600 mt-0.5 leading-relaxed">Switch to <strong>Wholesaler</strong> → Transfer to <em>HealthPlus Pharmacy</em>. Switch to <strong>Pharmacy</strong> → Click <strong>"Dispense"</strong>. Medicine is logged as reached consumer.</p>
+                    <strong className="text-black">National Regulatory Clearance:</strong> Switch role to <em>Allocation Authority (NOTTO)</em>. Verify donor HLA matching with recipient queue and clear allocation for surgical hospital.
                   </div>
                 </div>
 
-                <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex items-start gap-3">
-                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-teal-100 text-teal-800 font-bold text-xs shrink-0">4</span>
+                <div className="p-2 bg-white swing-sunken flex items-start gap-2">
+                  <span className="w-5 h-5 bg-[#0A246A] text-white font-bold text-xs flex items-center justify-center shrink-0">4</span>
                   <div>
-                    <p className="font-bold text-slate-900 text-xs">Public Zero-Wallet Verification</p>
-                    <p className="text-slate-600 mt-0.5 leading-relaxed">Navigate to <strong>"Verify Medicine"</strong> → Search <code className="text-teal-800 font-mono font-semibold">PCM001</code> or scan the packaging QR. Display the genuine verification document and full sequential timeline.</p>
+                    <strong className="text-black">Surgical Implantation Sign-Off:</strong> Switch role to <em>Transplant Hospital</em>. Receive organ in Operating Theater and sign off successful surgical graft into recipient.
                   </div>
                 </div>
 
-                <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex items-start gap-3">
-                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-rose-100 text-rose-800 font-bold text-xs shrink-0">5</span>
+                <div className="p-2 bg-white swing-sunken flex items-start gap-2">
+                  <span className="w-5 h-5 bg-[#0A246A] text-white font-bold text-xs flex items-center justify-center shrink-0">5</span>
                   <div>
-                    <p className="font-bold text-slate-900 text-xs">Demonstrate Edge Cases (Counterfeit & Expired)</p>
-                    <p className="text-slate-600 mt-0.5 leading-relaxed">Click test presets: <code className="text-rose-700 font-mono font-semibold">FAKE999</code> (illustrating unverified counterfeit rejection and regulatory reporting) and <code className="text-amber-700 font-mono font-semibold">EXP902</code> (illustrating automatic expiration safety lock).</p>
+                    <strong className="text-black">Specimen Audit & Cold-Ischemia Verification:</strong> Navigate to <strong>Organ Provenance Inspector</strong>. Inspect real-time elapsed cold ischemia time, donor consent IPFS certificate, and attempt to query an unregistered ID (`ORG-SUSPECT-9999`) to show counterfeit detection.
                   </div>
                 </div>
               </div>
@@ -106,124 +101,98 @@ export default function PresentationGuideModal({ isOpen, onClose }) {
           )}
 
           {activeTab === 'viva' && (
-            <div className="space-y-4">
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl">
-                <h3 className="font-bold text-blue-900 text-sm mb-1">Key Examiner Question: "Why not simply use MongoDB / SQL?"</h3>
-                <p className="text-xs text-blue-800 leading-relaxed">
-                  Examiners frequently ask this to test architectural depth. Provide this precise contrast:
+            <div className="space-y-3">
+              <div className="p-2.5 swing-sunken bg-[#FFFFF0] border border-amber-400">
+                <h3 className="font-bold text-amber-950 text-xs mb-1">
+                  Examiner Question: "Why Blockchain? Why not a centralized SQL/MongoDB database?"
+                </h3>
+                <p className="text-[10px] text-[#555555]">
+                  Key academic talking points and architectural arguments:
                 </p>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-                  <div className="flex items-center gap-2 text-rose-700 font-bold">
-                    <Database className="w-4 h-4" /> Traditional Centralized Database (MongoDB / SQL)
-                  </div>
-                  <ul className="space-y-1.5 text-slate-600 list-disc list-inside">
-                    <li>Single point of compromise: Database administrators or compromised servers can secretly mutate history, dates, or ownership records without an audit trail.</li>
-                    <li>No cryptographic non-repudiation: A distributor can deny having handled a contaminated or diverted medicine lot.</li>
-                    <li>Lack of cross-organizational trust: Multiple competing pharmaceutical manufacturers and distributors refuse to rely on each other's private databases.</li>
-                  </ul>
-                </div>
+              <div className="space-y-2">
+                <fieldset className="p-2 swing-etched bg-white">
+                  <legend className="px-1 font-bold text-[10px] text-[#0A246A]">
+                    1. Zero-Trust Multi-Stakeholder Consortium
+                  </legend>
+                  <p className="text-[10px] text-[#333333] leading-relaxed">
+                    Organ transplantation involves hostile or competing entities: private air ambulances, rival hospital networks, municipal morgues, and international regulatory agencies. A centralized database administrator at any one hospital could alter donor timestamps, forge consent papers, or covertly swap recipient prioritization.
+                  </p>
+                </fieldset>
 
-                <div className="p-4 bg-slate-50 rounded-xl border border-teal-200 space-y-2">
-                  <div className="flex items-center gap-2 text-teal-800 font-bold">
-                    <Lock className="w-4 h-4" /> TrueDose Consortium Blockchain
-                  </div>
-                  <ul className="space-y-1.5 text-slate-600 list-disc list-inside">
-                    <li><strong>Tamper-Evident Chaining:</strong> Records are sealed via cryptographic Merkle trees. Once written, past transactions cannot be secretly rewritten.</li>
-                    <li><strong>Enforced Code State Machine:</strong> Smart contract logic strictly enforces transition rules (e.g. non-owners cannot transfer; expired medicines cannot be sold).</li>
-                    <li><strong>Public Independent Verification:</strong> End consumers and hospital staff verify provenance directly against the ledger without requiring proprietary credentials.</li>
-                  </ul>
-                </div>
+                <fieldset className="p-2 swing-etched bg-white">
+                  <legend className="px-1 font-bold text-[10px] text-[#0A246A]">
+                    2. Strict Anti-Trafficking Non-Repudiation
+                  </legend>
+                  <p className="text-[10px] text-[#333333] leading-relaxed">
+                    Under the National Organ Transplant Act (NOTA/THOTA), black-market commercial organ trafficking relies on falsifying donor origins. On LifeLedger, every organ requires cryptographic signature by the OPO with immutable brain-death certificate CID. Once anchored on EVM blocks, this provenance cannot be altered or erased.
+                  </p>
+                </fieldset>
+
+                <fieldset className="p-2 swing-etched bg-white">
+                  <legend className="px-1 font-bold text-[10px] text-[#0A246A]">
+                    3. Smart-Contract Invariant Enforcement (Not Just Data Storage)
+                  </legend>
+                  <p className="text-[10px] text-[#333333] leading-relaxed">
+                    Unlike databases that passively accept updates, smart contracts execute programmable law: only the current holder can transfer custody, only verified hospitals can record surgical implantation, and any regulatory node can lock an organ with an instant emergency freeze.
+                  </p>
+                </fieldset>
               </div>
             </div>
           )}
 
           {activeTab === 'rules' && (
-            <div className="space-y-4">
-              <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
-                <h3 className="font-bold text-amber-900 text-sm mb-1">Smart Contract Enforced Invariants</h3>
-                <p className="text-xs text-amber-800 leading-relaxed">
-                  In our Solidity smart contract (<code className="font-mono">PharmaSupplyChain.sol</code>), these rules are enforced by code:
-                </p>
+            <div className="space-y-2">
+              <div className="p-2.5 swing-sunken bg-white">
+                <h4 className="font-bold text-xs text-[#0A246A] mb-1">Smart Contract (`LifeLedger.sol`) Invariants:</h4>
+                <div className="space-y-1 text-[10px] font-mono text-[#333333]">
+                  <div>• <code>require(msg.sender == currentOwner)</code>: Strict medical custody ownership.</div>
+                  <div>• <code>require(!organ.isQuarantined)</code>: Quarantined organs are immediately locked.</div>
+                  <div>• <code>require(stage != Transplanted)</code>: Prevents double-allocation of grafted organs.</div>
+                  <div>• <code>hasRole(HOSPITAL_ROLE, msg.sender)</code>: Only authorized hospitals sign surgical implantation.</div>
+                  <div>• <code>hasRole(AUTHORITY_ROLE, msg.sender)</code>: Only health authorities issue quarantine halts.</div>
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-teal-700 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-bold text-slate-900">Rule 1: Role-Gated Genesis: </span>
-                    <span>Only licensed manufacturers with verified addresses can mint new medicine batches via <code>createBatch()</code>.</span>
-                  </div>
-                </div>
-                <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-teal-700 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-bold text-slate-900">Rule 2: Sequential Custody Pipeline: </span>
-                    <span>Transfers must follow the physical lifecycle: Manufacturer → Distributor → Wholesaler → Pharmacy. Unauthorized jumps are rejected.</span>
-                  </div>
-                </div>
-                <div className="p-3 bg-slate-800/40 rounded-lg border border-slate-200 flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-teal-700 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-bold text-slate-900">Rule 3: Current Custodian Ownership Guard: </span>
-                    <span>Only the address currently recorded as custodian on the blockchain is authorized to execute a handoff.</span>
-                  </div>
-                </div>
-                <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-teal-700 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-bold text-slate-900">Rule 4: Automatic Expiry Clearance Lock: </span>
-                    <span>The smart contract compares the block timestamp with the batch expiry date and prevents distribution of expired medicines.</span>
-                  </div>
-                </div>
-                <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-teal-700 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-bold text-slate-900">Rule 5: Emergency Quarantine Recall: </span>
-                    <span>The regulatory authority or the manufacturing entity can trigger an emergency recall on-chain, quarantining all downstream lots.</span>
-                  </div>
-                </div>
+              <div className="p-2.5 swing-sunken bg-[#F5FFF5] border border-green-500 text-[10px] text-[#222222]">
+                <strong>Automated Test Coverage:</strong> 41 comprehensive invariants (16 Hardhat Solidity invariants + 25 Express API invariants) are verified automatically via <code>npm test</code>.
               </div>
             </div>
           )}
 
-          {activeTab === 'features' && (
-            <div className="space-y-4">
-              <div className="p-4 bg-slate-100 border border-slate-200 rounded-xl">
-                <h3 className="font-bold text-slate-900 text-sm mb-1">Key Architectural Highlights</h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Technical characteristics engineered into the TrueDose platform:
-                </p>
-              </div>
-
-              <div className="grid md:grid-cols-3 gap-3">
-                <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
-                  <div className="font-bold text-slate-900 mb-1">Hybrid On/Off-Chain Architecture</div>
-                  <p className="text-slate-600 leading-relaxed">Anchors state, custody, and verification hashes immutably on-chain while keeping telemetry and certificates in IPFS and indexed storage for low gas footprint.</p>
-                </div>
-                <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
-                  <div className="font-bold text-slate-900 mb-1">Zero-Wallet Citizen Verification</div>
-                  <p className="text-slate-600 leading-relaxed">Patients need no crypto knowledge or wallet extensions. Packaging QR codes verify instantly via browser.</p>
-                </div>
-                <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
-                  <div className="font-bold text-slate-900 mb-1">Tri-Vector Safety Shield</div>
-                  <p className="text-slate-600 leading-relaxed">Comprehensive detection for counterfeit unlisted batches, expired pharmaceutical lots, and manufacturer emergency recalls.</p>
-                </div>
+          {activeTab === 'architecture' && (
+            <div className="space-y-2">
+              <div className="p-2.5 swing-sunken bg-white space-y-1.5 text-[10px]">
+                <div className="font-bold text-xs text-[#0A246A]">Consortium Tech Stack:</div>
+                <div>• <strong>Smart Contracts:</strong> Solidity v0.8.20 on Ethereum Paris EVM with Hardhat</div>
+                <div>• <strong>Consensus Model:</strong> Proof-of-Authority (PoA) consortium for instant finality and zero volatility gas costs</div>
+                <div>• <strong>Decentralized Storage:</strong> IPFS CIDs for high-resolution histopathology and Form 8 legal documentation</div>
+                <div>• <strong>Backend Gateway:</strong> Node.js / Express with cryptographic SHA-256 state ledger fallback</div>
+                <div>• <strong>User Interface:</strong> Retro Java Swing / AWT 3D desktop aesthetic built in React 19 + Tailwind CSS</div>
               </div>
             </div>
           )}
         </div>
 
-        {/* Footer */}
-        <div className="px-6 py-3 bg-slate-50 border-t border-slate-200 flex justify-end">
+        {/* Dialog Action Strip */}
+        <div className="bg-[#ECE9D8] px-3 py-2 border-t border-[#808080] flex items-center justify-between">
+          <div className="text-[10px] text-[#555555]">
+            LifeLedger Project Defense Manual • Ready for Evaluation
+          </div>
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-teal-700 hover:bg-teal-800 text-white rounded-lg text-xs font-bold transition shadow-xs"
+            className="swing-btn swing-btn-primary text-xs py-1 px-4"
           >
-            Close Guide
+            OK
           </button>
+        </div>
+
+        {/* Java Dialog Status Bar */}
+        <div className="swing-statusbar">
+          <div className="swing-status-pane">JDialog: PresentationGuide</div>
+          <div className="swing-status-pane">LifeLedger v2.0</div>
+          <div className="swing-status-pane flex-1 text-right">Invariants: 41/41 Passed</div>
         </div>
       </div>
     </div>

@@ -1,182 +1,139 @@
-# 💊 TrueDose — Blockchain-Based Pharmaceutical Supply Chain & Medicine Verification
+# 🫀 LifeLedger — Decentralized Organ Procurement & Transplant Custody Network
 
-> **A decentralized, tamper-evident platform that records the journey of a medicine batch from manufacturer to pharmacy on an EVM blockchain, enabling instant public verification via QR code.**
-
----
-
-## 📌 1. Problem Statement
-
-In the traditional pharmaceutical supply chain, medicine batches pass through multiple independent organizations:
-$$\text{Manufacturer} \longrightarrow \text{Distributor} \longrightarrow \text{Wholesaler} \longrightarrow \text{Pharmacy} \longrightarrow \text{Customer}$$
-
-Traditional supply chain systems face critical vulnerabilities:
-- **Centralized Databases:** Vulnerable to database alterations, unauthorized history edits, or single-point-of-failure tampering.
-- **Counterfeit & Clone Medicines:** Fake batches printed with fabricated batch numbers infiltrate retail channels.
-- **Expired Medicines:** Substandard or expired batches sold to consumers without real-time safety enforcement.
-- **Unauthorized Transfers:** Intermediaries bypassing standard distribution checkpoints.
-- **No Direct Consumer Verification:** Patients have no independent method to verify provenance.
+> **An enterprise blockchain network built for Organ Procurement Organizations (OPOs), specialized cold-chain air-ambulances, national allocation clearinghouses (NOTTO/UNOS), and surgical transplant centers. Enforces non-repudiable donor consent, real-time cold-ischemia telemetry, and anti-trafficking rules with an authentic retro Java Swing desktop workstation interface.**
 
 ---
 
-## 💡 2. Solution: The TrueDose Blockchain Architecture
+## 📌 1. Domain Problem Statement
 
-TrueDose solves these challenges by combining smart contracts on the Ethereum Virtual Machine (EVM) with a high-performance web verification interface:
+Every year, thousands of donor organs (Kidneys, Hearts, Livers, Lungs, Corneas) are lost or compromised due to supply-chain failures and lack of trust between independent medical entities:
+$$\text{OPO Harvest} \longrightarrow \text{Air-Ambulance Logistics} \longrightarrow \text{Allocation Clearance} \longrightarrow \text{Hospital Surgical Suite} \longrightarrow \text{Transplantation}$$
+
+### Critical Vulnerabilities in Traditional Centralized Systems:
+- **Zero-Trust Multi-Stakeholder Ecosystem:** OPOs, private airlines, state traffic police (green corridors), competing hospital networks, and national regulators do not trust each other's centralized databases.
+- **Cold-Ischemia Window Expiration:** Donor organs suffer irreversibly from cellular death after harvest:
+  - *Heart:* $\le$ 4 hours (STAT Emergency)
+  - *Lung:* $\le$ 8 hours
+  - *Liver:* $\le$ 12 hours
+  - *Kidney:* $\le$ 24–30 hours
+  - *Cornea:* $\le$ 48 hours
+- **Black-Market Organ Trafficking & Paper Forgery:** Illicit organs or falsified donor consent documents (e.g., Form 8 brain-death certificates) infiltrate commercial hospitals without cryptographic verification.
+- **Thermal Excursions:** Failure of hypothermic perfusion canisters ($> 8^\circ\text{C}$) during transport often goes unnoticed until graft rejection occurs in the operating theater.
+
+---
+
+## 💡 2. Solution: The LifeLedger Consortium Architecture
+
+LifeLedger enforces immutable provenance, cold-ischemia tracking, and anti-trafficking rules via a Proof-of-Authority (PoA) Ethereum Virtual Machine (EVM) smart contract paired with an authentic Java Swing / AWT retro medical desktop interface.
 
 ```
-                            [ PHYSICAL MEDICINE BOX ]
-                                      │
-                                 [ QR CODE ]
-                                      │
-                                      ▼
-                          [ TRUEDOSE WEB VERIFIER ]
-                                      │
-                    ┌─────────────────┴─────────────────┐
-                    │                                   │
-              [ EXPRESS API ]                 [ EVM SMART CONTRACT ]
-              Metadata, Profiles,             Batch ID, Current Custodian,
-              Rapid Cache & Stats             Tamper-Evident History & State
+                    [ DECEASED DONOR FORM 8 CONSENT ]
+                                  │
+                                  ▼
+                   [ OPO HARVEST: LifeLedger.sol ]
+              (Locks Donor Hash, Blood Group & Ischemia Timer)
+                                  │
+                                  ▼
+                  [ CRYO-LOGISTICS AIR-AMBULANCE ]
+               (Real-Time IoT Temperature: 2°C - 4°C)
+                                  │
+                                  ▼
+                 [ NATIONAL ALLOCATION CLEARINGHOUSE ]
+               (HLA Matching & Queue Integrity Clearance)
+                                  │
+                                  ▼
+                  [ HOSPITAL SURGICAL THEATER (OR) ]
+             (Implantation Sign-Off / Reperfusion Verified)
 ```
 
-### Storage Architecture (Hybrid Model)
-- **On Blockchain (Solidity Smart Contract `PharmaSupplyChain.sol`):**
-  - Batch ID, medicine name, dosage, volume
-  - Current custodian Ethereum address & previous handlers
-  - Immutable state (`Manufactured` $\to$ `Distributor` $\to$ `Wholesaler` $\to$ `Pharmacy` $\to$ `SoldToCustomer`)
-  - Timestamps, transaction hashes, and recall orders
-- **Off Blockchain (Fast Storage):**
-  - Participant user profiles, contact details, licensing credentials
-  - QR Code vector rendering
-  - Analytical metrics
+---
+
+## 🖥️ 3. Authentic Retro Java Swing / AWT User Interface
+
+The web interface is intentionally styled after classic enterprise medical Java desktop software (Swing Look & Feel / Windows Classic):
+- **`JMenuBar`:** File, View, Nodes, Help with keyboard access mnemonics (`Alt+F`, `Alt+H`).
+- **`JToolBar`:** Beveled 3D buttons (`swing-raised` & `swing-sunken`), quick preset switchers, and active consortium node switcher (`JComboBox`).
+- **`JTable` Grid:** Compact table rows, `#0A246A` selected row highlights, column headers, and live stage badges.
+- **`JDialog` Modals:** Raised window title bars with standard close buttons (`[X]`), titled borders (`fieldset`/`legend`), and prompt action bars.
+- **`JStatusBar`:** Bottom status strip reporting PoA node health, connected contract address, and JVM heap simulation (`48MB / 128MB`).
 
 ---
 
-## 🛡️ 3. Smart Contract Enforced Rules
+## 🛡️ 4. Smart Contract Enforced Invariants (`LifeLedger.sol`)
 
-1. **Role-Gated Batch Creation:** Only approved Manufacturer addresses can invoke `createBatch()`.
-2. **Strict Sequential Custody Transitions:**
-   - $\text{Manufacturer} \to \text{Distributor}$ (`transferToDistributor`)
-   - $\text{Distributor} \to \text{Wholesaler}$ (`transferToWholesaler`)
-   - $\text{Wholesaler} \to \text{Pharmacy}$ (`transferToPharmacy`)
-   - $\text{Pharmacy} \to \text{Customer}$ (`markAsSold`)
-   - *Direct illegal jumps (e.g. Pharmacy transferring back to Manufacturer) are rejected on-chain.*
-3. **Current Owner Guard:** Only the active custodian on record can authorize an onward transfer.
-4. **Automated Expiry Locking:** Prevents custody transfer of expired batches and warns consumers.
-5. **Emergency Regulatory Quarantine:** Regulators or Manufacturers can trigger a global `recallBatch()` order.
+1. **Role-Gated Organ Harvest:** Only registered `OPO_ROLE` accounts can record an organ harvest.
+2. **Cold Ischemia Safeguards:** Organ registration strictly requires non-zero `ischemicLimitHours`.
+3. **Medical Chain-of-Custody:** Only the current verified custodian can execute `transferCustody()`.
+4. **Surgical Implantation Guard:** Only authorized `HOSPITAL_ROLE` surgeons can execute `completeTransplant()`.
+5. **Consortium Anti-Trafficking Freeze:** Any authorized regulatory node (`ADMIN_ROLE` or `AUTHORITY_ROLE`) can instantly place an organ under emergency quarantine, blocking all downstream transfers and surgical procedures consortium-wide.
+6. **Double-Allocation Prevention:** A transplanted organ cannot be transferred again or duplicated.
 
 ---
 
-## ❓ 4. Viva / Examiner Defense: "Why didn't you just use MongoDB?"
+## 🧪 5. Automated Testing & Verification Suite
 
-| Evaluation Criteria | Traditional MongoDB / SQL | TrueDose Blockchain Smart Contract |
-| :--- | :--- | :--- |
-| **Trust Model** | Centralized (Controlled by one company or DBA). | **Trustless Consortium** (Shared cryptographic ledger between parties). |
-| **History Immutability** | Database admins or attackers with credentials can `UPDATE` or `DELETE` rows secretly. | **Append-Only & Cryptographically Chained:** Past transactions cannot be altered retroactively. |
-| **Business Logic Enforcement** | Application-level code can be bypassed or manipulated. | **Smart Contract Bytecode** runs autonomously on EVM nodes; rules cannot be bypassed. |
-| **Non-Repudiation** | Any party can claim they never transferred or received a tainted batch. | **Cryptographic Digital Signatures:** Every transfer is signed with the sender's private key. |
-| **Consumer Access** | Patients must trust the database owner's private API. | **Public Verification View:** Open ledger inspection without needing accounts or proprietary access. |
+LifeLedger includes a comprehensive master automated test suite verifying **41 critical invariants**:
 
----
+| Test Stage | Invariants | Description |
+|---|:---:|---|
+| **Stage 1: Hardhat Solidity Invariants** | **16/16 Passed** | Role authorization, zero-address guards, custody transfer reverts, emergency quarantine, counterfeit detection |
+| **Stage 2: Express REST & State Machine** | **25/25 Passed** | Auth tokens, harvest validation, cold-ischemia telemetry, donor consent CID proof, trafficking alert dispatch |
+| **Total Automated Invariants** | **41/41 Passed** | **100% Invariant Verification (0 Failures)** |
 
-## 👥 5. Supply Chain Roles & Capabilities
-
-- 👨‍💼 **Manufacturer (ABC Pharma Ltd.)**: Register new batch, generate printable packaging QR code, transfer to distributor, issue recall.
-- 🚚 **Distributor (Apex Logistics)**: Accept batches from factory, log cold-chain transportation, transfer to regional wholesaler.
-- 🏪 **Wholesaler (Metro Health Wholesalers)**: Receive shipments, verify lot integrity, distribute to retail pharmacies.
-- 💊 **Pharmacy (HealthPlus Community Pharmacy)**: Receive stock, mark as dispensed to customer, generate verification receipts.
-- 👤 **End Consumer**: Scan QR code with any camera or phone browser, inspect full provenance timeline, verify expiry and authenticity without needing crypto or wallet.
-- 👨‍💻 **Regulator / Admin**: Audit global batches, monitor counterfeit scan attempts, inspect EVM smart contract explorer.
+Run the entire suite with one command:
+```bash
+npm test
+```
 
 ---
 
-## 🚀 6. Quickstart Guide
+## 🚀 6. Quick Start & Launch
 
 ### Prerequisites
-- **Node.js** (v18 or v20+)
-- **npm** (v9+)
+- Node.js (v18 or higher)
+- npm (v9 or higher)
 
-### Installation
-```bash
-# Clone the repository
-git clone <repo-url>
-cd TrueDose
-
-# Install all dependencies across contracts, server, and client
-npm run install:all
+### Option A: One-Click Windows Batch File
+Double-click or run:
+```cmd
+run.bat
 ```
+*Checks dependencies, compiles contracts, deploys the local PoA EVM network, runs the 41-invariant automated audit, and opens both the backend API and frontend workstation.*
 
-### Compile & Deploy Smart Contract
+### Option B: Manual Setup
 ```bash
-# Compile Solidity contract with viaIR optimizer
-npm run compile:contracts
+# 1. Install root dependencies
+npm install
 
-# Deploy contract and seed demo batches to config
+# 2. Deploy smart contract & export ABIs
 npm run deploy:contracts
-```
 
-### Launch the Platform
-```bash
-# Run both Backend API (:5000) and Frontend Client (:5173) concurrently:
+# 3. Run master automated audit
+npm test
+
+# 4. Start backend and client concurrently
 npm run dev
 ```
 
-Visit the application at:
-- 🌐 **Web Application:** [http://localhost:5173](http://localhost:5173)
-- 🔌 **Backend Health Check:** [http://localhost:5000/api/health](http://localhost:5000/api/health)
-- 🔍 **Direct Batch API:** [http://localhost:5000/api/verify/PCM001](http://localhost:5000/api/verify/PCM001)
-
-### 🚀 One-Click Windows Launch (`run.bat`)
-For Windows users, a comprehensive startup and health-check script is provided at the project root:
-```cmd
-# Double click run.bat or execute in CMD/PowerShell:
-run.bat
-```
-`run.bat` automatically:
-1. Verifies **Node.js** (v18+) and **npm** installation.
-2. Checks and auto-installs missing dependencies across `root`, `contracts`, `server`, and `client`.
-3. Verifies and compiles Solidity smart contracts (`PharmaSupplyChain.sol`).
-4. Executes the **Master Automated Test Suite** (all 50 invariant tests).
-5. Launches concurrent backend and client services and **automatically opens your browser** to [http://localhost:5173](http://localhost:5173).
+- **Frontend Workstation:** `http://localhost:5173`
+- **Backend REST API:** `http://localhost:5000`
+- **API Health Check:** `http://localhost:5000/api/health`
+- **Sample Organ JSON:** `http://localhost:5000/api/verify/ORG-KID-8041`
 
 ---
 
-### 🧪 Automated Testing & Logical Error Invariant Suite
-Execute the master automated testing suite covering all 50 smart contract and API logical error invariants:
-```bash
-# Run all 50 tests (EVM Smart Contract + REST API + State Machine):
-npm test
+## 👥 7. Consortium Stakeholders (Demo Accounts)
 
-# Run individual test suites:
-npm run test:contracts   # 21 EVM smart contract invariants
-npm run test:api         # 29 API & state machine invariants
-```
-
----
-
-## 🎯 7. Live Demonstration Walkthrough (1-Minute Script)
-
-1. **Verify Genuine Medicine (`PCM001`):**
-   - On the homepage [http://localhost:5173](http://localhost:5173), click the **`PCM001 (Genuine)`** pill or search `PCM001`.
-   - Observe the **Genuine Verified** badge, celebratory confetti, medicine specifications, and the sequential supply-chain timeline with transaction hashes.
-2. **Demonstrate Counterfeit Detection (`FAKE999`):**
-   - Click the **`FAKE999 (Counterfeit)`** pill.
-   - The platform checks the blockchain, finds no record, and triggers a **Critical Warning: Suspected Counterfeit Batch**.
-3. **Demonstrate Expired Medicine Alert (`EXP902`):**
-   - Click the **`EXP902 (Expired)`** pill.
-   - The system checks the expiry date against current time and displays an **Expired Safety Alert**.
-4. **Supply Chain Transfer Walkthrough:**
-   - Click **Supply Chain Portal** in the top navigation.
-   - Use the **Role Switcher** in the top-right to switch to **Manufacturer (ABC Pharma)**.
-   - Click **Create New Batch** (or click **Quick Autofill** $\to$ *Commit Batch to Blockchain*).
-   - Click **Transfer Batch** $\to$ Select *Apex Logistics (Distributor)* $\to$ *Execute Blockchain Transfer*.
-   - Switch role to **Distributor** $\to$ Transfer to *Metro Wholesalers*.
-   - Switch role to **Pharmacy** $\to$ Click **Dispense to Patient**.
-   - Return to the Public Verification page and verify your new batch to watch its full live timeline!
+| Node Entity | Role | Ethereum Address | Responsibilities |
+|---|---|---|---|
+| **NOTTO / UNOS** | `admin` | `0xf39Fd6...` | Regulatory oversight, national anti-trafficking enforcement, emergency quarantine |
+| **Lilavati Trauma OPO** | `opo` | `0x709979...` | Organ harvest, Form 8 donor consent verification, cold-ischemia lock |
+| **AeroMed Air-Ambulance** | `logistics` | `0x3C44Cd...` | Green-corridor flight, cryo-carrier telemetry (2°C - 4°C), transit handoff |
+| **Regional Allocation Directorate** | `authority` | `0x90F79b...` | Recipient queue prioritization, HLA compatibility clearance |
+| **Apollo Transplant Hospital** | `hospital` | `0x15d34A...` | Surgical suite reception, OR implantation sign-off, reperfusion confirmation |
+| **Public / Next-of-Kin Auditor** | `customer` | — | Independent QR code inspection and donor consent proof |
 
 ---
 
-## 📜 8. Tech Stack Summary
-
-- **Smart Contract:** Solidity `^0.8.20`, Hardhat, EVM, Ethers.js
-- **Backend:** Node.js, Express, JWT Authentication, QRCode generator
-- **Frontend:** React 19, Vite, Tailwind CSS v4, Lucide React, HTML5-QRCode scanner, Canvas Confetti
-- **Architectural Contribution:** Zero-crypto friction for consumers + on-chain cryptographic provenance + multi-tier anti-counterfeit protection.
+## 📄 License
+This project is open-source under the MIT License.

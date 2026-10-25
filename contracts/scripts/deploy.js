@@ -3,167 +3,181 @@ const fs = require("fs");
 const path = require("path");
 
 async function main() {
-  console.log("🚀 Starting deployment of TrueDose PharmaSupplyChain contract...");
+  console.log("🚀 Starting deployment of LifeLedger Organ Procurement contract...");
 
-  const [admin, manufacturer, distributor, wholesaler, pharmacy, otherUser] = await hre.ethers.getSigners();
+  const [admin, opo, logistics, authority, hospital] = await hre.ethers.getSigners();
 
-  console.log("Admin deployer address:", admin.address);
-  console.log("Manufacturer address:", manufacturer.address);
-  console.log("Distributor address:", distributor.address);
-  console.log("Wholesaler address:", wholesaler.address);
-  console.log("Pharmacy address:", pharmacy.address);
+  console.log("Admin / NOTTO Directorate:", admin.address);
+  console.log("OPO (Donor Hospital):", opo.address);
+  console.log("Medical Logistics / Transit:", logistics.address);
+  console.log("Regional Allocation Authority:", authority.address);
+  console.log("Transplant Hospital / Surgical Suite:", hospital.address);
 
-  const PharmaSupplyChain = await hre.ethers.getContractFactory("PharmaSupplyChain");
-  const contract = await PharmaSupplyChain.deploy();
+  const LifeLedger = await hre.ethers.getContractFactory("LifeLedger");
+  const contract = await LifeLedger.deploy();
   await contract.waitForDeployment();
 
   const contractAddress = await contract.getAddress();
-  console.log("✅ PharmaSupplyChain deployed at:", contractAddress);
+  console.log("✅ LifeLedger deployed at:", contractAddress);
 
   // Register participants
-  console.log("Registering supply chain participants...");
-  // 1: Admin, 2: Manufacturer, 3: Distributor, 4: Wholesaler, 5: Pharmacy
+  // Roles: 1: Admin, 2: OPO, 3: Logistics, 4: Authority, 5: Hospital
+  console.log("Registering organ transplant consortium participants...");
+
   let tx = await contract.connect(admin).registerParticipant(
-    manufacturer.address,
-    "ABC Pharma Ltd.",
-    "Industrial Area Unit 4, Mumbai, India",
-    2 // Manufacturer
+    opo.address,
+    "National Organ Procurement Network (Unit 4 Mumbai)",
+    2, // OPO
+    "Lilavati Memorial Surgical Trauma Center, Mumbai"
   );
   await tx.wait();
 
   tx = await contract.connect(admin).registerParticipant(
-    distributor.address,
-    "Apex Logistics & Distribution",
-    "Cold Chain Hub 12, Pune, India",
-    3 // Distributor
+    logistics.address,
+    "AeroMed Specialized Organ Logistics & Cryo-Transit",
+    3, // Logistics
+    "Chhatrapati Shivaji Air Ambulance Terminal, Mumbai"
   );
   await tx.wait();
 
   tx = await contract.connect(admin).registerParticipant(
-    wholesaler.address,
-    "Metro Health Wholesalers",
-    "Regional Depot 9, Bangalore, India",
-    4 // Wholesaler
+    authority.address,
+    "National Organ & Tissue Allocation Directorate (NOTTO)",
+    4, // Authority
+    "Safdarjung Hospital Healthcare Complex, New Delhi"
   );
   await tx.wait();
 
   tx = await contract.connect(admin).registerParticipant(
-    pharmacy.address,
-    "HealthPlus Community Pharmacy",
-    "MG Road Branch, Hyderabad, India",
-    5 // Pharmacy
+    hospital.address,
+    "Apollo Multi-Specialty Transplant Surgical Center",
+    5, // Hospital
+    "Banjara Hills Medical Campus, Hyderabad"
   );
   await tx.wait();
 
-  console.log("✅ All participants registered on blockchain!");
+  console.log("✅ All transplant consortium nodes registered on-chain!");
 
-  // Create demo batch PCM001 as specified in user request
-  const mfgDate = Math.floor(new Date("2026-09-01T00:00:00Z").getTime() / 1000);
-  const expDate = Math.floor(new Date("2028-08-31T23:59:59Z").getTime() / 1000);
-
-  console.log("Creating initial batch PCM001 (Paracetamol 500mg)...");
-  tx = await contract.connect(manufacturer).createBatch(
-    "PCM001",
-    "Paracetamol",
-    "500 mg",
-    5000,
-    mfgDate,
-    expDate,
-    "Manufactured under Good Manufacturing Practice (GMP) certificate #IN-GMP-8821"
-  );
-  await tx.wait();
-  console.log("✅ Batch PCM001 created on-chain!");
-
-  // Also create a second batch that is already expired for demonstration: EXP-902
-  const oldMfgDate = Math.floor(new Date("2023-01-01T00:00:00Z").getTime() / 1000);
-  const oldExpDate = Math.floor(new Date("2025-01-01T00:00:00Z").getTime() / 1000);
-  tx = await contract.connect(manufacturer).createBatch(
-    "EXP902",
-    "Amoxicillin Trihydrate",
-    "250 mg",
-    1200,
-    oldMfgDate,
-    oldExpDate,
-    "Archival batch created for expiry alert demonstration"
-  );
-  await tx.wait();
-  console.log("✅ Demo expired batch EXP902 created on-chain!");
-
-  // Also create an advanced batch AMX404 moved up to Wholesaler to demonstrate in-transit state
-  const amxMfgDate = Math.floor(new Date("2026-08-15T00:00:00Z").getTime() / 1000);
-  const amxExpDate = Math.floor(new Date("2027-12-31T00:00:00Z").getTime() / 1000);
-  tx = await contract.connect(manufacturer).createBatch(
-    "AMX404",
-    "Azithromycin",
-    "500 mg",
-    3000,
-    amxMfgDate,
-    amxExpDate,
-    "Anti-infective batch - Quality cleared"
+  // Seed Organ 1: ORG-KID-8041 (Kidney, Harvested)
+  console.log("Harvesting Organ #1: ORG-KID-8041 (Kidney)...");
+  tx = await contract.connect(opo).harvestOrgan(
+    "ORG-KID-8041",
+    "Kidney (Left)",
+    "DNR-MUM-9021",
+    "O+",
+    "6/6 HLA-Matched",
+    30, // 30 hours safe cold ischemia
+    "RCP-7704",
+    "Apollo Multi-Specialty Transplant Surgical Center",
+    "Custodiol HTK Hypothermic Perfusion",
+    28 // 2.8°C
   );
   await tx.wait();
 
-  // Move AMX404 to Distributor
-  tx = await contract.connect(manufacturer).transferToDistributor(
-    "AMX404",
-    distributor.address,
-    "Dispatched via Temperature-controlled Reefer Container #TR-402"
+  // Seed Organ 2: ORG-HRT-2094 (Heart, In Transit)
+  console.log("Harvesting Organ #2: ORG-HRT-2094 (Heart)...");
+  tx = await contract.connect(opo).harvestOrgan(
+    "ORG-HRT-2094",
+    "Heart (Whole)",
+    "DNR-DEL-4412",
+    "A+",
+    "5/6 HLA-Matched",
+    4, // 4 hours safe cold ischemia
+    "RCP-9120",
+    "All-India Institute Surgical Transplant Center",
+    "Celsior Micro-Perfusion Preservation",
+    32 // 3.2°C
   );
   await tx.wait();
 
-  // Move AMX404 to Wholesaler
-  tx = await contract.connect(distributor).transferToWholesaler(
-    "AMX404",
-    wholesaler.address,
-    "Inspected batch integrity at distribution hub. Transferred to regional warehouse."
+  tx = await contract.connect(opo).transferCustody(
+    "ORG-HRT-2094",
+    logistics.address,
+    "Organ packed in RFID Cryo-Carrier #CC-881. Transferred to Air Ambulance flight MED-901",
+    "Delhi Terminal 1D",
+    32
   );
   await tx.wait();
 
-  console.log("✅ Batch AMX404 moved to Wholesaler on-chain!");
+  // Seed Organ 3: ORG-LVR-5512 (Liver, Hospital Received)
+  console.log("Harvesting Organ #3: ORG-LVR-5512 (Liver)...");
+  tx = await contract.connect(opo).harvestOrgan(
+    "ORG-LVR-5512",
+    "Liver (Right Lobe)",
+    "DNR-BLR-7820",
+    "B+",
+    "6/6 HLA-Matched",
+    12, // 12 hours safe cold ischemia
+    "RCP-4491",
+    "Apollo Multi-Specialty Transplant Surgical Center",
+    "University of Wisconsin (UW) Cold Solution",
+    26 // 2.6°C
+  );
+  await tx.wait();
 
-  // Save contract artifact and deployment details
-  const artifactPath = path.join(__dirname, "../artifacts/contracts/PharmaSupplyChain.sol/PharmaSupplyChain.json");
-  const contractArtifact = JSON.parse(fs.readFileSync(artifactPath, "utf8"));
+  tx = await contract.connect(opo).transferCustody(
+    "ORG-LVR-5512",
+    logistics.address,
+    "Handed off to Rapid Medical Courier",
+    "Bangalore Trauma Center",
+    26
+  );
+  await tx.wait();
 
-  const deploymentData = {
+  tx = await contract.connect(logistics).transferCustody(
+    "ORG-LVR-5512",
+    hospital.address,
+    "Delivered to Apollo OR 4. Pre-surgical inspection passed, cold ischemia within safe window",
+    "Apollo Surgical Suite, Hyderabad",
+    27
+  );
+  await tx.wait();
+
+  // Seed Organ 4: ORG-COR-3390 (Cornea, Quarantined)
+  console.log("Harvesting Organ #4: ORG-COR-3390 (Cornea)...");
+  tx = await contract.connect(opo).harvestOrgan(
+    "ORG-COR-3390",
+    "Cornea Graft",
+    "DNR-CHN-6110",
+    "AB+",
+    "Tissue Crossmatch OK",
+    24,
+    "RCP-2033",
+    "Regional Eye Bank & Surgical Institute",
+    "Optisol-GS Storage Medium",
+    85 // 8.5°C (Excursion breach)
+  );
+  await tx.wait();
+
+  tx = await contract.connect(admin).quarantineOrgan(
+    "ORG-COR-3390",
+    "Thermal Sensor Alert: Reefer temperature spiked above 8.0°C during transshipment. Quarantined for biosafety."
+  );
+  await tx.wait();
+
+  console.log("✅ All demo organ records harvested and verified on-chain!");
+
+  // Export contract address and ABI
+  const contractArtifact = await hre.artifacts.readArtifact("LifeLedger");
+  const contractInfo = {
     address: contractAddress,
-    abi: contractArtifact.abi,
     network: hre.network.name,
     chainId: hre.network.config.chainId || 1337,
-    deployedAt: new Date().toISOString(),
-    accounts: {
-      admin: admin.address,
-      manufacturer: manufacturer.address,
-      distributor: distributor.address,
-      wholesaler: wholesaler.address,
-      pharmacy: pharmacy.address,
-      other: otherUser.address,
-    },
-    demoBatches: ["PCM001", "EXP902", "AMX404"]
+    abi: contractArtifact.abi,
+    deployedAt: new Date().toISOString()
   };
 
-  // Write to server config
-  const serverConfigDir = path.join(__dirname, "../../server/src/config");
-  if (!fs.existsSync(serverConfigDir)) {
-    fs.mkdirSync(serverConfigDir, { recursive: true });
-  }
-  fs.writeFileSync(
-    path.join(serverConfigDir, "contractInfo.json"),
-    JSON.stringify(deploymentData, null, 2)
-  );
-
-  // Write to client config
   const clientConfigDir = path.join(__dirname, "../../client/src/config");
-  if (!fs.existsSync(clientConfigDir)) {
-    fs.mkdirSync(clientConfigDir, { recursive: true });
-  }
-  fs.writeFileSync(
-    path.join(clientConfigDir, "contractInfo.json"),
-    JSON.stringify(deploymentData, null, 2)
-  );
+  const serverConfigDir = path.join(__dirname, "../../server/src/config");
 
-  console.log("📄 Saved contract details to server & client config!");
-  console.log("🎉 TrueDose setup & deployment completed successfully!");
+  if (!fs.existsSync(clientConfigDir)) fs.mkdirSync(clientConfigDir, { recursive: true });
+  if (!fs.existsSync(serverConfigDir)) fs.mkdirSync(serverConfigDir, { recursive: true });
+
+  fs.writeFileSync(path.join(clientConfigDir, "contractInfo.json"), JSON.stringify(contractInfo, null, 2));
+  fs.writeFileSync(path.join(serverConfigDir, "contractInfo.json"), JSON.stringify(contractInfo, null, 2));
+
+  console.log("📝 Contract configuration exported to client and server config folders.");
+  console.log("🎉 LifeLedger deployment complete!");
 }
 
 main().catch((error) => {

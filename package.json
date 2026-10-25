@@ -1,7 +1,7 @@
 {
-  "name": "truedose-platform",
-  "version": "1.0.0",
-  "description": "Blockchain-Based Pharmaceutical Supply Chain Management & Medicine Verification System",
+  "name": "lifeledger-platform",
+  "version": "2.0.0",
+  "description": "LifeLedger: Decentralized Organ Procurement, Chain-of-Custody & Cold Ischemia Verification System",
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run client\" -n \"SERVER,CLIENT\" -c \"blue,green\"",
     "dev:full": "concurrently \"npm run hardhat:node\" \"npm run server\" \"npm run client\" -n \"NODE,SERVER,CLIENT\" -c \"yellow,blue,green\"",
@@ -20,16 +20,17 @@
   },
   "keywords": [
     "blockchain",
-    "pharmaceutical",
-    "supply-chain",
-    "medicine-verification",
-    "anti-counterfeit",
+    "organ-donation",
+    "transplant",
+    "chain-of-custody",
+    "cold-ischemia",
+    "anti-trafficking",
     "smart-contracts",
     "solidity",
     "ethereum",
     "react"
   ],
-  "author": "TrueDose Team",
+  "author": "LifeLedger Consortium",
   "license": "MIT",
   "devDependencies": {
     "concurrently": "^9.1.2"
