@@ -5,7 +5,70 @@ import VerifyPage from './pages/VerifyPage';
 import DashboardPage from './pages/DashboardPage';
 import ExplorerPage from './pages/ExplorerPage';
 import PresentationGuideModal from './components/PresentationGuideModal';
-import { Heart, ExternalLink, HelpCircle, Activity, ShieldCheck, Database } from 'lucide-react';
+import { Heart, ExternalLink, HelpCircle, Activity, ShieldCheck, Database, AlertCircle, RefreshCw } from 'lucide-react';
+
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error("LifeLedger Workspace Runtime Exception:", error, errorInfo);
+  }
+
+  handleReset = () => {
+    this.setState({ hasError: false, error: null });
+    window.location.href = '/';
+  };
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="p-4 max-w-2xl mx-auto swing-raised shadow-xl mt-8">
+          <div className="swing-titlebar bg-[#8C1A1A]">
+            <div className="flex items-center gap-1.5">
+              <AlertCircle className="w-3.5 h-3.5 text-yellow-300" />
+              <span className="font-bold text-xs tracking-wide">
+                java.lang.RuntimeException: Workspace Render Exception
+              </span>
+            </div>
+          </div>
+          <div className="p-4 bg-[#ECE9D8] space-y-3 text-[11px]">
+            <p className="text-[#333333]">
+              An unhandled exception occurred in the active workspace view:
+            </p>
+            <div className="swing-sunken p-3 bg-[#FFF0F0] border border-red-500 text-red-950 font-mono text-[10px] break-all">
+              <strong>Exception:</strong> {this.state.error?.message || "Unknown error"}
+            </div>
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#808080]">
+              <button
+                type="button"
+                onClick={() => window.location.reload()}
+                className="swing-btn text-xs py-1 px-3 flex items-center gap-1"
+              >
+                <RefreshCw className="w-3 h-3" />
+                <span>Reload JVM Process</span>
+              </button>
+              <button
+                type="button"
+                onClick={this.handleReset}
+                className="swing-btn swing-btn-primary text-xs py-1 px-3"
+              >
+                Return to Organ Registry
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 function AppContent() {
   const [activePage, setActivePage] = useState('dashboard');
@@ -21,6 +84,8 @@ function AppContent() {
         setInitialOrganId(id);
         setActivePage('verify');
       }
+    } else if (path.includes('/verify')) {
+      setActivePage('verify');
     } else if (path.includes('/explorer')) {
       setActivePage('explorer');
     } else if (path.includes('/dashboard')) {
@@ -59,18 +124,20 @@ function AppContent() {
       {/* Main Workspace Frame */}
       <main className="flex-1 p-2 overflow-auto">
         <div className="max-w-7xl mx-auto swing-raised p-2 shadow-md">
-          {activePage === 'verify' && (
-            <VerifyPage
-              initialBatchId={initialOrganId}
-              onNavigateToAdmin={() => handlePageChange('dashboard')}
-            />
-          )}
-          {activePage === 'dashboard' && (
-            <DashboardPage onNavigateToVerify={handleNavigateToVerify} />
-          )}
-          {activePage === 'explorer' && (
-            <ExplorerPage />
-          )}
+          <ErrorBoundary>
+            {activePage === 'verify' && (
+              <VerifyPage
+                initialBatchId={initialOrganId}
+                onNavigateToAdmin={() => handlePageChange('dashboard')}
+              />
+            )}
+            {activePage === 'dashboard' && (
+              <DashboardPage onNavigateToVerify={handleNavigateToVerify} />
+            )}
+            {activePage === 'explorer' && (
+              <ExplorerPage />
+            )}
+          </ErrorBoundary>
         </div>
       </main>
 

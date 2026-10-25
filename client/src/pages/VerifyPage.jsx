@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Search, Camera, ShieldCheck, AlertTriangle, CheckCircle2,
   Clock, MapPin, ExternalLink, Copy, Check, ChevronRight,
   Pill, AlertOctagon, Award, Thermometer, ShieldAlert,
   FileCheck, Hash, Info, ArrowRight, ShieldX, HeartHandshake,
-  Heart, Activity, Building2, Truck
+  Heart, Activity, Building2, Truck, Layers
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useAuth } from '../context/AuthContext';
@@ -25,16 +25,7 @@ export default function VerifyPage({ initialBatchId, onNavigateToAdmin }) {
   const [isCertModalOpen, setIsCertModalOpen] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
-  useEffect(() => {
-    if (initialBatchId) {
-      setOrganIdInput(initialBatchId);
-      performVerification(initialBatchId);
-    } else {
-      performVerification('ORG-KID-8041');
-    }
-  }, [initialBatchId]);
-
-  const performVerification = async (idToVerify) => {
+  const performVerification = useCallback(async (idToVerify) => {
     const id = (idToVerify || organIdInput || '').trim().toUpperCase();
     if (!id) return;
 
@@ -57,7 +48,9 @@ export default function VerifyPage({ initialBatchId, onNavigateToAdmin }) {
               spread: 50,
               origin: { y: 0.6 }
             });
-          } catch (e) {}
+          } catch (e) {
+            // non-fatal if canvas-confetti fails
+          }
         }
       }
       setLoading(false);
@@ -72,7 +65,16 @@ export default function VerifyPage({ initialBatchId, onNavigateToAdmin }) {
       });
       setLoading(false);
     }
-  };
+  }, [organIdInput]);
+
+  useEffect(() => {
+    if (initialBatchId) {
+      setOrganIdInput(initialBatchId);
+      performVerification(initialBatchId);
+    } else {
+      performVerification('ORG-KID-8041');
+    }
+  }, [initialBatchId, performVerification]);
 
   const handleCopy = (text, key) => {
     navigator.clipboard.writeText(text);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, ArrowRight, Truck, ShieldCheck, AlertCircle, CheckCircle, Thermometer, MapPin, Building2, Heart } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -7,37 +7,47 @@ export default function TransferModal({ batch, isOpen, onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const [toAddress, setToAddress] = useState('');
+  const [location, setLocation] = useState('');
+  const [temperature, setTemperature] = useState(2.4);
+  const [notes, setNotes] = useState('');
+
+  // Update form fields whenever a new batch is selected or opened
+  useEffect(() => {
+    if (batch) {
+      let recommendedRole = 'logistics';
+      if (batch.stage === 'Harvested') {
+        recommendedRole = 'logistics';
+      } else if (batch.stage === 'InTransit') {
+        recommendedRole = 'authority';
+      } else if (batch.stage === 'AllocationCleared') {
+        recommendedRole = 'hospital';
+      } else {
+        recommendedRole = 'hospital';
+      }
+
+      const availableRecipients = demoUsers.filter(u => u.role !== 'customer');
+      const defaultRecipient = availableRecipients.find(u => u.role === recommendedRole) || availableRecipients[0];
+
+      setToAddress(defaultRecipient?.ethAddress || '');
+      setLocation(
+        recommendedRole === 'logistics' ? 'Air Ambulance Terminal 1D, Cryo-Bay 4' :
+        recommendedRole === 'authority' ? 'NOTTO Central Allocation Directorate' :
+        'Apollo Transplant Surgical Suite #3'
+      );
+      setTemperature(batch.latestTemperature || batch.temperatureCelsius || 2.4);
+      setNotes(`Chain-of-custody handoff to authorized ${recommendedRole.toUpperCase()} node`);
+      setError(null);
+    }
+  }, [batch, demoUsers, isOpen]);
+
+  // Hook rules: all hooks must be called before conditional return
   if (!isOpen || !batch) return null;
 
   const organId = batch.organId || batch.batchId;
   const organType = batch.organType || batch.medicineName || 'Organ';
   const bloodType = batch.donorBloodType || 'O+';
-  const currentTemp = batch.latestTemperature || batch.temperatureCelsius || 2.4;
-
-  // Next recommended recipient node based on stage
-  let recommendedRole = 'logistics';
-  if (batch.stage === 'Harvested') {
-    recommendedRole = 'logistics';
-  } else if (batch.stage === 'InTransit') {
-    recommendedRole = 'authority';
-  } else if (batch.stage === 'AllocationCleared') {
-    recommendedRole = 'hospital';
-  } else {
-    recommendedRole = 'hospital';
-  }
-
-  // Filter possible nodes
   const availableRecipients = demoUsers.filter(u => u.role !== 'customer');
-  const defaultRecipient = availableRecipients.find(u => u.role === recommendedRole) || availableRecipients[0];
-
-  const [toAddress, setToAddress] = useState(defaultRecipient?.ethAddress || '');
-  const [location, setLocation] = useState(
-    recommendedRole === 'logistics' ? 'Air Ambulance Terminal 1D, Cryo-Bay 4' :
-    recommendedRole === 'authority' ? 'NOTTO Central Allocation Directorate' :
-    'Apollo Transplant Surgical Suite #3'
-  );
-  const [temperature, setTemperature] = useState(currentTemp);
-  const [notes, setNotes] = useState(`Chain-of-custody handoff to authorized ${recommendedRole.toUpperCase()} node`);
 
   const handleTransfer = async (e) => {
     e.preventDefault();
