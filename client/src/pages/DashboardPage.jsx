@@ -226,9 +226,13 @@ export default function DashboardPage({
               >
                 <Icon className={`w-3.5 h-3.5 shrink-0 ${active ? 'text-[#0A246A]' : 'text-gray-600'}`} />
                 <div className="min-w-0 flex-1 leading-tight">
-                  <div className="text-[11px] truncate flex items-center justify-between">
-                    <span>{u.badge}</span>
-                    {active && <span className="text-[9px] text-[#0A246A] font-bold font-mono">[ACTIVE]</span>}
+                  <div className="flex items-center justify-between gap-1">
+                    <span className="text-[11px] font-bold truncate">{u.shortBadge || u.badge}</span>
+                    {active && (
+                      <span className="shrink-0 text-[8px] bg-[#0A246A] text-white px-1 py-0.2 rounded-2xs font-mono font-bold">
+                        ACTIVE
+                      </span>
+                    )}
                   </div>
                   <div className="text-[9px] text-gray-500 truncate">{u.name}</div>
                 </div>
@@ -405,7 +409,7 @@ export default function DashboardPage({
         </div>
 
         {/* JTable Container */}
-        <div className="swing-sunken overflow-x-auto max-h-[500px]">
+        <div className="swing-sunken overflow-x-auto max-h-[560px] pb-1">
           <table className="w-full text-left border-collapse text-[11px]">
             <thead className="sticky top-0 z-10">
               <tr>
