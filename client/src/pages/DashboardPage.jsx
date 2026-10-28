@@ -367,7 +367,7 @@ export default function DashboardPage({
           <span className="text-xl font-bold font-mono text-blue-800">
             {organs.filter(o => o.stage === 'InTransit' || o.stage === 'DistributorReceived').length} Coolers
           </span>
-          <span className="text-[9px] text-blue-600">Active Cryo-Telemetry</span>
+          <span className="text-[9px] text-blue-600">Active In-Transit</span>
         </div>
         <div className="swing-panel-sunken p-2 flex flex-col justify-between">
           <span className="text-[10px] font-bold text-gray-600 uppercase">Transplanted / Grafted</span>
@@ -416,7 +416,7 @@ export default function DashboardPage({
                 <th className="swing-th">Organ Identifier</th>
                 <th className="swing-th">Organ Type</th>
                 <th className="swing-th">Donor & Blood</th>
-                <th className="swing-th">Cold Ischemia & Preservative</th>
+                <th className="swing-th">Safe Window & Temp</th>
                 <th className="swing-th">Current Custodian</th>
                 <th className="swing-th">Status</th>
                 <th className="swing-th text-right">Swing Actions</th>
@@ -505,7 +505,7 @@ export default function DashboardPage({
                         </div>
                         <div className={`text-[10px] flex items-center gap-1 ${isSelected ? 'text-blue-200' : 'text-gray-500'}`}>
                           <Thermometer className="w-3 h-3 text-cyan-600" />
-                          <span>{organ.temperatureCelsius || 2.8}°C ({organ.preservationProtocol?.split(' ')[0] || "Custodiol"})</span>
+                          <span>{organ.temperatureCelsius || 2.8}°C (Safe Range)</span>
                         </div>
                       </td>
 

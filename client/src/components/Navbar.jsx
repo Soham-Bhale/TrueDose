@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
-  Heart, ShieldAlert, Search, LayoutDashboard, Boxes, GraduationCap,
-  ChevronDown, Check, Truck, Building2, UserCheck, RefreshCw,
-  Plus, Shield, Activity, FileCheck, HeartHandshake, AlertTriangle
+  ShieldAlert, Search, LayoutDashboard, Boxes, GraduationCap,
+  ChevronDown, Check, Truck, Building2, UserCheck,
+  Plus, FileCheck, HeartHandshake, AlertTriangle,
+  Zap, Link as LinkIcon
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -20,8 +21,8 @@ const ROLE_ICONS = {
   pharmacy: Building2
 };
 
-export default function Navbar({ activePage, setActivePage, onOpenGuide, onHarvestClick }) {
-  const { currentUser, switchRole, demoUsers, investigationCount, refreshStats } = useAuth();
+export default function Navbar({ activePage, setActivePage, onOpenGuide, onHarvestClick, onOpenWheel }) {
+  const { currentUser, switchRole, demoUsers, investigationCount } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState(null);
   const dropdownRef = useRef(null);
@@ -44,9 +45,10 @@ export default function Navbar({ activePage, setActivePage, onOpenGuide, onHarve
   }, []);
 
   const navItems = [
-    { id: 'dashboard', label: 'Procurement & Custody Portal', shortcut: 'F2' },
-    { id: 'verify',    label: 'Organ Verification Inspector', shortcut: 'F3' },
-    { id: 'explorer',  label: 'Consortium EVM Ledger',        shortcut: 'F4' },
+    { id: 'dashboard',  label: 'Procurement & Custody Portal', shortcut: 'F2' },
+    { id: 'verify',     label: 'Organ Verification Inspector', shortcut: 'F3' },
+    { id: 'explorer',   label: 'Consortium EVM Ledger',        shortcut: 'F4' },
+    { id: 'visualizer', label: 'Visual Block Chain',           shortcut: 'F5' },
   ];
 
   return (
@@ -170,6 +172,13 @@ export default function Navbar({ activePage, setActivePage, onOpenGuide, onHarve
                   <span>Consortium EVM Ledger Explorer</span>
                   {activePage === 'explorer' && <Check className="w-3 h-3 text-black" />}
                 </button>
+                <button
+                  onClick={() => { setActivePage('visualizer'); setActiveMenu(null); }}
+                  className="w-full text-left px-3 py-1 hover:bg-[#0A246A] hover:text-white flex justify-between items-center"
+                >
+                  <span>Visual Block Chain & Consensus Simulator</span>
+                  {activePage === 'visualizer' && <Check className="w-3 h-3 text-black" />}
+                </button>
               </div>
             )}
           </div>
@@ -258,6 +267,7 @@ export default function Navbar({ activePage, setActivePage, onOpenGuide, onHarve
                 {item.id === 'dashboard' && <LayoutDashboard className="w-3.5 h-3.5 text-[#0A246A]" />}
                 {item.id === 'verify' && <Search className="w-3.5 h-3.5 text-teal-700" />}
                 {item.id === 'explorer' && <Boxes className="w-3.5 h-3.5 text-indigo-700" />}
+                {item.id === 'visualizer' && <LinkIcon className="w-3.5 h-3.5 text-blue-700" />}
                 <span>{item.label}</span>
                 <span className="text-gray-400 text-[9px] font-mono">[{item.shortcut}]</span>
               </button>
@@ -277,6 +287,15 @@ export default function Navbar({ activePage, setActivePage, onOpenGuide, onHarve
           >
             <Plus className="w-3 h-3 text-green-700" />
             <span>Harvest Organ</span>
+          </button>
+
+          <button
+            onClick={() => onOpenWheel && onOpenWheel()}
+            className="swing-btn bg-[#2B2F38] text-amber-400 font-bold border-amber-500/50 hover:bg-[#1E222A]"
+            title="Open GTA 5 Action Wheel [Tab]"
+          >
+            <Zap className="w-3 h-3 text-amber-400 animate-pulse" />
+            <span>GTA Wheel [Tab]</span>
           </button>
 
           <button

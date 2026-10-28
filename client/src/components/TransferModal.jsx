@@ -183,15 +183,15 @@ export default function TransferModal({ batch, isOpen, onClose, onSuccess }) {
             </div>
           </fieldset>
 
-          {/* Transit Telemetry */}
+          {/* Transit Storage & Location */}
           <fieldset className="p-2.5 swing-etched bg-[#ECE9D8]">
             <legend className="px-1 text-[11px] font-bold text-[#0A246A]">
-              3. Custodial Telemetry & Transit Location
+              3. Transit Location & Safe Storage Temp
             </legend>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
               <div>
                 <label className="block text-[10px] font-bold text-[#333333] mb-0.5">
-                  Transfer Point / Milestone:
+                  Transfer Point / Destination:
                 </label>
                 <input
                   type="text"
@@ -205,7 +205,7 @@ export default function TransferModal({ batch, isOpen, onClose, onSuccess }) {
 
               <div>
                 <label className="block text-[10px] font-bold text-[#333333] mb-0.5">
-                  Cryo Container Temp (°C):
+                  Container Temperature (°C) <span className="text-gray-500 font-normal">[Safe: 2.0°C - 4.0°C]</span>:
                 </label>
                 <div className="flex items-center gap-1">
                   <input

@@ -302,25 +302,25 @@ export default function VerifyPage({ initialBatchId, onNavigateToAdmin }) {
             {/* Spec Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 text-[11px]">
               <div className="swing-panel-sunken p-2">
-                <span className="text-[10px] text-gray-500 uppercase font-bold block">Donor Blood & HLA</span>
+                <span className="text-[10px] text-gray-500 uppercase font-bold block">Blood & Tissue Match</span>
                 <span className="font-mono font-bold text-red-700 text-sm">
                   {result.donorBloodType || result.dosage}
                 </span>
                 <span className="text-[10px] text-gray-600 block">{result.hlaMarker || "6/6 Match"}</span>
               </div>
               <div className="swing-panel-sunken p-2">
-                <span className="text-[10px] text-gray-500 uppercase font-bold block">Cold Ischemia Clock</span>
+                <span className="text-[10px] text-gray-500 uppercase font-bold block">Safe Viability Window</span>
                 <span className={`font-mono font-bold text-sm ${result.isIschemiaExpired ? 'text-red-700' : 'text-blue-800'}`}>
                   {result.remainingIschemiaHours || result.daysUntilExpiry}h safe window
                 </span>
-                <span className="text-[10px] text-gray-600 block">Limit: {result.ischemicLimitHours}h safe</span>
+                <span className="text-[10px] text-gray-600 block">Max Limit: {result.ischemicLimitHours}h</span>
               </div>
               <div className="swing-panel-sunken p-2">
-                <span className="text-[10px] text-gray-500 uppercase font-bold block">Cryo-Reefer Temp</span>
+                <span className="text-[10px] text-gray-500 uppercase font-bold block">Container Temp</span>
                 <span className="font-mono font-bold text-cyan-800 text-sm">
                   {result.telemetry?.currentTemperatureCelsius || 2.8}°C
                 </span>
-                <span className="text-[10px] text-green-700 font-bold block">Preserved: 2°C - 4°C</span>
+                <span className="text-[10px] text-green-700 font-bold block">Safe Range: 2°C - 4°C</span>
               </div>
               <div className="swing-panel-sunken p-2">
                 <span className="text-[10px] text-gray-500 uppercase font-bold block">Target Recipient</span>
@@ -332,36 +332,39 @@ export default function VerifyPage({ initialBatchId, onNavigateToAdmin }) {
             </div>
           </div>
 
-          {/* ── 5. Cold-Chain IoT Cryo-Preservation Telemetry ─────── */}
+          {/* ── 5. Simplified Storage & Preservation Status ─────── */}
           <fieldset className="swing-etched bg-[#ECE9D8] p-2.5">
             <legend className="px-1.5 font-bold text-[11px] text-[#0A246A] bg-[#ECE9D8] flex items-center gap-1.5">
               <Thermometer className="w-3.5 h-3.5 text-blue-700" />
-              <span>Real-Time Hypothermic Cryo-Preservation IoT Telemetry</span>
+              <span>Organ Storage & Preservation Condition (Simple Overview)</span>
             </legend>
 
-            <div className="p-2 bg-white border border-[#808080] flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px]">
-              <div className="space-y-0.5">
-                <div className="font-bold text-gray-800 flex items-center gap-1.5">
-                  <Activity className="w-3.5 h-3.5 text-green-600" />
-                  <span>Preservation Protocol: {result.preservationProtocol || "Custodiol HTK Hypothermic Perfusion"}</span>
+            <div className="p-2.5 bg-white border border-[#808080] flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px]">
+              <div className="space-y-1">
+                <div className="font-bold text-gray-900 flex items-center gap-1.5 text-xs">
+                  <CheckCircle2 className="w-4 h-4 text-green-600" />
+                  <span>Status: Optimal Condition (Safe for Implantation)</span>
                 </div>
-                <div className="text-[10px] text-gray-500">
-                  Continuous Perfusion Flow: 45 mL/min | Sensor Node ID: {result.telemetry?.sensorNodeId || "IOT-CRYO-8041"}
+                <div className="text-[11px] text-gray-600">
+                  Preserved in sterile cold solution • Constant safe temperature maintained throughout transit.
                 </div>
               </div>
 
               <div className="flex items-center gap-2 font-mono">
-                <div className="swing-panel-sunken px-2 py-1 text-center">
-                  <div className="text-[9px] text-gray-500">Probe Temp</div>
-                  <div className="font-bold text-blue-800 text-[12px]">{result.telemetry?.currentTemperatureCelsius || 2.8}°C</div>
+                <div className="swing-panel-sunken px-3 py-1.5 text-center">
+                  <div className="text-[9px] text-gray-500 uppercase font-sans">Current Temp</div>
+                  <div className="font-bold text-blue-800 text-[13px]">{result.telemetry?.currentTemperatureCelsius || 2.8}°C</div>
+                  <div className="text-[8px] text-green-700 font-bold font-sans">Normal</div>
                 </div>
-                <div className="swing-panel-sunken px-2 py-1 text-center">
-                  <div className="text-[9px] text-gray-500">Safe Range</div>
-                  <div className="font-bold text-green-700 text-[12px]">2.0°C - 4.0°C</div>
+                <div className="swing-panel-sunken px-3 py-1.5 text-center">
+                  <div className="text-[9px] text-gray-500 uppercase font-sans">Safe Time Left</div>
+                  <div className="font-bold text-green-700 text-[13px]">{result.remainingIschemiaHours || 19.2}h</div>
+                  <div className="text-[8px] text-blue-700 font-sans">Active Window</div>
                 </div>
-                <div className="swing-panel-sunken px-2 py-1 text-center">
-                  <div className="text-[9px] text-gray-500">Seal Integrity</div>
-                  <div className="font-bold text-[#0A246A] text-[12px]">UNBROKEN</div>
+                <div className="swing-panel-sunken px-3 py-1.5 text-center">
+                  <div className="text-[9px] text-gray-500 uppercase font-sans">Container Seal</div>
+                  <div className="font-bold text-[#0A246A] text-[13px]">INTACT</div>
+                  <div className="text-[8px] text-gray-500 font-sans">Tamper-Proof</div>
                 </div>
               </div>
             </div>

@@ -531,3 +531,92 @@ This document contains the complete manual test suite (**45 test cases across 11
 ---
 
 *LifeLedger Manual Test Suite • 45 Verified Invariants • October 2026 Production Build*
+
+
+### 🎮 Module 12: GTA V Radial Action Wheel Navigation
+
+#### TC-WHEEL-01: Toggle GTA V Radial Wheel via Tab Key & Q Key
+* **Objective:** Verify pressing `Tab` or `Q` anywhere in the app displays the GTA V weapon wheel overlay.
+* **Test Steps:**
+  1. From any screen (Dashboard, Verify, or Explorer), press `Tab`.
+  2. Verify circular 8-octant weapon HUD opens with darkened backdrop.
+  3. Press `Tab` or `Esc` again to close.
+  4. Press `Q` (when not typing in a text field). Verify wheel opens again.
+* **Expected Result:** Wheel opens and closes instantly with smooth focus trap prevention.
+* **Status:** PASS / FAIL
+
+#### TC-WHEEL-02: Floating Quick-Launcher Button Trigger
+* **Objective:** Verify mouse users can click the bottom-right `ACTION WHEEL [TAB]` HUD button.
+* **Test Steps:**
+  1. Click the glowing amber `[ACTION WHEEL [TAB]]` button in bottom-right corner.
+  2. Verify radial wheel displays with audio chirp.
+* **Expected Result:** Wheel opens centered on screen.
+* **Status:** PASS / FAIL
+
+#### TC-WHEEL-03: Radial Angle Mouse Tracking & Slice Selection
+* **Objective:** Verify mouse movement dynamically highlights wedges based on circular angle `Math.atan2`.
+* **Test Steps:**
+  1. Move mouse in a circle around the wheel center.
+  2. Verify the corresponding wedge highlights with golden-amber glow and audio tick.
+  3. Verify center reticle updates with slot number, role, icon, and action description.
+* **Expected Result:** Responsive 360-degree radial tracking selecting slots 1 through 8.
+* **Status:** PASS / FAIL
+
+#### TC-WHEEL-04: Numeric Direct Select Keys [1-8]
+* **Objective:** Verify pressing keys `1` to `8` directly executes the corresponding action.
+* **Test Steps:**
+  1. Open wheel with `Tab`.
+  2. Press key `7` (Visual Block Chain).
+* **Expected Result:** Wheel closes and immediately navigates to `Visual Block Chain` page.
+* **Status:** PASS / FAIL
+
+---
+
+### ⛓️ Module 13: Visual Blockchain Architecture & Simulator
+
+#### TC-VIS-01: Cryptographic Block Chaining & Hash Inspection
+* **Objective:** Verify sequential blocks link via `currentHash` -> `prevHash`.
+* **Test Steps:**
+  1. Open `Visual Block Chain` (Shortcut `F5` or click `Visual Block Chain` in toolbar).
+  2. Observe Genesis Block (#000), Block #001, Block #002, Block #003.
+  3. Hover over Block #001's current hash ribbon.
+* **Expected Result:** Block #001's hash and Block #002's previous hash highlight simultaneously with green checkmark: `prevHash Match verified`.
+* **Status:** PASS / FAIL
+
+#### TC-VIS-02: Data Tamper & Cryptographic Avalanche Simulation
+* **Objective:** Verify altering data in Block #1 breaks subsequent block hashes and triggers consensus rejection.
+* **Test Steps:**
+  1. On Block #001, click `[Simulate Data Tamper]`.
+  2. Observe Block #001 recalculates hash via real Web Crypto SHA-256.
+  3. Observe link connector turns bright red with `CRYPTOGRAPHIC LINK BROKEN! Hash mismatch rejected by PoA Consensus`.
+  4. Observe subsequent blocks show `CONSENSUS REJECTED`.
+  5. Click `[Restore Blockchain Integrity]`.
+* **Expected Result:** Ledger restores to clean, cryptographically valid state.
+* **Status:** PASS / FAIL
+
+#### TC-VIS-03: Interactive PoA Block Minting Simulator
+* **Objective:** Verify bundling Mempool transactions into a brand-new mined block.
+* **Test Steps:**
+  1. Switch to `Mint Next Block` tab.
+  2. Review 3 pending transactions in Mempool queue.
+  3. Click `[Mint Block #4 (PoA Consensus)]`.
+  4. Watch 4-stage animation: (1) Bundling, (2) Merkle tree calculation, (3) Multi-node PoA signatures, (4) SHA-256 chaining.
+* **Expected Result:** Progress bar animates to 100%, confetti triggers, and new Block #004 is appended to the chain.
+* **Status:** PASS / FAIL
+
+#### TC-VIS-04: Proof-of-Authority Consortium Node Topology
+* **Objective:** Verify inspection of the 4 authorized stakeholder validator nodes.
+* **Test Steps:**
+  1. Switch to `Validator Nodes (PoA)` tab.
+  2. Inspect Lilavati OPO, AeroMed Transit, NOTTO Central, and Apollo Hospital nodes.
+* **Expected Result:** Displays public Ethereum addresses, 25% consensus weights, and live peer latency (~14ms).
+* **Status:** PASS / FAIL
+
+#### TC-VIS-05: Simplified Organ Preservation & Safety Status
+* **Objective:** Verify organ details show simple, clean preservation status instead of complex IoT probe jargon.
+* **Test Steps:**
+  1. Open `Organ Verification Inspector` (Shortcut `F3`).
+  2. Query `ORG-KID-8041`.
+  3. Inspect `Organ Storage & Preservation Condition` card.
+* **Expected Result:** Displays clean: Current Temp `2.8°C (Normal)`, Safe Time Left `19.2h (Active Window)`, Container Seal `INTACT (Tamper-Proof)`. No complex sensor probe telemetry clutter.
+* **Status:** PASS / FAIL

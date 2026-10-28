@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import VerifyPage from './pages/VerifyPage';
 import DashboardPage from './pages/DashboardPage';
 import ExplorerPage from './pages/ExplorerPage';
+import BlockVisualizerPage from './pages/BlockVisualizerPage';
+import RadialActionWheel from './components/RadialActionWheel';
 import PresentationGuideModal from './components/PresentationGuideModal';
-import { Heart, ExternalLink, HelpCircle, Activity, ShieldCheck, Database, AlertCircle, RefreshCw } from 'lucide-react';
+import { ExternalLink, HelpCircle, ShieldCheck, AlertCircle, RefreshCw, Zap } from 'lucide-react';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -72,22 +74,63 @@ class ErrorBoundary extends React.Component {
 
 function AppContent() {
   const { currentUser, switchRole } = useAuth();
-  const [activePage, setActivePage] = useState('dashboard');
-  const [initialOrganId, setInitialOrganId] = useState(null);
+  const [initialOrganId, setInitialOrganId] = useState(() => {
+    if (typeof window === 'undefined') return null;
+    const path = window.location.pathname;
+    if (path.includes('/verify/')) {
+      const parts = path.split('/verify/');
+      if (parts[1]) return parts[1].split('/')[0].split('?')[0];
+    }
+    return null;
+  });
+
+  const [activePage, setActivePage] = useState(() => {
+    if (typeof window === 'undefined') return 'dashboard';
+    const path = window.location.pathname;
+    if (path.includes('/verify')) return 'verify';
+    if (path.includes('/explorer')) return 'explorer';
+    if (path.includes('/visualizer')) return 'visualizer';
+    return 'dashboard';
+  });
+
   const [isGuideOpen, setIsGuideOpen] = useState(false);
   const [isHarvestModalOpen, setIsHarvestModalOpen] = useState(false);
+  const [isWheelOpen, setIsWheelOpen] = useState(false);
 
-  const handleOpenHarvest = () => {
+  const handleOpenHarvest = useCallback(() => {
     if (currentUser.role !== 'opo' && currentUser.role !== 'admin' && currentUser.role !== 'manufacturer') {
       switchRole('opo');
     }
     setActivePage('dashboard');
     setIsHarvestModalOpen(true);
-  };
+  }, [currentUser, switchRole]);
+
+  const handlePageChange = useCallback((page) => {
+    setActivePage(page);
+    if (page === 'verify' && initialOrganId) {
+      window.history.pushState({}, '', `/verify/${initialOrganId}`);
+    } else if (page === 'verify') {
+      window.history.pushState({}, '', '/verify');
+    } else if (page === 'dashboard') {
+      window.history.pushState({}, '', '/');
+    } else {
+      window.history.pushState({}, '', `/${page}`);
+    }
+  }, [initialOrganId]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if ((e.ctrlKey && e.key.toLowerCase() === 'h') || e.key === 'F2') {
+      const activeEl = document.activeElement;
+      const isInputActive = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'SELECT');
+
+      // Tab or Q opens GTA V Action Wheel (when not typing in an input field)
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        setIsWheelOpen(prev => !prev);
+      } else if (!isInputActive && (e.key.toLowerCase() === 'q')) {
+        e.preventDefault();
+        setIsWheelOpen(prev => !prev);
+      } else if ((e.ctrlKey && e.key.toLowerCase() === 'h') || e.key === 'F2') {
         e.preventDefault();
         handleOpenHarvest();
       } else if (e.key === 'F1') {
@@ -99,47 +142,19 @@ function AppContent() {
       } else if (e.key === 'F4') {
         e.preventDefault();
         handlePageChange('explorer');
+      } else if (e.key === 'F5') {
+        e.preventDefault();
+        handlePageChange('visualizer');
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentUser]);
-
-  useEffect(() => {
-    const path = window.location.pathname;
-    if (path.includes('/verify/')) {
-      const parts = path.split('/verify/');
-      if (parts[1]) {
-        const id = parts[1].split('/')[0].split('?')[0];
-        setInitialOrganId(id);
-        setActivePage('verify');
-      }
-    } else if (path.includes('/verify')) {
-      setActivePage('verify');
-    } else if (path.includes('/explorer')) {
-      setActivePage('explorer');
-    } else if (path.includes('/dashboard')) {
-      setActivePage('dashboard');
-    }
-  }, []);
+  }, [currentUser, handleOpenHarvest, handlePageChange]);
 
   const handleNavigateToVerify = (organId) => {
     setInitialOrganId(organId);
     setActivePage('verify');
     window.history.pushState({}, '', `/verify/${organId}`);
-  };
-
-  const handlePageChange = (page) => {
-    setActivePage(page);
-    if (page === 'verify' && initialOrganId) {
-      window.history.pushState({}, '', `/verify/${initialOrganId}`);
-    } else if (page === 'verify') {
-      window.history.pushState({}, '', '/verify');
-    } else if (page === 'dashboard') {
-      window.history.pushState({}, '', '/');
-    } else {
-      window.history.pushState({}, '', `/${page}`);
-    }
   };
 
   return (
@@ -150,6 +165,7 @@ function AppContent() {
         setActivePage={handlePageChange}
         onOpenGuide={() => setIsGuideOpen(true)}
         onHarvestClick={handleOpenHarvest}
+        onOpenWheel={() => setIsWheelOpen(true)}
       />
 
       {/* Main Workspace Frame */}
@@ -173,9 +189,32 @@ function AppContent() {
             {activePage === 'explorer' && (
               <ExplorerPage />
             )}
+            {activePage === 'visualizer' && (
+              <BlockVisualizerPage />
+            )}
           </ErrorBoundary>
         </div>
       </main>
+
+      {/* Floating GTA V Style Action Wheel Quick Launcher */}
+      <div className="fixed bottom-10 right-4 z-40">
+        <button
+          onClick={() => setIsWheelOpen(true)}
+          className="flex items-center gap-2 px-3 py-1.5 bg-[#0f141d]/95 text-amber-400 font-mono font-bold text-[11px] rounded-full border-2 border-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.35)] hover:scale-105 active:scale-95 transition-all cursor-pointer group"
+          title="Open GTA V Quick-Action Radial Wheel (Keyboard: Press TAB or Q)"
+        >
+          <Zap className="w-3.5 h-3.5 text-amber-400 group-hover:rotate-12 transition-transform" />
+          <span>ACTION WHEEL [TAB]</span>
+        </button>
+      </div>
+
+      {/* GTA V Radial Action Wheel Overlay */}
+      <RadialActionWheel
+        isOpen={isWheelOpen}
+        onClose={() => setIsWheelOpen(false)}
+        onNavigate={handlePageChange}
+        onOpenHarvest={handleOpenHarvest}
+      />
 
       {/* Java Swing Standard JStatusBar */}
       <footer className="swing-statusbar border-t-2 border-[#FFFFFF] bg-[#ECE9D8] px-2 py-1 text-[11px] select-none">
