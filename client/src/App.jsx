@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import VerifyPage from './pages/VerifyPage';
@@ -77,6 +77,34 @@ function AppContent() {
   const [isGuideOpen, setIsGuideOpen] = useState(false);
   const [isHarvestModalOpen, setIsHarvestModalOpen] = useState(false);
 
+  const handleOpenHarvest = () => {
+    if (currentUser.role !== 'opo' && currentUser.role !== 'admin' && currentUser.role !== 'manufacturer') {
+      switchRole('opo');
+    }
+    setActivePage('dashboard');
+    setIsHarvestModalOpen(true);
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey && e.key.toLowerCase() === 'h') || e.key === 'F2') {
+        e.preventDefault();
+        handleOpenHarvest();
+      } else if (e.key === 'F1') {
+        e.preventDefault();
+        setIsGuideOpen(true);
+      } else if (e.key === 'F3') {
+        e.preventDefault();
+        handlePageChange('verify');
+      } else if (e.key === 'F4') {
+        e.preventDefault();
+        handlePageChange('explorer');
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentUser]);
+
   useEffect(() => {
     const path = window.location.pathname;
     if (path.includes('/verify/')) {
@@ -94,25 +122,6 @@ function AppContent() {
       setActivePage('dashboard');
     }
   }, []);
-
-  const handleHarvestClick = useCallback(() => {
-    if (currentUser?.role !== 'opo' && currentUser?.role !== 'admin') {
-      switchRole('opo');
-    }
-    setActivePage('dashboard');
-    setIsHarvestModalOpen(true);
-  }, [currentUser, switchRole]);
-
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if ((e.ctrlKey && e.key.toLowerCase() === 'h') || e.key === 'F2') {
-        e.preventDefault();
-        handleHarvestClick();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleHarvestClick]);
 
   const handleNavigateToVerify = (organId) => {
     setInitialOrganId(organId);
@@ -140,7 +149,7 @@ function AppContent() {
         activePage={activePage}
         setActivePage={handlePageChange}
         onOpenGuide={() => setIsGuideOpen(true)}
-        onHarvestClick={handleHarvestClick}
+        onHarvestClick={handleOpenHarvest}
       />
 
       {/* Main Workspace Frame */}
@@ -157,7 +166,8 @@ function AppContent() {
               <DashboardPage
                 onNavigateToVerify={handleNavigateToVerify}
                 isHarvestModalOpen={isHarvestModalOpen}
-                setIsHarvestModalOpen={setIsHarvestModalOpen}
+                onOpenHarvestModal={handleOpenHarvest}
+                onCloseHarvestModal={() => setIsHarvestModalOpen(false)}
               />
             )}
             {activePage === 'explorer' && (

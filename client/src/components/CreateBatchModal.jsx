@@ -50,15 +50,27 @@ export default function CreateBatchModal({ isOpen, onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  React.useEffect(() => {
+    if (isOpen) {
+      setFormData({
+        ...ORGAN_PRESETS.kidney,
+        organId: 'ORG-KID-' + Math.floor(1000 + Math.random() * 9000),
+        donorId: 'DNR-DEL-' + Math.floor(1000 + Math.random() * 9000)
+      });
+      setError(null);
+      setLoading(false);
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const loadPreset = (key) => {
     const preset = ORGAN_PRESETS[key];
-    const prefix = key === 'kidney' ? 'ORG-KID-' : key === 'heart' ? 'ORG-HRT-' : 'ORG-LVR-';
     if (preset) {
       setFormData({
         ...preset,
-        organId: prefix + Math.floor(1000 + Math.random() * 9000)
+        organId: preset.organId.slice(0, 8) + Math.floor(1000 + Math.random() * 9000),
+        donorId: preset.donorId.slice(0, 8) + Math.floor(1000 + Math.random() * 9000)
       });
     }
   };
@@ -68,20 +80,16 @@ export default function CreateBatchModal({ isOpen, onClose, onSuccess }) {
     setLoading(true);
     setError(null);
 
-    const authorizedRole = (currentUser.role === 'opo' || currentUser.role === 'admin' || currentUser.role === 'manufacturer')
+    const roleToUse = (currentUser.role === 'opo' || currentUser.role === 'admin' || currentUser.role === 'manufacturer')
       ? currentUser.role
       : 'opo';
-
-    if (currentUser.role !== authorizedRole) {
-      switchRole('opo');
-    }
 
     try {
       const res = await fetch('/api/organs', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-demo-role': authorizedRole
+          'x-demo-role': roleToUse
         },
         body: JSON.stringify({
           ...formData,
@@ -96,6 +104,9 @@ export default function CreateBatchModal({ isOpen, onClose, onSuccess }) {
       }
 
       setLoading(false);
+      if (currentUser.role !== 'opo' && currentUser.role !== 'admin') {
+        switchRole('opo');
+      }
       if (onSuccess) onSuccess(data.organ || data.batch);
       onClose();
     } catch (err) {
