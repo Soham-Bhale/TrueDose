@@ -32,7 +32,11 @@ const STAGE_STYLES = {
   Quarantined:      { label: 'QUARANTINED',    bg: 'bg-red-100 text-red-900 border-red-300' }
 };
 
-export default function DashboardPage({ onNavigateToVerify }) {
+export default function DashboardPage({
+  onNavigateToVerify,
+  isHarvestModalOpen: externalIsHarvestOpen,
+  setIsHarvestModalOpen: externalSetIsHarvestOpen
+}) {
   const { currentUser, switchRole, demoUsers, investigationCount, refreshStats } = useAuth();
   const [organs, setOrgans] = useState([]);
   const [investigations, setInvestigations] = useState([]);
@@ -40,7 +44,10 @@ export default function DashboardPage({ onNavigateToVerify }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRow, setSelectedRow] = useState(null);
 
-  const [isHarvestModalOpen, setIsHarvestModalOpen] = useState(false);
+  const [internalIsHarvestOpen, setInternalIsHarvestOpen] = useState(false);
+  const isHarvestOpen = externalIsHarvestOpen !== undefined ? externalIsHarvestOpen : internalIsHarvestOpen;
+  const setIsHarvestOpen = externalSetIsHarvestOpen || setInternalIsHarvestOpen;
+
   const [transferTargetOrgan, setTransferTargetOrgan] = useState(null);
   const [qrTargetOrgan, setQrTargetOrgan] = useState(null);
   const [certTargetOrgan, setCertTargetOrgan] = useState(null);
@@ -250,13 +257,26 @@ export default function DashboardPage({ onNavigateToVerify }) {
             <span>Refresh (F5)</span>
           </button>
 
-          {(currentUser.role === 'opo' || currentUser.role === 'manufacturer' || currentUser.role === 'admin') && (
+          {(currentUser.role === 'opo' || currentUser.role === 'manufacturer' || currentUser.role === 'admin') ? (
             <button
-              onClick={() => setIsHarvestModalOpen(true)}
+              onClick={() => setIsHarvestOpen(true)}
               className="swing-btn swing-btn-primary"
+              title="Harvest & Register Donor Organ on Blockchain"
             >
               <Plus className="w-3.5 h-3.5 text-green-700" />
               <span>Harvest Organ Record (Ctrl+H)</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => {
+                switchRole('opo');
+                setIsHarvestOpen(true);
+              }}
+              className="swing-btn swing-btn-primary"
+              title="Switch to OPO Node & Harvest Organ"
+            >
+              <Plus className="w-3.5 h-3.5 text-green-700" />
+              <span>Harvest Organ Record (Switch to OPO)</span>
             </button>
           )}
 
@@ -585,8 +605,8 @@ export default function DashboardPage({ onNavigateToVerify }) {
 
       {/* ── 6. Modals ────────────────────────────────────────────── */}
       <CreateBatchModal
-        isOpen={isHarvestModalOpen}
-        onClose={() => setIsHarvestModalOpen(false)}
+        isOpen={isHarvestOpen}
+        onClose={() => setIsHarvestOpen(false)}
         onSuccess={(newOrgan) => {
           fetchDashboardData();
           setQrTargetOrgan(newOrgan);

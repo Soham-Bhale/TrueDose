@@ -115,6 +115,8 @@ If suspected human trafficking, a forged Form 8 certificate, or a thermal excurs
 
 ## 4. Exhaustive Button & UI Control Directory
 
+![LifeLedger Visual UI Button Showcase](diagram_ui_buttons_showcase.png)
+
 ### 4.1 Navigation Bar, JMenuBar & JToolBar
 
 | Control Element | UI Type | Technical Trigger & System Effect |
@@ -227,6 +229,10 @@ If suspected human trafficking, a forged Form 8 certificate, or a thermal excurs
 | **`[API Health]`** | Action Link | Direct link opening `http://localhost:5000/api/health` to verify backend gateway responsiveness. |
 | **`[REST JSON]`** | Action Link | Direct link inspecting raw JSON payload for `ORG-KID-8041` from the API. |
 | **`[Defense Guide [F1]]`** | Action Button | Opens the full academic presentation and viva defense manual. |
+
+### 4.7 Workstation Screen Layout Wireframes & Component Geometry
+
+![LifeLedger Workstation Screen Layout Wireframes](diagram_ui_screens_wireframe.png)
 
 ---
 

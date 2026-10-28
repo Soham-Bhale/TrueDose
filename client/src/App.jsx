@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { AuthProvider } from './context/AuthContext';
+import React, { useState, useEffect, useCallback } from 'react';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import VerifyPage from './pages/VerifyPage';
 import DashboardPage from './pages/DashboardPage';
@@ -71,9 +71,11 @@ class ErrorBoundary extends React.Component {
 }
 
 function AppContent() {
+  const { currentUser, switchRole } = useAuth();
   const [activePage, setActivePage] = useState('dashboard');
   const [initialOrganId, setInitialOrganId] = useState(null);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
+  const [isHarvestModalOpen, setIsHarvestModalOpen] = useState(false);
 
   useEffect(() => {
     const path = window.location.pathname;
@@ -92,6 +94,25 @@ function AppContent() {
       setActivePage('dashboard');
     }
   }, []);
+
+  const handleHarvestClick = useCallback(() => {
+    if (currentUser?.role !== 'opo' && currentUser?.role !== 'admin') {
+      switchRole('opo');
+    }
+    setActivePage('dashboard');
+    setIsHarvestModalOpen(true);
+  }, [currentUser, switchRole]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey && e.key.toLowerCase() === 'h') || e.key === 'F2') {
+        e.preventDefault();
+        handleHarvestClick();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleHarvestClick]);
 
   const handleNavigateToVerify = (organId) => {
     setInitialOrganId(organId);
@@ -119,6 +140,7 @@ function AppContent() {
         activePage={activePage}
         setActivePage={handlePageChange}
         onOpenGuide={() => setIsGuideOpen(true)}
+        onHarvestClick={handleHarvestClick}
       />
 
       {/* Main Workspace Frame */}
@@ -132,7 +154,11 @@ function AppContent() {
               />
             )}
             {activePage === 'dashboard' && (
-              <DashboardPage onNavigateToVerify={handleNavigateToVerify} />
+              <DashboardPage
+                onNavigateToVerify={handleNavigateToVerify}
+                isHarvestModalOpen={isHarvestModalOpen}
+                setIsHarvestModalOpen={setIsHarvestModalOpen}
+              />
             )}
             {activePage === 'explorer' && (
               <ExplorerPage />

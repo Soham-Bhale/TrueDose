@@ -87,6 +87,9 @@ async function runTestSuite() {
   console.log(`${bold(cyan('🧪 LifeLedger Comprehensive Automated API & Logical Error Test Suite'))}`);
   console.log(`${bold(cyan('========================================================================'))}\n`);
 
+  // Reset database to fresh seed state with current timestamps
+  store.resetToLifeLedger();
+
   await new Promise((resolve) => {
     server = app.listen(TEST_PORT, () => {
       console.log(`🚀 In-Memory Test Server running on port ${TEST_PORT}\n`);

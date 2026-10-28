@@ -5,10 +5,13 @@
 ---
 
 ### 📑 Official System Documentation & Engineering Report
-* 📄 **[Download Complete System Architecture & UI Specification Report (PDF)](LifeLedger_System_Architecture_and_UI_Specification_Report.pdf)** *(9-Page Detailed Engineering PDF)*
+* 📄 **[Download Complete System Architecture & UI Specification Report (PDF)](LifeLedger_System_Architecture_and_UI_Specification_Report.pdf)** *(12-Page Exhaustive Engineering PDF with 3D Visual UI Button Directory & Wireframes)*
+* 🧪 **[Comprehensive Manual Test Suite & Test Cases (45 Cases)](docs/MANUAL_TEST_SUITE.md)** *(Complete step-by-step test cases for manual evaluation)*
 * 📖 **[Read Online UI Specification & Button Directory](docs/UI_AND_WORKFLOW_SPECIFICATION.md)** *(Exhaustive button-by-button operational manual)*
 * 🏛️ **[System Architecture Diagram](docs/diagram_architecture.png)**
 * 🔄 **[Organ Custody Lifecycle Workflow Diagram](docs/diagram_workflow.png)**
+* 🔘 **[Visual UI Button & Control Directory Showcase](docs/diagram_ui_buttons_showcase.png)**
+* 📐 **[Workstation Screen Layout Wireframes](docs/diagram_ui_screens_wireframe.png)**
 
 ---
 

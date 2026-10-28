@@ -479,6 +479,10 @@ module.exports = {
 
   // Users
   getUsers: () => readDb().users,
+  getUserById: (id) => {
+    const users = readDb().users;
+    return users.find(u => u.id === id);
+  },
   getUserByEmail: (email) => {
     const users = readDb().users;
     return users.find(u => u.email.toLowerCase() === (email || '').toLowerCase());

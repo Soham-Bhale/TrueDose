@@ -45,7 +45,7 @@ const ORGAN_PRESETS = {
 };
 
 export default function CreateBatchModal({ isOpen, onClose, onSuccess }) {
-  const { currentUser } = useAuth();
+  const { currentUser, switchRole } = useAuth();
   const [formData, setFormData] = useState(ORGAN_PRESETS.kidney);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -54,10 +54,11 @@ export default function CreateBatchModal({ isOpen, onClose, onSuccess }) {
 
   const loadPreset = (key) => {
     const preset = ORGAN_PRESETS[key];
+    const prefix = key === 'kidney' ? 'ORG-KID-' : key === 'heart' ? 'ORG-HRT-' : 'ORG-LVR-';
     if (preset) {
       setFormData({
         ...preset,
-        organId: preset.organId.slice(0, 8) + Math.floor(1000 + Math.random() * 9000)
+        organId: prefix + Math.floor(1000 + Math.random() * 9000)
       });
     }
   };
@@ -67,12 +68,20 @@ export default function CreateBatchModal({ isOpen, onClose, onSuccess }) {
     setLoading(true);
     setError(null);
 
+    const authorizedRole = (currentUser.role === 'opo' || currentUser.role === 'admin' || currentUser.role === 'manufacturer')
+      ? currentUser.role
+      : 'opo';
+
+    if (currentUser.role !== authorizedRole) {
+      switchRole('opo');
+    }
+
     try {
       const res = await fetch('/api/organs', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-demo-role': currentUser.role
+          'x-demo-role': authorizedRole
         },
         body: JSON.stringify({
           ...formData,
