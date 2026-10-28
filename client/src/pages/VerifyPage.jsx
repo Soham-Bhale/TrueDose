@@ -83,35 +83,35 @@ export default function VerifyPage({ initialBatchId, onNavigateToAdmin }) {
   };
 
   return (
-    <div className="p-3 max-w-[1200px] mx-auto space-y-3 font-sans">
+    <div className="space-y-4 font-sans">
 
       {/* ── 1. Top Active Role Workstation Bar ─────────────────────── */}
-      <div className="swing-raised p-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 bg-green-600 rounded-full border border-black animate-pulse"></span>
-          <span className="text-[11px] text-gray-800">
-            Current Workstation Role: <strong>{currentUser.badge}</strong> ({currentUser.name})
+      <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5">
+          <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></span>
+          <span className="text-xs text-slate-700">
+            Current Workstation: <strong>{currentUser.badge}</strong> ({currentUser.name})
           </span>
           {currentUser.role === 'admin' && investigationCount > 0 && (
-            <span className="px-1.5 py-0.2 bg-red-600 text-white font-bold text-[10px]">
-              {investigationCount} Active Trafficking Alert{investigationCount > 1 ? 's' : ''}
+            <span className="px-2 py-0.5 bg-rose-600 text-white font-bold text-[10px] rounded-full">
+              {investigationCount} Active Alert{investigationCount > 1 ? 's' : ''}
             </span>
           )}
         </div>
         <button
           onClick={() => onNavigateToAdmin && onNavigateToAdmin()}
-          className="swing-btn swing-btn-primary text-[10px] py-0.5 px-2 self-end sm:self-auto"
+          className="px-2.5 py-1 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
         >
           <span>Open {currentUser.badge} Portal</span>
-          <ArrowRight className="w-3 h-3 text-[#0A246A]" />
+          <ArrowRight className="w-3.5 h-3.5 text-blue-600" />
         </button>
       </div>
 
       {/* ── 2. Organ Query Inspector Panel ─────────────────────────── */}
-      <fieldset className="swing-etched bg-[#ECE9D8] p-3">
-        <legend className="px-1.5 font-bold text-[11px] text-[#0A246A] bg-[#ECE9D8]">
+      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+        <div className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
           Organ Verification & Donor Provenance Inspector (EVM Cryptographic Query)
-        </legend>
+        </div>
 
         <form
           onSubmit={(e) => {
@@ -120,7 +120,7 @@ export default function VerifyPage({ initialBatchId, onNavigateToAdmin }) {
           }}
           className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-1"
         >
-          <label className="text-[11px] font-bold text-gray-700 shrink-0">
+          <label className="text-xs font-bold text-slate-700 shrink-0">
             Organ Registry ID:
           </label>
           <input
@@ -128,108 +128,108 @@ export default function VerifyPage({ initialBatchId, onNavigateToAdmin }) {
             value={organIdInput}
             onChange={(e) => setOrganIdInput(e.target.value)}
             placeholder="e.g. ORG-KID-8041, ORG-HRT-2094, ORG-COR-3390..."
-            className="swing-input flex-1 font-mono uppercase font-bold text-[12px]"
+            className="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 font-mono uppercase font-bold text-xs text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
           />
           <button
             type="submit"
             disabled={loading}
-            className="swing-btn swing-btn-primary py-1.5 px-3"
+            className="px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer shrink-0"
           >
-            <Search className="w-3.5 h-3.5 text-[#0A246A]" />
+            <Search className="w-3.5 h-3.5" />
             <span>Interrogate Ledger</span>
           </button>
           <button
             type="button"
             onClick={() => setIsScannerOpen(true)}
-            className="swing-btn py-1.5 px-2.5"
+            className="px-3.5 py-2 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors flex items-center justify-center gap-1.5 cursor-pointer shrink-0"
             title="Scan Packaging QR / RFID"
           >
-            <Camera className="w-3.5 h-3.5 text-gray-700" />
-            <span>Scan QR / RFID</span>
+            <Camera className="w-3.5 h-3.5 text-slate-600" />
+            <span>Scan QR</span>
           </button>
         </form>
 
         {/* Preset Sample Organs for Instant Evaluation */}
-        <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-[#D4D0C8] mt-2 text-[10px]">
-          <span className="font-bold text-gray-600">Sample Registry Presets:</span>
+        <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-slate-100 mt-3 text-xs">
+          <span className="font-semibold text-slate-500">Sample Registry Presets:</span>
           <button
             type="button"
             onClick={() => { setOrganIdInput('ORG-KID-8041'); performVerification('ORG-KID-8041'); }}
-            className="swing-btn text-[10px] py-0.5 px-1.5 font-mono"
+            className="px-2.5 py-1 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-lg font-mono text-xs transition-colors cursor-pointer"
           >
             ORG-KID-8041 <span className="text-teal-700 font-sans font-bold">(Kidney: O+)</span>
           </button>
           <button
             type="button"
             onClick={() => { setOrganIdInput('ORG-HRT-2094'); performVerification('ORG-HRT-2094'); }}
-            className="swing-btn text-[10px] py-0.5 px-1.5 font-mono"
+            className="px-2.5 py-1 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-lg font-mono text-xs transition-colors cursor-pointer"
           >
             ORG-HRT-2094 <span className="text-blue-700 font-sans font-bold">(Heart: Air Transit)</span>
           </button>
           <button
             type="button"
             onClick={() => { setOrganIdInput('ORG-LVR-5512'); performVerification('ORG-LVR-5512'); }}
-            className="swing-btn text-[10px] py-0.5 px-1.5 font-mono"
+            className="px-2.5 py-1 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-lg font-mono text-xs transition-colors cursor-pointer"
           >
             ORG-LVR-5512 <span className="text-purple-700 font-sans font-bold">(Liver: Hospital OR)</span>
           </button>
           <button
             type="button"
             onClick={() => { setOrganIdInput('ORG-COR-3390'); performVerification('ORG-COR-3390'); }}
-            className="swing-btn swing-btn-danger text-[10px] py-0.5 px-1.5 font-mono"
+            className="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 rounded-lg font-mono text-xs transition-colors cursor-pointer"
           >
-            ORG-COR-3390 <span className="text-red-700 font-sans font-bold">(Cornea: Quarantined)</span>
+            ORG-COR-3390 <span className="text-rose-700 font-sans font-bold">(Cornea: Quarantined)</span>
           </button>
           <button
             type="button"
             onClick={() => { setOrganIdInput('ORG-FAKE-999'); performVerification('ORG-FAKE-999'); }}
-            className="swing-btn swing-btn-danger text-[10px] py-0.5 px-1.5 font-mono"
+            className="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 rounded-lg font-mono text-xs transition-colors cursor-pointer"
           >
-            ORG-FAKE-999 <span className="text-red-800 font-sans font-bold">(Illegal Trafficking Alert)</span>
+            ORG-FAKE-999 <span className="text-rose-800 font-sans font-bold">(Illegal Trafficking Alert)</span>
           </button>
         </div>
-      </fieldset>
+      </div>
 
       {/* Loading */}
       {loading && (
-        <div className="swing-sunken p-6 text-center text-[11px] font-mono text-gray-600">
+        <div className="bg-white p-6 rounded-xl border border-slate-200 text-center text-xs font-mono text-slate-500 shadow-xs">
           Interrogating LifeLedger Consortium Node at 0x5FbDB2315678afecb367f032d93F642f64180aa3...
         </div>
       )}
 
       {/* ── 3. Unregistered / Illegal Trafficking Alert Box ────────── */}
       {!loading && errorResult && (
-        <fieldset className="swing-etched bg-[#FFF0F0] border-2 border-red-600 p-3">
-          <legend className="px-1.5 font-bold text-[11px] text-red-900 bg-[#FFF0F0] flex items-center gap-1">
-            <ShieldX className="w-4 h-4 text-red-700" />
-            <span>UNREGISTERED ORGAN / TRAFFICKING ALERT</span>
-          </legend>
+        <div className="bg-rose-50/80 border-2 border-rose-500 rounded-xl p-4 shadow-sm space-y-3">
+          <div className="flex items-center gap-2 text-rose-900 font-bold text-sm">
+            <ShieldX className="w-5 h-5 text-rose-600" />
+            <span>UNREGISTERED ORGAN / HUMAN TRAFFICKING ALERT</span>
+          </div>
 
-          <div className="space-y-2 pt-1 text-[11px]">
+          <div className="space-y-2 text-xs">
             <div className="flex items-center gap-2">
-              <span className="font-mono font-bold bg-red-800 text-white px-2 py-0.5">
+              <span className="font-mono font-bold bg-rose-700 text-white px-2 py-0.5 rounded-md">
                 VERIFICATION REJECTED: {errorResult.organId || errorResult.batchId}
               </span>
-              <span className="font-bold text-red-800">{errorResult.alertTitle}</span>
+              <span className="font-bold text-rose-800">{errorResult.alertTitle}</span>
             </div>
 
-            <p className="text-red-900 leading-relaxed font-medium bg-white p-2 border border-red-300">
+            <p className="text-rose-950 leading-relaxed font-medium bg-white p-3 rounded-lg border border-rose-200">
               {errorResult.alertDescription}
             </p>
 
-            <div className="bg-[#FFF8E8] border border-amber-300 p-2 text-amber-900 font-semibold flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0" />
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-2.5 text-amber-900 font-semibold flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
               <span>{errorResult.recommendation}</span>
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-red-200">
-              <span className="font-mono text-[10px] text-gray-600">
+            <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-rose-200">
+              <span className="font-mono text-[11px] text-slate-500">
                 Logged to Central Fraud & Human Trafficking Registry
               </span>
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-2">
                 <button
                   onClick={() => setIsReportModalOpen(true)}
-                  className="swing-btn swing-btn-danger text-[11px]"
+                  className="px-3 py-1.5 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
                 >
                   <ShieldAlert className="w-3.5 h-3.5" />
                   <span>Report Trafficking Violation to NOTTO</span>
@@ -240,7 +240,7 @@ export default function VerifyPage({ initialBatchId, onNavigateToAdmin }) {
                       switchRole('admin');
                       if (onNavigateToAdmin) onNavigateToAdmin();
                     }}
-                    className="swing-btn swing-btn-primary text-[11px]"
+                    className="px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-colors cursor-pointer"
                   >
                     <span>View in Regulatory Directorate ({investigationCount} Cases)</span>
                   </button>
@@ -248,164 +248,164 @@ export default function VerifyPage({ initialBatchId, onNavigateToAdmin }) {
               </div>
             </div>
           </div>
-        </fieldset>
+        </div>
       )}
 
       {/* ── 4. Genuine / Valid Organ Record Inspector ──────────────── */}
       {!loading && result && (
-        <div className="space-y-2.5">
+        <div className="space-y-3">
           {/* Header Card */}
-          <div className="swing-raised p-3">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#808080] pb-2">
+          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
               <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className={`px-2 py-0.5 font-bold font-mono text-[10px] border ${
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className={`px-2.5 py-0.5 font-bold font-mono text-[11px] rounded-full border ${
                     result.isQuarantined
-                      ? 'bg-red-200 text-red-900 border-red-400'
+                      ? 'bg-rose-100 text-rose-800 border-rose-300'
                       : result.isIschemiaExpired
-                      ? 'bg-amber-200 text-amber-900 border-amber-400'
-                      : 'bg-green-200 text-green-900 border-green-400'
+                      ? 'bg-amber-100 text-amber-800 border-amber-300'
+                      : 'bg-emerald-100 text-emerald-800 border-emerald-300'
                   }`}>
                     {result.status}
                   </span>
-                  <span className="text-[10px] text-gray-500 font-mono">
+                  <span className="text-xs text-slate-400 font-mono">
                     Chain Hash: {result.blockchainTxHash ? result.blockchainTxHash.slice(0, 16) + '...' : 'EVM Confirmed'}
                   </span>
                 </div>
-                <h1 className="text-xl font-bold text-[#0A246A] tracking-tight">
+                <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">
                   {result.organType || result.medicineName}
                 </h1>
-                <div className="text-[11px] text-gray-700 mt-0.5">
-                  Organ ID: <strong className="font-mono text-black">{result.organId || result.batchId}</strong> | Harvested by <strong>{result.manufacturerName || result.currentOwnerName}</strong>
+                <div className="text-xs text-slate-500 mt-0.5">
+                  Organ ID: <strong className="font-mono text-slate-900">{result.organId || result.batchId}</strong> | Harvested by <strong>{result.manufacturerName || result.currentOwnerName}</strong>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center gap-1.5 shrink-0">
+              <div className="flex items-center gap-2 shrink-0">
                 <button
                   onClick={() => setIsCertModalOpen(true)}
-                  className="swing-btn swing-btn-primary"
+                  className="px-3 py-1.5 text-xs font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
                 >
-                  <Award className="w-3.5 h-3.5 text-amber-700" />
+                  <Award className="w-3.5 h-3.5 text-amber-600" />
                   <span>Donor Consent (Form 8)</span>
                 </button>
                 <button
                   onClick={() => setIsReportModalOpen(true)}
-                  className="swing-btn swing-btn-danger"
+                  className="px-3 py-1.5 text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
                 >
-                  <ShieldAlert className="w-3.5 h-3.5 text-red-700" />
+                  <ShieldAlert className="w-3.5 h-3.5 text-rose-600" />
                   <span>Flag Incident</span>
                 </button>
               </div>
             </div>
 
             {/* Spec Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 text-[11px]">
-              <div className="swing-panel-sunken p-2">
-                <span className="text-[10px] text-gray-500 uppercase font-bold block">Blood & Tissue Match</span>
-                <span className="font-mono font-bold text-red-700 text-sm">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-3 text-xs">
+              <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">Blood & Tissue Match</span>
+                <span className="font-mono font-black text-rose-700 text-base mt-0.5 block">
                   {result.donorBloodType || result.dosage}
                 </span>
-                <span className="text-[10px] text-gray-600 block">{result.hlaMarker || "6/6 Match"}</span>
+                <span className="text-[11px] text-slate-500 block">{result.hlaMarker || "6/6 Match"}</span>
               </div>
-              <div className="swing-panel-sunken p-2">
-                <span className="text-[10px] text-gray-500 uppercase font-bold block">Safe Viability Window</span>
-                <span className={`font-mono font-bold text-sm ${result.isIschemiaExpired ? 'text-red-700' : 'text-blue-800'}`}>
+              <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">Safe Viability Window</span>
+                <span className={`font-mono font-black text-base mt-0.5 block ${result.isIschemiaExpired ? 'text-rose-700' : 'text-blue-700'}`}>
                   {result.remainingIschemiaHours || result.daysUntilExpiry}h safe window
                 </span>
-                <span className="text-[10px] text-gray-600 block">Max Limit: {result.ischemicLimitHours}h</span>
+                <span className="text-[11px] text-slate-500 block">Max Limit: {result.ischemicLimitHours}h</span>
               </div>
-              <div className="swing-panel-sunken p-2">
-                <span className="text-[10px] text-gray-500 uppercase font-bold block">Container Temp</span>
-                <span className="font-mono font-bold text-cyan-800 text-sm">
+              <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">Container Temp</span>
+                <span className="font-mono font-black text-cyan-700 text-base mt-0.5 block">
                   {result.telemetry?.currentTemperatureCelsius || 2.8}°C
                 </span>
-                <span className="text-[10px] text-green-700 font-bold block">Safe Range: 2°C - 4°C</span>
+                <span className="text-[11px] text-emerald-600 font-bold block">Safe Range: 2°C - 4°C</span>
               </div>
-              <div className="swing-panel-sunken p-2">
-                <span className="text-[10px] text-gray-500 uppercase font-bold block">Target Recipient</span>
-                <span className="font-mono font-bold text-purple-900 text-sm">
+              <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">Target Recipient</span>
+                <span className="font-mono font-black text-purple-900 text-base mt-0.5 block">
                   {result.recipientId || "Matched"}
                 </span>
-                <span className="text-[10px] text-gray-600 truncate block">{result.recipientHospital || "Transplant Suite"}</span>
+                <span className="text-[11px] text-slate-500 truncate block">{result.recipientHospital || "Transplant Suite"}</span>
               </div>
             </div>
           </div>
 
           {/* ── 5. Simplified Storage & Preservation Status ─────── */}
-          <fieldset className="swing-etched bg-[#ECE9D8] p-2.5">
-            <legend className="px-1.5 font-bold text-[11px] text-[#0A246A] bg-[#ECE9D8] flex items-center gap-1.5">
-              <Thermometer className="w-3.5 h-3.5 text-blue-700" />
+          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs space-y-2">
+            <div className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+              <Thermometer className="w-3.5 h-3.5 text-blue-600" />
               <span>Organ Storage & Preservation Condition (Simple Overview)</span>
-            </legend>
+            </div>
 
-            <div className="p-2.5 bg-white border border-[#808080] flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px]">
+            <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
               <div className="space-y-1">
-                <div className="font-bold text-gray-900 flex items-center gap-1.5 text-xs">
-                  <CheckCircle2 className="w-4 h-4 text-green-600" />
+                <div className="font-bold text-slate-900 flex items-center gap-2 text-xs">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                   <span>Status: Optimal Condition (Safe for Implantation)</span>
                 </div>
-                <div className="text-[11px] text-gray-600">
+                <div className="text-xs text-slate-500">
                   Preserved in sterile cold solution • Constant safe temperature maintained throughout transit.
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 font-mono">
-                <div className="swing-panel-sunken px-3 py-1.5 text-center">
-                  <div className="text-[9px] text-gray-500 uppercase font-sans">Current Temp</div>
-                  <div className="font-bold text-blue-800 text-[13px]">{result.telemetry?.currentTemperatureCelsius || 2.8}°C</div>
-                  <div className="text-[8px] text-green-700 font-bold font-sans">Normal</div>
+              <div className="flex items-center gap-2.5 font-mono">
+                <div className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-center shadow-2xs">
+                  <div className="text-[9px] text-slate-400 uppercase font-sans">Current Temp</div>
+                  <div className="font-black text-blue-700 text-sm">{result.telemetry?.currentTemperatureCelsius || 2.8}°C</div>
+                  <div className="text-[9px] text-emerald-600 font-bold font-sans">Normal</div>
                 </div>
-                <div className="swing-panel-sunken px-3 py-1.5 text-center">
-                  <div className="text-[9px] text-gray-500 uppercase font-sans">Safe Time Left</div>
-                  <div className="font-bold text-green-700 text-[13px]">{result.remainingIschemiaHours || 19.2}h</div>
-                  <div className="text-[8px] text-blue-700 font-sans">Active Window</div>
+                <div className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-center shadow-2xs">
+                  <div className="text-[9px] text-slate-400 uppercase font-sans">Safe Time Left</div>
+                  <div className="font-black text-emerald-600 text-sm">{result.remainingIschemiaHours || 19.2}h</div>
+                  <div className="text-[9px] text-blue-600 font-sans">Active Window</div>
                 </div>
-                <div className="swing-panel-sunken px-3 py-1.5 text-center">
-                  <div className="text-[9px] text-gray-500 uppercase font-sans">Container Seal</div>
-                  <div className="font-bold text-[#0A246A] text-[13px]">INTACT</div>
-                  <div className="text-[8px] text-gray-500 font-sans">Tamper-Proof</div>
+                <div className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-center shadow-2xs">
+                  <div className="text-[9px] text-slate-400 uppercase font-sans">Container Seal</div>
+                  <div className="font-black text-slate-800 text-sm">INTACT</div>
+                  <div className="text-[9px] text-slate-400 font-sans">Tamper-Proof</div>
                 </div>
               </div>
             </div>
-          </fieldset>
+          </div>
 
           {/* ── 6. Immutable Chain-of-Custody Timeline ─────────────── */}
-          <fieldset className="swing-etched bg-[#ECE9D8] p-2.5">
-            <legend className="px-1.5 font-bold text-[11px] text-[#0A246A] bg-[#ECE9D8] flex items-center gap-1.5">
-              <Layers className="w-3.5 h-3.5 text-indigo-700" />
+          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs space-y-2">
+            <div className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+              <Layers className="w-3.5 h-3.5 text-indigo-600" />
               <span>Immutable Chain-of-Custody Ledger ({result.history?.length || 1} Verified Blockchain Handoffs)</span>
-            </legend>
+            </div>
 
-            <div className="swing-sunken p-2 bg-white max-h-[260px] overflow-y-auto space-y-2">
+            <div className="bg-slate-50 rounded-lg border border-slate-200 p-2.5 max-h-[280px] overflow-y-auto space-y-2">
               {result.history?.map((step, idx) => (
-                <div key={idx} className="p-2 border border-[#D4D0C8] bg-[#FAF8F5] text-[11px]">
-                  <div className="flex flex-wrap items-center justify-between gap-1 border-b border-[#E0DFD8] pb-1 mb-1">
-                    <div className="flex items-center gap-1.5 font-bold">
-                      <span className="w-4 h-4 rounded-full bg-[#0A246A] text-white text-[9px] flex items-center justify-center font-mono">
+                <div key={idx} className="p-2.5 border border-slate-200 bg-white rounded-lg text-xs shadow-2xs">
+                  <div className="flex flex-wrap items-center justify-between gap-1 border-b border-slate-100 pb-1.5 mb-1.5">
+                    <div className="flex items-center gap-2 font-bold">
+                      <span className="w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] flex items-center justify-center font-mono">
                         {idx + 1}
                       </span>
-                      <span className="text-[#0A246A]">{step.stage}</span>
-                      <span className="text-gray-500 text-[10px]">({step.roleFrom} → {step.roleTo})</span>
+                      <span className="text-slate-900">{step.stage}</span>
+                      <span className="text-slate-500 font-normal text-[11px]">({step.roleFrom} → {step.roleTo})</span>
                     </div>
-                    <span className="text-[10px] text-gray-500 font-mono">
+                    <span className="text-[11px] text-slate-400 font-mono">
                       {new Date(step.timestamp).toLocaleString()}
                     </span>
                   </div>
 
-                  <div className="text-gray-700 text-[11px]">
+                  <div className="text-slate-700 text-xs">
                     <strong>From:</strong> {step.from} → <strong>To:</strong> {step.to}
                   </div>
-                  <div className="text-[10px] text-gray-500 italic mt-0.5">
+                  <div className="text-[11px] text-slate-500 italic mt-0.5">
                     "{step.notes}"
                   </div>
 
                   {step.txHash && (
-                    <div className="flex items-center justify-between text-[10px] font-mono text-gray-500 pt-1 mt-1 border-t border-[#EAE8E0]">
+                    <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 pt-1.5 mt-1.5 border-t border-slate-100">
                       <span className="truncate max-w-[450px]">TxHash: {step.txHash}</span>
                       <button
                         onClick={() => handleCopy(step.txHash, `tx_${idx}`)}
-                        className="swing-btn text-[9px] py-0 px-1"
+                        className="px-2 py-0.5 text-[10px] font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-md transition-colors cursor-pointer"
                       >
                         {copiedHash === `tx_${idx}` ? "Copied" : "Copy"}
                       </button>
@@ -414,7 +414,7 @@ export default function VerifyPage({ initialBatchId, onNavigateToAdmin }) {
                 </div>
               ))}
             </div>
-          </fieldset>
+          </div>
         </div>
       )}
 

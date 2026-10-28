@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, ArrowRight, Truck, ShieldCheck, AlertCircle, CheckCircle, Thermometer, MapPin, Building2, Heart } from 'lucide-react';
+import { X, Truck, ShieldCheck, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function TransferModal({ batch, isOpen, onClose, onSuccess }) {
@@ -86,41 +86,44 @@ export default function TransferModal({ batch, isOpen, onClose, onSuccess }) {
   const selectedNode = demoUsers.find(u => u.ethAddress.toLowerCase() === toAddress.toLowerCase());
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/40 backdrop-blur-xs">
-      <div className="w-full max-w-xl swing-raised shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
-        {/* Java Window Titlebar */}
-        <div className="swing-titlebar">
-          <div className="flex items-center gap-1.5">
-            <Truck className="w-3.5 h-3.5 text-blue-200" />
-            <span className="font-bold text-xs tracking-wide">
-              javax.swing.JDialog: Organ Custody Transfer Protocol [LifeLedger v2.0]
-            </span>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
+      <div className="w-full max-w-xl bg-white rounded-2xl shadow-2xl border border-slate-200/80 overflow-hidden flex flex-col max-h-[92vh]">
+        {/* Modern Modal Header */}
+        <div className="bg-slate-900 px-5 py-4 text-white flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-blue-500/20 border border-blue-400/30 flex items-center justify-center text-blue-400">
+              <Truck className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-white tracking-tight">Custody Transfer Protocol</h3>
+              <p className="text-xs text-slate-400">LifeLedger EVM Proof-of-Authority Handoff</p>
+            </div>
           </div>
           <button
             onClick={onClose}
-            className="w-4 h-4 bg-[#ECE9D8] text-black font-bold text-[10px] flex items-center justify-center border border-[#FFFFFF] border-r-[#808080] border-b-[#808080] hover:bg-[#D4D0C8] active:translate-y-px"
+            className="w-8 h-8 rounded-lg bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 flex items-center justify-center transition-colors"
             title="Close Dialog"
           >
-            ✕
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Dialog Header Banner */}
-        <div className="bg-[#ECE9D8] px-3 py-2 border-b border-[#808080] flex items-center justify-between text-[11px]">
-          <div>
-            <span className="font-bold text-[#0A246A]">Target Organ:</span>{' '}
-            <span className="font-mono font-bold bg-white px-1 border border-[#808080]">{organId}</span>{' '}
-            <span className="text-[#555555]">({organType} • {bloodType})</span>
+        <div className="bg-slate-100/80 px-5 py-2.5 border-b border-slate-200 flex items-center justify-between text-xs">
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-slate-700">Target Specimen:</span>
+            <span className="font-mono font-bold bg-white px-2 py-0.5 rounded border border-slate-300 text-blue-700 shadow-2xs">{organId}</span>
+            <span className="text-slate-500">({organType} • {bloodType})</span>
           </div>
-          <div className="text-[10px] bg-amber-100 text-amber-900 px-1.5 py-0.5 border border-amber-300 font-bold">
+          <span className="text-[11px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full border border-amber-300">
             STAGE: {batch.stage}
-          </div>
+          </span>
         </div>
 
         {/* Scrollable Form Body */}
-        <form onSubmit={handleTransfer} className="p-3 overflow-y-auto space-y-3 bg-[#ECE9D8] flex-1">
+        <form onSubmit={handleTransfer} className="p-5 overflow-y-auto space-y-4 bg-slate-50 flex-1">
           {error && (
-            <div className="p-2 swing-sunken bg-[#FFF0F0] border border-red-500 text-red-900 text-[11px] flex items-center gap-2">
+            <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-900 text-xs flex items-center gap-2.5">
               <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
               <div>
                 <strong>Handoff Rejection:</strong> {error}
@@ -129,30 +132,30 @@ export default function TransferModal({ batch, isOpen, onClose, onSuccess }) {
           )}
 
           {/* Current Custodian Box */}
-          <fieldset className="p-2.5 swing-etched bg-[#ECE9D8]">
-            <legend className="px-1 text-[11px] font-bold text-[#0A246A]">
-              1. Releasing Custodian (Signer)
-            </legend>
-            <div className="text-[11px] space-y-1">
-              <div className="flex justify-between">
-                <span className="text-[#555555]">Authorized Node:</span>
-                <span className="font-bold text-[#111111]">{currentUser.name}</span>
+          <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs space-y-2.5">
+            <div className="text-xs font-semibold text-slate-600 tracking-wider uppercase flex items-center gap-1.5">
+              <span>1. Releasing Custodian (Signer)</span>
+            </div>
+            <div className="text-xs space-y-1.5">
+              <div className="flex justify-between items-center">
+                <span className="text-slate-500">Authorized Node:</span>
+                <span className="font-semibold text-slate-900">{currentUser.name}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-[#555555]">Ethereum Signer Address:</span>
-                <span className="font-mono text-[10px] text-blue-900">{currentUser.ethAddress}</span>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-500">Signer Address:</span>
+                <span className="font-mono text-[11px] text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">{currentUser.ethAddress}</span>
               </div>
             </div>
-          </fieldset>
+          </div>
 
           {/* Destination Node */}
-          <fieldset className="p-2.5 swing-etched bg-[#ECE9D8]">
-            <legend className="px-1 text-[11px] font-bold text-[#0A246A]">
-              2. Designated Receiving Node
-            </legend>
-            <div className="space-y-2">
+          <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs space-y-3">
+            <div className="text-xs font-semibold text-slate-600 tracking-wider uppercase flex items-center gap-1.5">
+              <span>2. Designated Receiving Node</span>
+            </div>
+            <div className="space-y-2.5">
               <div>
-                <label className="block text-[10px] font-bold text-[#333333] mb-0.5">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
                   Select Consortium Entity:
                 </label>
                 <select
@@ -164,7 +167,7 @@ export default function TransferModal({ batch, isOpen, onClose, onSuccess }) {
                       setNotes(`Custody handoff to ${sel.badge} (${sel.organization})`);
                     }
                   }}
-                  className="swing-input w-full font-bold text-[11px]"
+                  className="w-full px-3 py-2 text-xs font-medium bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 >
                   {availableRecipients.map(u => (
                     <option key={u.ethAddress} value={u.ethAddress}>
@@ -175,22 +178,22 @@ export default function TransferModal({ batch, isOpen, onClose, onSuccess }) {
               </div>
 
               {selectedNode && (
-                <div className="swing-sunken p-2 bg-[#F9F8F5] text-[10px] space-y-0.5">
-                  <div><strong>Operating Base:</strong> {selectedNode.location}</div>
-                  <div><strong>Public Address:</strong> <span className="font-mono">{selectedNode.ethAddress}</span></div>
+                <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 text-xs space-y-1 text-slate-700">
+                  <div><strong className="text-slate-900">Operating Base:</strong> {selectedNode.location}</div>
+                  <div><strong className="text-slate-900">Public Address:</strong> <span className="font-mono text-[11px] text-slate-600">{selectedNode.ethAddress}</span></div>
                 </div>
               )}
             </div>
-          </fieldset>
+          </div>
 
           {/* Transit Storage & Location */}
-          <fieldset className="p-2.5 swing-etched bg-[#ECE9D8]">
-            <legend className="px-1 text-[11px] font-bold text-[#0A246A]">
-              3. Transit Location & Safe Storage Temp
-            </legend>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+          <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs space-y-3">
+            <div className="text-xs font-semibold text-slate-600 tracking-wider uppercase flex items-center gap-1.5">
+              <span>3. Transit Location & Safe Storage Temp</span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <label className="block text-[10px] font-bold text-[#333333] mb-0.5">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
                   Transfer Point / Destination:
                 </label>
                 <input
@@ -198,16 +201,16 @@ export default function TransferModal({ batch, isOpen, onClose, onSuccess }) {
                   required
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  className="swing-input w-full text-[11px]"
+                  className="w-full px-3 py-2 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   placeholder="e.g. Green Corridor Checkpoint #2"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-[#333333] mb-0.5">
-                  Container Temperature (°C) <span className="text-gray-500 font-normal">[Safe: 2.0°C - 4.0°C]</span>:
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Container Temperature (°C) <span className="text-slate-400 font-normal">[2.0°C - 4.0°C]</span>:
                 </label>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5">
                   <input
                     type="number"
                     step="0.1"
@@ -216,51 +219,51 @@ export default function TransferModal({ batch, isOpen, onClose, onSuccess }) {
                     required
                     value={temperature}
                     onChange={(e) => setTemperature(e.target.value)}
-                    className="swing-input w-full font-mono font-bold text-[11px] text-blue-900"
+                    className="w-full px-3 py-2 text-xs font-mono font-bold text-blue-700 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   />
-                  <span className="text-[10px] text-[#555555]">°C</span>
+                  <span className="text-xs font-semibold text-slate-500">°C</span>
                 </div>
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-[10px] font-bold text-[#333333] mb-0.5">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
                   Handoff Attestation / Carrier Notes:
                 </label>
                 <textarea
                   rows="2"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  className="swing-input w-full text-[11px] font-mono"
+                  className="w-full px-3 py-2 text-xs font-sans bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 />
               </div>
             </div>
-          </fieldset>
+          </div>
 
           {/* Footer Action Bar */}
-          <div className="pt-2 flex items-center justify-between border-t border-[#808080]">
-            <div className="text-[10px] text-[#555555] flex items-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5 text-blue-700" />
-              <span>Cryptographically signs custody transfer transaction</span>
+          <div className="pt-2 flex items-center justify-between">
+            <div className="text-xs text-slate-500 flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-emerald-600" />
+              <span>EVM cryptographic handoff signature</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               <button
                 type="button"
                 onClick={onClose}
-                className="swing-btn text-xs py-1 px-3"
+                className="px-4 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-100 transition-colors shadow-2xs"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="swing-btn swing-btn-primary text-xs py-1 px-4 flex items-center gap-1.5"
+                className="px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition-all flex items-center gap-2 disabled:opacity-50"
               >
                 {loading ? (
                   <span>Signing Transfer...</span>
                 ) : (
                   <>
-                    <Truck className="w-3.5 h-3.5 text-blue-800" />
-                    <span>OK - Sign Medical Handoff</span>
+                    <Truck className="w-4 h-4" />
+                    <span>Sign Medical Handoff</span>
                   </>
                 )}
               </button>
@@ -268,11 +271,11 @@ export default function TransferModal({ batch, isOpen, onClose, onSuccess }) {
           </div>
         </form>
 
-        {/* Java Dialog Status Bar */}
-        <div className="swing-statusbar">
-          <div className="swing-status-pane">JDialog: Transfer Protocol</div>
-          <div className="swing-status-pane">Smart Contract: transferCustody()</div>
-          <div className="swing-status-pane flex-1 text-right">Verification: Ready</div>
+        {/* Modal Status Footer */}
+        <div className="bg-slate-100 px-5 py-2 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500 font-mono">
+          <div>LifeLedger PoA Custody Protocol</div>
+          <div>Smart Contract: transferCustody()</div>
+          <div className="text-emerald-700 font-bold">Node Ready</div>
         </div>
       </div>
     </div>

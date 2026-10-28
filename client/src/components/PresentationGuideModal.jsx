@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Award, HelpCircle, CheckCircle2, ShieldCheck, AlertTriangle, Layers, ArrowRight, Zap, Database, Lock, GraduationCap, Heart, Clock, Truck, FileCheck, Building2 } from 'lucide-react';
+import { X, GraduationCap } from 'lucide-react';
 
 export default function PresentationGuideModal({ isOpen, onClose }) {
   const [activeTab, setActiveTab] = useState('demo');
@@ -7,27 +7,30 @@ export default function PresentationGuideModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/40 backdrop-blur-xs">
-      <div className="w-full max-w-4xl swing-raised shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
-        {/* Java Window Titlebar */}
-        <div className="swing-titlebar">
-          <div className="flex items-center gap-1.5">
-            <GraduationCap className="w-3.5 h-3.5 text-yellow-300" />
-            <span className="font-bold text-xs tracking-wide">
-              javax.swing.JDialog: LifeLedger Architecture & Examiner Viva Defense Guide
-            </span>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
+      <div className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl border border-slate-200/80 overflow-hidden flex flex-col max-h-[92vh]">
+        {/* Modern Modal Header */}
+        <div className="bg-slate-900 px-5 py-4 text-white flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-400/30 flex items-center justify-center text-amber-400">
+              <GraduationCap className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-white tracking-tight">LifeLedger Viva Defense & Presentation Guide</h3>
+              <p className="text-xs text-slate-400">Architectural Invariants, Live Flow & Evaluation Talking Points</p>
+            </div>
           </div>
           <button
             onClick={onClose}
-            className="w-4 h-4 bg-[#ECE9D8] text-black font-bold text-[10px] flex items-center justify-center border border-[#FFFFFF] border-r-[#808080] border-b-[#808080] hover:bg-[#D4D0C8] active:translate-y-px"
+            className="w-8 h-8 rounded-lg bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 flex items-center justify-center transition-colors"
             title="Close Dialog"
           >
-            ✕
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Tab Header */}
-        <div className="bg-[#ECE9D8] px-3 pt-2 border-b border-[#808080] flex items-center gap-1 text-xs overflow-x-auto">
+        {/* Tab Navigation */}
+        <div className="bg-slate-100/80 px-5 pt-3 border-b border-slate-200 flex items-center gap-2 overflow-x-auto text-xs">
           {[
             { id: 'demo', label: '1. Live Demo Flow (60s)' },
             { id: 'viva', label: '2. Viva Defense: Why Blockchain?' },
@@ -37,10 +40,10 @@ export default function PresentationGuideModal({ isOpen, onClose }) {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-3 py-1 text-[11px] font-bold border-t-2 border-l-2 border-r-2 whitespace-nowrap ${
+              className={`px-3.5 py-2 text-xs font-semibold rounded-t-lg transition-all whitespace-nowrap border-b-2 ${
                 activeTab === tab.id
-                  ? 'bg-[#ECE9D8] border-white border-b-transparent translate-y-px text-[#0A246A]'
-                  : 'bg-[#DCD8C8] border-[#808080] text-[#555555]'
+                  ? 'bg-white text-blue-700 border-blue-600 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 border-transparent hover:bg-slate-200/50'
               }`}
             >
               {tab.label}
@@ -49,51 +52,51 @@ export default function PresentationGuideModal({ isOpen, onClose }) {
         </div>
 
         {/* Tab Body */}
-        <div className="p-3 bg-[#ECE9D8] overflow-y-auto flex-1 space-y-3 text-[11px] text-[#222222]">
+        <div className="p-5 bg-slate-50 overflow-y-auto flex-1 space-y-4 text-xs text-slate-700">
           {activeTab === 'demo' && (
             <div className="space-y-3">
-              <div className="p-2.5 swing-sunken bg-[#F5F8FC] border border-blue-400">
-                <h3 className="font-bold text-[#0A246A] text-xs mb-1">
+              <div className="p-3.5 bg-blue-50/80 rounded-xl border border-blue-200">
+                <h4 className="font-bold text-blue-900 text-sm mb-1">
                   Chronological Demonstration Flow for Evaluators:
-                </h3>
-                <p className="text-[10px] text-[#444444]">
+                </h4>
+                <p className="text-xs text-blue-800">
                   Execute these 5 steps in the live workstation to show end-to-end chain of custody:
                 </p>
               </div>
 
-              <div className="space-y-2">
-                <div className="p-2 bg-white swing-sunken flex items-start gap-2">
-                  <span className="w-5 h-5 bg-[#0A246A] text-white font-bold text-xs flex items-center justify-center shrink-0">1</span>
+              <div className="space-y-2.5">
+                <div className="p-3.5 bg-white rounded-xl border border-slate-200/80 shadow-xs flex items-start gap-3">
+                  <span className="w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center shrink-0">1</span>
                   <div>
-                    <strong className="text-black">OPO Organ Harvest:</strong> Switch role to <em>Organ Procurement Org</em>. Click <strong>Harvest & Register Organ</strong>. Notice automatic Form 8 donor consent hash generation and cold-ischemia window lock (e.g. 24h for Kidney, 4h for Heart).
+                    <strong className="text-slate-900">OPO Organ Harvest:</strong> Switch role to <em>Organ Procurement Org</em>. Click <strong>Harvest & Register Organ</strong>. Notice automatic Form 8 donor consent hash generation and cold-ischemia window lock (e.g. 24h for Kidney, 4h for Heart).
                   </div>
                 </div>
 
-                <div className="p-2 bg-white swing-sunken flex items-start gap-2">
-                  <span className="w-5 h-5 bg-[#0A246A] text-white font-bold text-xs flex items-center justify-center shrink-0">2</span>
+                <div className="p-3.5 bg-white rounded-xl border border-slate-200/80 shadow-xs flex items-start gap-3">
+                  <span className="w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center shrink-0">2</span>
                   <div>
-                    <strong className="text-black">Cryo-Transit Logistics Handoff:</strong> Switch role to <em>Logistics</em>. Execute medical custody transfer from OPO to specialized cold-chain air transport. Record milestone & live temperature (2.4°C).
+                    <strong className="text-slate-900">Cryo-Transit Logistics Handoff:</strong> Switch role to <em>Logistics</em>. Execute medical custody transfer from OPO to specialized cold-chain air transport. Record milestone & live temperature (2.4°C).
                   </div>
                 </div>
 
-                <div className="p-2 bg-white swing-sunken flex items-start gap-2">
-                  <span className="w-5 h-5 bg-[#0A246A] text-white font-bold text-xs flex items-center justify-center shrink-0">3</span>
+                <div className="p-3.5 bg-white rounded-xl border border-slate-200/80 shadow-xs flex items-start gap-3">
+                  <span className="w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center shrink-0">3</span>
                   <div>
-                    <strong className="text-black">National Regulatory Clearance:</strong> Switch role to <em>Allocation Authority (NOTTO)</em>. Verify donor HLA matching with recipient queue and clear allocation for surgical hospital.
+                    <strong className="text-slate-900">National Regulatory Clearance:</strong> Switch role to <em>Allocation Authority (NOTTO)</em>. Verify donor HLA matching with recipient queue and clear allocation for surgical hospital.
                   </div>
                 </div>
 
-                <div className="p-2 bg-white swing-sunken flex items-start gap-2">
-                  <span className="w-5 h-5 bg-[#0A246A] text-white font-bold text-xs flex items-center justify-center shrink-0">4</span>
+                <div className="p-3.5 bg-white rounded-xl border border-slate-200/80 shadow-xs flex items-start gap-3">
+                  <span className="w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center shrink-0">4</span>
                   <div>
-                    <strong className="text-black">Surgical Implantation Sign-Off:</strong> Switch role to <em>Transplant Hospital</em>. Receive organ in Operating Theater and sign off successful surgical graft into recipient.
+                    <strong className="text-slate-900">Surgical Implantation Sign-Off:</strong> Switch role to <em>Transplant Hospital</em>. Receive organ in Operating Theater and sign off successful surgical graft into recipient.
                   </div>
                 </div>
 
-                <div className="p-2 bg-white swing-sunken flex items-start gap-2">
-                  <span className="w-5 h-5 bg-[#0A246A] text-white font-bold text-xs flex items-center justify-center shrink-0">5</span>
+                <div className="p-3.5 bg-white rounded-xl border border-slate-200/80 shadow-xs flex items-start gap-3">
+                  <span className="w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center shrink-0">5</span>
                   <div>
-                    <strong className="text-black">Specimen Audit & Cold-Ischemia Verification:</strong> Navigate to <strong>Organ Provenance Inspector</strong>. Inspect real-time elapsed cold ischemia time, donor consent IPFS certificate, and attempt to query an unregistered ID (`ORG-SUSPECT-9999`) to show counterfeit detection.
+                    <strong className="text-slate-900">Specimen Audit & Cold-Ischemia Verification:</strong> Navigate to <strong>Organ Provenance Inspector</strong>. Inspect real-time elapsed cold ischemia time, donor consent IPFS certificate, and attempt to query an unregistered ID (`ORG-SUSPECT-9999`) to show counterfeit detection.
                   </div>
                 </div>
               </div>
@@ -102,97 +105,98 @@ export default function PresentationGuideModal({ isOpen, onClose }) {
 
           {activeTab === 'viva' && (
             <div className="space-y-3">
-              <div className="p-2.5 swing-sunken bg-[#FFFFF0] border border-amber-400">
-                <h3 className="font-bold text-amber-950 text-xs mb-1">
+              <div className="p-3.5 bg-amber-50/80 rounded-xl border border-amber-200">
+                <h4 className="font-bold text-amber-950 text-sm mb-1">
                   Examiner Question: "Why Blockchain? Why not a centralized SQL/MongoDB database?"
-                </h3>
-                <p className="text-[10px] text-[#555555]">
+                </h4>
+                <p className="text-xs text-amber-800">
                   Key academic talking points and architectural arguments:
                 </p>
               </div>
 
-              <div className="space-y-2">
-                <fieldset className="p-2 swing-etched bg-white">
-                  <legend className="px-1 font-bold text-[10px] text-[#0A246A]">
+              <div className="space-y-3">
+                <div className="p-3.5 bg-white rounded-xl border border-slate-200/80 shadow-xs space-y-1">
+                  <div className="font-bold text-xs text-blue-700 uppercase tracking-wider">
                     1. Zero-Trust Multi-Stakeholder Consortium
-                  </legend>
-                  <p className="text-[10px] text-[#333333] leading-relaxed">
+                  </div>
+                  <p className="text-xs text-slate-600 leading-relaxed">
                     Organ transplantation involves hostile or competing entities: private air ambulances, rival hospital networks, municipal morgues, and international regulatory agencies. A centralized database administrator at any one hospital could alter donor timestamps, forge consent papers, or covertly swap recipient prioritization.
                   </p>
-                </fieldset>
+                </div>
 
-                <fieldset className="p-2 swing-etched bg-white">
-                  <legend className="px-1 font-bold text-[10px] text-[#0A246A]">
+                <div className="p-3.5 bg-white rounded-xl border border-slate-200/80 shadow-xs space-y-1">
+                  <div className="font-bold text-xs text-blue-700 uppercase tracking-wider">
                     2. Strict Anti-Trafficking Non-Repudiation
-                  </legend>
-                  <p className="text-[10px] text-[#333333] leading-relaxed">
+                  </div>
+                  <p className="text-xs text-slate-600 leading-relaxed">
                     Under the National Organ Transplant Act (NOTA/THOTA), black-market commercial organ trafficking relies on falsifying donor origins. On LifeLedger, every organ requires cryptographic signature by the OPO with immutable brain-death certificate CID. Once anchored on EVM blocks, this provenance cannot be altered or erased.
                   </p>
-                </fieldset>
+                </div>
 
-                <fieldset className="p-2 swing-etched bg-white">
-                  <legend className="px-1 font-bold text-[10px] text-[#0A246A]">
+                <div className="p-3.5 bg-white rounded-xl border border-slate-200/80 shadow-xs space-y-1">
+                  <div className="font-bold text-xs text-blue-700 uppercase tracking-wider">
                     3. Smart-Contract Invariant Enforcement (Not Just Data Storage)
-                  </legend>
-                  <p className="text-[10px] text-[#333333] leading-relaxed">
+                  </div>
+                  <p className="text-xs text-slate-600 leading-relaxed">
                     Unlike databases that passively accept updates, smart contracts execute programmable law: only the current holder can transfer custody, only verified hospitals can record surgical implantation, and any regulatory node can lock an organ with an instant emergency freeze.
                   </p>
-                </fieldset>
+                </div>
               </div>
             </div>
           )}
 
           {activeTab === 'rules' && (
-            <div className="space-y-2">
-              <div className="p-2.5 swing-sunken bg-white">
-                <h4 className="font-bold text-xs text-[#0A246A] mb-1">Smart Contract (`LifeLedger.sol`) Invariants:</h4>
-                <div className="space-y-1 text-[10px] font-mono text-[#333333]">
-                  <div>• <code>require(msg.sender == currentOwner)</code>: Strict medical custody ownership.</div>
-                  <div>• <code>require(!organ.isQuarantined)</code>: Quarantined organs are immediately locked.</div>
-                  <div>• <code>require(stage != Transplanted)</code>: Prevents double-allocation of grafted organs.</div>
-                  <div>• <code>hasRole(HOSPITAL_ROLE, msg.sender)</code>: Only authorized hospitals sign surgical implantation.</div>
-                  <div>• <code>hasRole(AUTHORITY_ROLE, msg.sender)</code>: Only health authorities issue quarantine halts.</div>
+            <div className="space-y-3">
+              <div className="p-4 bg-white rounded-xl border border-slate-200/80 shadow-xs space-y-2">
+                <h4 className="font-bold text-xs text-slate-900 uppercase tracking-wider">Smart Contract (`LifeLedger.sol`) Invariants:</h4>
+                <div className="space-y-1.5 text-xs font-mono text-slate-700">
+                  <div className="p-2 bg-slate-50 rounded border border-slate-200">• <code className="text-blue-700">require(msg.sender == currentOwner)</code>: Strict medical custody ownership.</div>
+                  <div className="p-2 bg-slate-50 rounded border border-slate-200">• <code className="text-blue-700">require(!organ.isQuarantined)</code>: Quarantined organs are immediately locked.</div>
+                  <div className="p-2 bg-slate-50 rounded border border-slate-200">• <code className="text-blue-700">require(stage != Transplanted)</code>: Prevents double-allocation of grafted organs.</div>
+                  <div className="p-2 bg-slate-50 rounded border border-slate-200">• <code className="text-blue-700">hasRole(HOSPITAL_ROLE, msg.sender)</code>: Only authorized hospitals sign surgical implantation.</div>
+                  <div className="p-2 bg-slate-50 rounded border border-slate-200">• <code className="text-blue-700">hasRole(AUTHORITY_ROLE, msg.sender)</code>: Only health authorities issue quarantine halts.</div>
                 </div>
               </div>
 
-              <div className="p-2.5 swing-sunken bg-[#F5FFF5] border border-green-500 text-[10px] text-[#222222]">
-                <strong>Automated Test Coverage:</strong> 41 comprehensive invariants (16 Hardhat Solidity invariants + 25 Express API invariants) are verified automatically via <code>npm test</code>.
+              <div className="p-3.5 bg-emerald-50 rounded-xl border border-emerald-200 text-xs text-emerald-900">
+                <strong>Automated Test Coverage:</strong> 41 comprehensive invariants (16 Hardhat Solidity invariants + 25 Express API invariants) are verified automatically via <code className="font-mono bg-white px-1.5 py-0.5 rounded border border-emerald-300">npm test</code>.
               </div>
             </div>
           )}
 
           {activeTab === 'architecture' && (
-            <div className="space-y-2">
-              <div className="p-2.5 swing-sunken bg-white space-y-1.5 text-[10px]">
-                <div className="font-bold text-xs text-[#0A246A]">Consortium Tech Stack:</div>
-                <div>• <strong>Smart Contracts:</strong> Solidity v0.8.20 on Ethereum Paris EVM with Hardhat</div>
-                <div>• <strong>Consensus Model:</strong> Proof-of-Authority (PoA) consortium for instant finality and zero volatility gas costs</div>
-                <div>• <strong>Decentralized Storage:</strong> IPFS CIDs for high-resolution histopathology and Form 8 legal documentation</div>
-                <div>• <strong>Backend Gateway:</strong> Node.js / Express with cryptographic SHA-256 state ledger fallback</div>
-                <div>• <strong>User Interface:</strong> Retro Java Swing / AWT 3D desktop aesthetic built in React 19 + Tailwind CSS</div>
+            <div className="space-y-3">
+              <div className="p-4 bg-white rounded-xl border border-slate-200/80 shadow-xs space-y-2.5 text-xs text-slate-700">
+                <div className="font-bold text-xs text-slate-900 uppercase tracking-wider">Consortium Tech Stack:</div>
+                <div className="space-y-1.5">
+                  <div>• <strong>Smart Contracts:</strong> Solidity v0.8.20 on Ethereum Paris EVM with Hardhat</div>
+                  <div>• <strong>Consensus Model:</strong> Proof-of-Authority (PoA) consortium for instant finality and zero volatility gas costs</div>
+                  <div>• <strong>Decentralized Storage:</strong> IPFS CIDs for high-resolution histopathology and Form 8 legal documentation</div>
+                  <div>• <strong>Backend Gateway:</strong> Node.js / Express with cryptographic SHA-256 state ledger fallback</div>
+                  <div>• <strong>User Interface:</strong> Modern React 19 SPA with Tailwind CSS v4 and radial quick-action HUD</div>
+                </div>
               </div>
             </div>
           )}
         </div>
 
         {/* Dialog Action Strip */}
-        <div className="bg-[#ECE9D8] px-3 py-2 border-t border-[#808080] flex items-center justify-between">
-          <div className="text-[10px] text-[#555555]">
+        <div className="bg-slate-100 px-5 py-3 border-t border-slate-200 flex items-center justify-between">
+          <div className="text-xs text-slate-500">
             LifeLedger Project Defense Manual • Ready for Evaluation
           </div>
           <button
             onClick={onClose}
-            className="swing-btn swing-btn-primary text-xs py-1 px-4"
+            className="px-5 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition-all"
           >
-            OK
+            OK - Got It
           </button>
         </div>
 
-        {/* Java Dialog Status Bar */}
-        <div className="swing-statusbar">
-          <div className="swing-status-pane">JDialog: PresentationGuide</div>
-          <div className="swing-status-pane">LifeLedger v2.0</div>
-          <div className="swing-status-pane flex-1 text-right">Invariants: 41/41 Passed</div>
+        {/* Modal Status Footer */}
+        <div className="bg-slate-100 px-5 py-2 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500 font-mono">
+          <div>LifeLedger v2.4 Defense Architecture</div>
+          <div className="text-emerald-700 font-bold">Consortium Invariants: 41/41 Passed</div>
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Heart, Sparkles, ShieldCheck, AlertCircle, CheckCircle, Activity, Thermometer, Clock } from 'lucide-react';
+import { X, Heart, ShieldCheck, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const ORGAN_PRESETS = {
@@ -116,50 +116,54 @@ export default function CreateBatchModal({ isOpen, onClose, onSuccess }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/40 backdrop-blur-xs">
-      <div className="w-full max-w-2xl swing-raised shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
-        {/* Java Window Titlebar */}
-        <div className="swing-titlebar">
-          <div className="flex items-center gap-1.5">
-            <Heart className="w-3.5 h-3.5 text-red-300 fill-red-300" />
-            <span className="font-bold text-xs tracking-wide">
-              javax.swing.JDialog: Harvest & Register Donor Organ [LifeLedger PoA v2.0]
-            </span>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
+      <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-slate-200/80 overflow-hidden flex flex-col max-h-[92vh]">
+        {/* Modern Window Titlebar */}
+        <div className="bg-slate-900 px-5 py-4 text-white flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-red-500/20 border border-red-400/30 flex items-center justify-center text-red-400">
+              <Heart className="w-5 h-5 fill-red-400" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-white tracking-tight">Harvest & Register Donor Organ</h3>
+              <p className="text-xs text-slate-400">LifeLedger EVM PoA Consortium Protocol</p>
+            </div>
           </div>
           <button
             onClick={onClose}
-            className="w-4 h-4 bg-[#ECE9D8] text-black font-bold text-[10px] flex items-center justify-center border border-[#FFFFFF] border-r-[#808080] border-b-[#808080] hover:bg-[#D4D0C8] active:translate-y-px"
+            className="w-8 h-8 rounded-lg bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 flex items-center justify-center transition-colors"
             title="Close Dialog"
           >
-            ✕
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Dialog Subheader & Presets Toolbar */}
-        <div className="bg-[#ECE9D8] px-3 py-2 border-b border-[#808080] flex items-center justify-between gap-2 flex-wrap">
-          <div className="text-[11px] text-[#333333]">
-            <span className="font-bold">OPO Node:</span> Authenticated as <span className="font-mono bg-white px-1 border border-[#808080]">{currentUser.name}</span>
+        <div className="bg-slate-100/80 px-5 py-2.5 border-b border-slate-200 flex items-center justify-between gap-3 flex-wrap text-xs">
+          <div className="text-slate-600 flex items-center gap-1.5">
+            <span className="font-semibold text-slate-700">Authenticated Node:</span>
+            <span className="font-mono font-medium text-slate-800 bg-white px-2 py-0.5 rounded border border-slate-300 shadow-2xs">{currentUser.name}</span>
           </div>
-          <div className="flex items-center gap-1">
-            <span className="text-[10px] font-bold text-[#555555]">Fast Templates:</span>
+          <div className="flex items-center gap-1.5">
+            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Fast Presets:</span>
             <button
               type="button"
               onClick={() => loadPreset('kidney')}
-              className="swing-btn text-[10px] py-0.5 px-1.5"
+              className="px-2.5 py-1 text-xs font-medium rounded-md bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 transition-colors shadow-2xs"
             >
               Kidney (24h)
             </button>
             <button
               type="button"
               onClick={() => loadPreset('heart')}
-              className="swing-btn text-[10px] py-0.5 px-1.5 font-bold text-red-900"
+              className="px-2.5 py-1 text-xs font-semibold rounded-md bg-red-50 border border-red-200 hover:bg-red-100 text-red-700 transition-colors shadow-2xs"
             >
-              Heart (4h Urgent)
+              Heart (4h STAT)
             </button>
             <button
               type="button"
               onClick={() => loadPreset('liver')}
-              className="swing-btn text-[10px] py-0.5 px-1.5"
+              className="px-2.5 py-1 text-xs font-medium rounded-md bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 transition-colors shadow-2xs"
             >
               Liver (12h)
             </button>
@@ -167,9 +171,9 @@ export default function CreateBatchModal({ isOpen, onClose, onSuccess }) {
         </div>
 
         {/* Scrollable Form Body */}
-        <form onSubmit={handleSubmit} className="p-3 overflow-y-auto space-y-3 bg-[#ECE9D8] flex-1">
+        <form onSubmit={handleSubmit} className="p-5 overflow-y-auto space-y-4 bg-slate-50 flex-1">
           {error && (
-            <div className="p-2 swing-sunken bg-[#FFF0F0] border border-red-500 text-red-900 text-[11px] flex items-center gap-2">
+            <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-900 text-xs flex items-center gap-2.5">
               <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
               <div>
                 <strong>EVM Execution / Validation Error:</strong> {error}
@@ -178,13 +182,13 @@ export default function CreateBatchModal({ isOpen, onClose, onSuccess }) {
           )}
 
           {/* Group 1: Organ Specimen Identifiers */}
-          <fieldset className="p-2.5 swing-etched bg-[#ECE9D8]">
-            <legend className="px-1 text-[11px] font-bold text-[#0A246A]">
-              1. Specimen & Genetic Profile
-            </legend>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+          <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs space-y-3">
+            <div className="text-xs font-semibold text-slate-600 tracking-wider uppercase flex items-center gap-1.5">
+              <span>1. Specimen & Genetic Profile</span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <div>
-                <label className="block text-[10px] font-bold text-[#333333] mb-0.5">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
                   Organ Barcode ID:
                 </label>
                 <input
@@ -192,19 +196,19 @@ export default function CreateBatchModal({ isOpen, onClose, onSuccess }) {
                   required
                   value={formData.organId}
                   onChange={(e) => setFormData({ ...formData, organId: e.target.value.toUpperCase() })}
-                  className="swing-input w-full font-mono text-[11px] font-bold"
+                  className="w-full px-3 py-2 text-xs font-mono font-bold bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   placeholder="ORG-KID-XXXX"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-[#333333] mb-0.5">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
                   Organ Type / Anatomical Side:
                 </label>
                 <select
                   value={formData.organType}
                   onChange={(e) => setFormData({ ...formData, organType: e.target.value })}
-                  className="swing-input w-full text-[11px]"
+                  className="w-full px-3 py-2 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 >
                   <option value="Kidney (Left)">Kidney (Left)</option>
                   <option value="Kidney (Right)">Kidney (Right)</option>
@@ -216,13 +220,13 @@ export default function CreateBatchModal({ isOpen, onClose, onSuccess }) {
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-[#333333] mb-0.5">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
                   Donor Blood Group:
                 </label>
                 <select
                   value={formData.donorBloodType}
                   onChange={(e) => setFormData({ ...formData, donorBloodType: e.target.value })}
-                  className="swing-input w-full font-bold text-[11px] text-[#0A246A]"
+                  className="w-full px-3 py-2 text-xs font-bold text-blue-700 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 >
                   <option value="O+">O Positive (O+)</option>
                   <option value="O-">O Negative (O- Universal)</option>
@@ -236,7 +240,7 @@ export default function CreateBatchModal({ isOpen, onClose, onSuccess }) {
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-[#333333] mb-0.5">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
                   Donor Registry ID (Form 8):
                 </label>
                 <input
@@ -244,12 +248,12 @@ export default function CreateBatchModal({ isOpen, onClose, onSuccess }) {
                   required
                   value={formData.donorId}
                   onChange={(e) => setFormData({ ...formData, donorId: e.target.value })}
-                  className="swing-input w-full font-mono text-[11px]"
+                  className="w-full px-3 py-2 text-xs font-mono bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 />
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-[10px] font-bold text-[#333333] mb-0.5">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
                   HLA Marker / Crossmatch Histocompatibility:
                 </label>
                 <input
@@ -257,23 +261,23 @@ export default function CreateBatchModal({ isOpen, onClose, onSuccess }) {
                   required
                   value={formData.hlaMarker}
                   onChange={(e) => setFormData({ ...formData, hlaMarker: e.target.value })}
-                  className="swing-input w-full text-[11px]"
+                  className="w-full px-3 py-2 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 />
               </div>
             </div>
-          </fieldset>
+          </div>
 
           {/* Group 2: Critical Ischemia & Preservation Protocol */}
-          <fieldset className="p-2.5 swing-etched bg-[#ECE9D8]">
-            <legend className="px-1 text-[11px] font-bold text-[#0A246A]">
-              2. Ischemia Window & Cold-Chain Telemetry
-            </legend>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+          <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs space-y-3">
+            <div className="text-xs font-semibold text-slate-600 tracking-wider uppercase flex items-center gap-1.5">
+              <span>2. Ischemia Window & Cold-Chain Telemetry</span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <div>
-                <label className="block text-[10px] font-bold text-[#333333] mb-0.5">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
                   Ischemic Limit (Hours):
                 </label>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5">
                   <input
                     type="number"
                     min="1"
@@ -281,17 +285,17 @@ export default function CreateBatchModal({ isOpen, onClose, onSuccess }) {
                     required
                     value={formData.ischemicLimitHours}
                     onChange={(e) => setFormData({ ...formData, ischemicLimitHours: e.target.value })}
-                    className="swing-input w-full font-mono font-bold text-[11px]"
+                    className="w-full px-3 py-2 text-xs font-mono font-bold bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   />
-                  <span className="text-[10px] text-[#555555]">hrs</span>
+                  <span className="text-xs font-semibold text-slate-500">hrs</span>
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-[#333333] mb-0.5">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
                   Harvest Cryo Temp (°C):
                 </label>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5">
                   <input
                     type="number"
                     step="0.1"
@@ -300,14 +304,14 @@ export default function CreateBatchModal({ isOpen, onClose, onSuccess }) {
                     required
                     value={formData.initialTemp}
                     onChange={(e) => setFormData({ ...formData, initialTemp: e.target.value })}
-                    className="swing-input w-full font-mono font-bold text-[11px] text-blue-900"
+                    className="w-full px-3 py-2 text-xs font-mono font-bold text-blue-700 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   />
-                  <span className="text-[10px] text-[#555555]">°C</span>
+                  <span className="text-xs font-semibold text-slate-500">°C</span>
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-[#333333] mb-0.5">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
                   Preservation Solution:
                 </label>
                 <input
@@ -315,20 +319,20 @@ export default function CreateBatchModal({ isOpen, onClose, onSuccess }) {
                   required
                   value={formData.preservationProtocol}
                   onChange={(e) => setFormData({ ...formData, preservationProtocol: e.target.value })}
-                  className="swing-input w-full text-[11px]"
+                  className="w-full px-3 py-2 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 />
               </div>
             </div>
-          </fieldset>
+          </div>
 
           {/* Group 3: Allocation Destination & Recipient */}
-          <fieldset className="p-2.5 swing-etched bg-[#ECE9D8]">
-            <legend className="px-1 text-[11px] font-bold text-[#0A246A]">
-              3. Recipient Matching & Transplant Hospital
-            </legend>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+          <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs space-y-3">
+            <div className="text-xs font-semibold text-slate-600 tracking-wider uppercase flex items-center gap-1.5">
+              <span>3. Recipient Matching & Transplant Hospital</span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <label className="block text-[10px] font-bold text-[#333333] mb-0.5">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
                   Matched Recipient ID:
                 </label>
                 <input
@@ -336,12 +340,12 @@ export default function CreateBatchModal({ isOpen, onClose, onSuccess }) {
                   required
                   value={formData.recipientId}
                   onChange={(e) => setFormData({ ...formData, recipientId: e.target.value })}
-                  className="swing-input w-full font-mono text-[11px]"
+                  className="w-full px-3 py-2 text-xs font-mono bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-[#333333] mb-0.5">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
                   Target Surgical Hospital:
                 </label>
                 <input
@@ -349,50 +353,50 @@ export default function CreateBatchModal({ isOpen, onClose, onSuccess }) {
                   required
                   value={formData.recipientHospital}
                   onChange={(e) => setFormData({ ...formData, recipientHospital: e.target.value })}
-                  className="swing-input w-full text-[11px]"
+                  className="w-full px-3 py-2 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 />
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-[10px] font-bold text-[#333333] mb-0.5">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
                   OPO Surgical Procuring Notes & Legal Attestation:
                 </label>
                 <textarea
                   rows="2"
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  className="swing-input w-full text-[11px] font-mono"
+                  className="w-full px-3 py-2 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-sans"
                   placeholder="Enter procurement operating room details..."
                 />
               </div>
             </div>
-          </fieldset>
+          </div>
 
           {/* Footer Action Bar */}
-          <div className="pt-2 flex items-center justify-between border-t border-[#808080]">
-            <div className="text-[10px] text-[#555555] flex items-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5 text-green-700" />
+          <div className="pt-2 flex items-center justify-between">
+            <div className="text-xs text-slate-500 flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-emerald-600" />
               <span>Creates immutable on-chain record on PoA EVM block</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               <button
                 type="button"
                 onClick={onClose}
-                className="swing-btn text-xs py-1 px-3"
+                className="px-4 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-100 transition-colors shadow-2xs"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="swing-btn swing-btn-primary text-xs py-1 px-4 flex items-center gap-1.5"
+                className="px-4 py-2 text-xs font-semibold text-white bg-red-600 hover:bg-red-700 rounded-lg shadow-sm transition-all flex items-center gap-2 disabled:opacity-50"
               >
                 {loading ? (
                   <span>Executing EVM Tx...</span>
                 ) : (
                   <>
-                    <Heart className="w-3.5 h-3.5 text-red-700 fill-red-700" />
-                    <span>OK - Sign & Register Harvest</span>
+                    <Heart className="w-4 h-4 fill-white" />
+                    <span>Register Harvest</span>
                   </>
                 )}
               </button>
@@ -400,11 +404,11 @@ export default function CreateBatchModal({ isOpen, onClose, onSuccess }) {
           </div>
         </form>
 
-        {/* Java Dialog Status Bar */}
-        <div className="swing-statusbar">
-          <div className="swing-status-pane">JDialog: Modal Form</div>
-          <div className="swing-status-pane">Chain: LifeLedger PoA (ChainID: 31337)</div>
-          <div className="swing-status-pane flex-1 text-right">Gas Limit: 3,000,000</div>
+        {/* Modal Status Footer */}
+        <div className="bg-slate-100 px-5 py-2 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500 font-mono">
+          <div>LifeLedger PoA (ChainID: 31337)</div>
+          <div>Gas Limit: 3,000,000</div>
+          <div className="text-emerald-700 font-bold">Consortium Synced</div>
         </div>
       </div>
     </div>

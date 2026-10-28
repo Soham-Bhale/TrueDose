@@ -304,63 +304,63 @@ export default function BlockVisualizerPage() {
   };
 
   return (
-    <div className="p-3 max-w-[1240px] mx-auto space-y-3 font-sans">
+    <div className="space-y-4 font-sans">
       {/* ── 1. Page Header & Navigation Tabs ─────────────────────── */}
-      <div className="swing-raised p-3 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="px-2 py-0.5 bg-[#0A246A] text-white font-mono font-bold text-[10px]">
-              EVM POA PROTOCOL
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="px-2 py-0.5 bg-blue-600 text-white font-mono font-bold text-[10px] rounded-md">
+              EVM POA CONSORTIUM
             </span>
-            <span className="text-gray-500 text-[10px] font-mono">
-              ChainID: 31337 • Block Time: 2.0s • Zero-Gas Consortium
+            <span className="text-slate-400 text-xs font-mono">
+              ChainID: 31337 • Block Time: 2.0s • Zero-Gas Healthcare
             </span>
           </div>
-          <h1 className="text-lg font-bold text-[#0A246A] flex items-center gap-2">
-            <Boxes className="w-5 h-5 text-indigo-700" />
-            <span>Consortium Blockchain Visualizer & Block Chaining Architecture</span>
+          <h1 className="text-xl font-extrabold text-slate-900 flex items-center gap-2">
+            <Boxes className="w-5 h-5 text-blue-600" />
+            <span>Consortium Blockchain Visualizer & Consensus Simulator</span>
           </h1>
-          <p className="text-[11px] text-gray-600 mt-0.5">
-            Visual explanation of how organ custody transactions are packaged, cryptographically hashed with SHA-256, and chained into an immutable decentralized ledger.
+          <p className="text-xs text-slate-500 mt-1">
+            Visual representation of how organ custody transactions are packaged, cryptographically hashed with SHA-256, and chained into an immutable decentralized ledger.
           </p>
         </div>
 
         {/* View Switcher Tabs */}
-        <div className="flex items-center gap-1 bg-[#ECE9D8] p-1 border border-[#808080] rounded-xs shrink-0">
+        <div className="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-xl border border-slate-200 shrink-0">
           <button
             onClick={() => setActiveTab('chain')}
-            className={`swing-btn text-[11px] py-1 px-2.5 flex items-center gap-1.5 ${
-              activeTab === 'chain' ? 'swing-btn-active bg-[#DFDBD0] font-bold text-[#0A246A]' : ''
+            className={`px-3 py-1.5 text-xs rounded-lg font-medium transition-all flex items-center gap-1.5 cursor-pointer ${
+              activeTab === 'chain' ? 'bg-white shadow-xs text-blue-700 font-bold' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <LinkIcon className="w-3.5 h-3.5 text-blue-700" />
-            <span>Block Chain [{blocks.length} Blocks]</span>
+            <LinkIcon className="w-3.5 h-3.5" />
+            <span>Block Chain [{blocks.length}]</span>
           </button>
           <button
             onClick={() => setActiveTab('mint')}
-            className={`swing-btn text-[11px] py-1 px-2.5 flex items-center gap-1.5 ${
-              activeTab === 'mint' ? 'swing-btn-active bg-[#DFDBD0] font-bold text-[#0A246A]' : ''
+            className={`px-3 py-1.5 text-xs rounded-lg font-medium transition-all flex items-center gap-1.5 cursor-pointer ${
+              activeTab === 'mint' ? 'bg-white shadow-xs text-amber-700 font-bold' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <Zap className="w-3.5 h-3.5 text-amber-600" />
+            <Zap className="w-3.5 h-3.5" />
             <span>Mint Next Block</span>
           </button>
           <button
             onClick={() => setActiveTab('network')}
-            className={`swing-btn text-[11px] py-1 px-2.5 flex items-center gap-1.5 ${
-              activeTab === 'network' ? 'swing-btn-active bg-[#DFDBD0] font-bold text-[#0A246A]' : ''
+            className={`px-3 py-1.5 text-xs rounded-lg font-medium transition-all flex items-center gap-1.5 cursor-pointer ${
+              activeTab === 'network' ? 'bg-white shadow-xs text-emerald-700 font-bold' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <Cpu className="w-3.5 h-3.5 text-green-700" />
-            <span>Validator Nodes (PoA)</span>
+            <Cpu className="w-3.5 h-3.5" />
+            <span>PoA Nodes</span>
           </button>
           <button
             onClick={() => setActiveTab('guide')}
-            className={`swing-btn text-[11px] py-1 px-2.5 flex items-center gap-1.5 ${
-              activeTab === 'guide' ? 'swing-btn-active bg-[#DFDBD0] font-bold text-[#0A246A]' : ''
+            className={`px-3 py-1.5 text-xs rounded-lg font-medium transition-all flex items-center gap-1.5 cursor-pointer ${
+              activeTab === 'guide' ? 'bg-white shadow-xs text-purple-700 font-bold' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <Info className="w-3.5 h-3.5 text-purple-700" />
+            <Info className="w-3.5 h-3.5" />
             <span>How It Works</span>
           </button>
         </div>
@@ -368,23 +368,23 @@ export default function BlockVisualizerPage() {
 
       {/* ── 2. Tamper Alert Banner (If simulated) ─────────────────── */}
       {tamperedBlockIndex !== null && (
-        <div className="p-3 bg-red-100 border-2 border-red-600 text-red-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-[11px] animate-pulse">
-          <div className="flex items-center gap-2">
-            <AlertTriangle className="w-5 h-5 text-red-700 shrink-0" />
+        <div className="p-4 bg-rose-50 border-2 border-rose-500 rounded-xl text-rose-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-sm animate-pulse">
+          <div className="flex items-center gap-3">
+            <AlertTriangle className="w-6 h-6 text-rose-600 shrink-0" />
             <div>
-              <strong className="text-red-900 uppercase">
+              <strong className="text-rose-900 text-sm uppercase block">
                 Tamper Attack Simulated in Block #{tamperedBlockIndex}!
               </strong>
-              <div className="text-[10px] text-red-800">
+              <div className="text-xs text-rose-800 mt-0.5">
                 Data was altered. SHA-256 hash changed avalanche style, causing cryptographic mismatch with Block #{tamperedBlockIndex + 1}'s previous hash. All downstream blocks are rejected by PoA consensus!
               </div>
             </div>
           </div>
           <button
             onClick={handleRestoreLedger}
-            className="swing-btn swing-btn-primary text-[11px] py-1 px-3 shrink-0"
+            className="px-3.5 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-xs transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer"
           >
-            <RefreshCw className="w-3.5 h-3.5 text-green-700" />
+            <RefreshCw className="w-3.5 h-3.5" />
             <span>Restore Blockchain Integrity</span>
           </button>
         </div>
@@ -392,22 +392,22 @@ export default function BlockVisualizerPage() {
 
       {/* ── 3. TAB 1: VISUAL BLOCK CHAIN EXPLORER ──────────────────── */}
       {activeTab === 'chain' && (
-        <div className="space-y-3">
-          <div className="bg-[#FAF8F5] p-2 border border-[#D4D0C8] flex flex-wrap items-center justify-between gap-2 text-[11px]">
+        <div className="space-y-4">
+          <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs flex flex-wrap items-center justify-between gap-2 text-xs">
             <div className="flex items-center gap-2">
-              <span className="font-bold text-gray-700">Ledger Visualizer Controls:</span>
-              <span className="text-gray-500">
+              <span className="font-bold text-slate-800">Ledger Visualizer Controls:</span>
+              <span className="text-slate-500">
                 Hover over any hash to see its cryptographic link to the next block. Try clicking <strong>"Simulate Data Tamper"</strong> on Block #1.
               </span>
             </div>
-            <div className="flex items-center gap-1.5 font-mono text-[10px]">
-              <span className="flex items-center gap-1">
-                <span className="w-2.5 h-2.5 bg-green-500 rounded-full"></span>
-                <span>Verified Chain</span>
+            <div className="flex items-center gap-3 font-mono text-[11px]">
+              <span className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full"></span>
+                <span className="text-slate-600">Verified Chain</span>
               </span>
-              <span className="flex items-center gap-1 ml-2">
-                <span className="w-2.5 h-2.5 bg-red-500 rounded-full"></span>
-                <span>Broken Link</span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 bg-rose-500 rounded-full"></span>
+                <span className="text-slate-600">Broken Link</span>
               </span>
             </div>
           </div>
@@ -427,51 +427,51 @@ export default function BlockVisualizerPage() {
                 <div key={block.blockNumber} className="relative">
                   {/* The Block Container */}
                   <div
-                    className={`swing-raised p-3 transition-all ${
+                    className={`p-4 rounded-xl transition-all border shadow-xs ${
                       isTampered
-                        ? 'border-2 border-red-600 bg-[#FFF5F5] shadow-lg shadow-red-200'
+                        ? 'border-2 border-rose-500 bg-rose-50/50 shadow-lg shadow-rose-100'
                         : isBroken
-                        ? 'border-2 border-amber-600 bg-[#FFFBF0] opacity-85'
-                        : 'bg-[#ECE9D8]'
+                        ? 'border-2 border-amber-500 bg-amber-50/50 opacity-90'
+                        : 'bg-white border-slate-200'
                     }`}
                   >
                     {/* Top Block Header Bar */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#808080] pb-2">
-                      <div className="flex items-center gap-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                      <div className="flex items-center gap-3">
                         <div
-                          className={`w-7 h-7 rounded-xs flex items-center justify-center font-mono font-bold text-xs ${
+                          className={`w-9 h-9 rounded-lg flex items-center justify-center font-mono font-bold text-sm shadow-2xs ${
                             isTampered
-                              ? 'bg-red-700 text-white'
+                              ? 'bg-rose-600 text-white'
                               : isBroken
-                              ? 'bg-amber-700 text-white'
-                              : 'bg-[#0A246A] text-white'
+                              ? 'bg-amber-600 text-white'
+                              : 'bg-blue-600 text-white'
                           }`}
                         >
                           #{block.blockNumber}
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="font-bold text-sm text-[#0A246A]">
+                            <span className="font-extrabold text-base text-slate-900">
                               BLOCK #{block.blockNumber.toString().padStart(3, '0')}
                             </span>
                             {block.blockNumber === 0 && (
-                              <span className="px-1.5 py-0.2 bg-purple-700 text-white font-bold text-[9px] uppercase">
+                              <span className="px-2 py-0.5 bg-purple-100 text-purple-800 border border-purple-200 rounded-full font-bold text-[10px] uppercase font-mono">
                                 Genesis Block
                               </span>
                             )}
                             {isTampered && (
-                              <span className="px-1.5 py-0.2 bg-red-600 text-white font-bold text-[9px] uppercase animate-pulse">
+                              <span className="px-2 py-0.5 bg-rose-600 text-white font-bold text-[10px] uppercase rounded-full animate-pulse">
                                 TAMPERED
                               </span>
                             )}
                             {isBroken && (
-                              <span className="px-1.5 py-0.2 bg-amber-600 text-white font-bold text-[9px] uppercase">
+                              <span className="px-2 py-0.5 bg-amber-600 text-white font-bold text-[10px] uppercase rounded-full">
                                 CONSENSUS REJECTED
                               </span>
                             )}
                           </div>
-                          <div className="text-[10px] text-gray-500 font-mono">
-                            Timestamp: {block.timestamp} • Mined by: <strong className="text-gray-800">{block.validator}</strong>
+                          <div className="text-xs text-slate-500 font-mono mt-0.5">
+                            Timestamp: {block.timestamp} • Mined by: <strong className="text-slate-800">{block.validator}</strong>
                           </div>
                         </div>
                       </div>
@@ -481,19 +481,19 @@ export default function BlockVisualizerPage() {
                         {block.blockNumber > 0 && !isTampered && !isBroken && (
                           <button
                             onClick={() => handleTamperBlock(idx)}
-                            className="swing-btn swing-btn-danger text-[10px] py-1 px-2 flex items-center gap-1"
+                            className="px-3 py-1.5 text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
                             title="Simulate unauthorized tampering with transaction data inside this block"
                           >
-                            <Unlock className="w-3 h-3 text-red-700" />
+                            <Unlock className="w-3.5 h-3.5" />
                             <span>Simulate Data Tamper</span>
                           </button>
                         )}
                         {isTampered && (
                           <button
                             onClick={handleRestoreLedger}
-                            className="swing-btn swing-btn-primary text-[10px] py-1 px-2 flex items-center gap-1"
+                            className="px-3 py-1.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
                           >
-                            <Lock className="w-3 h-3 text-green-700" />
+                            <Lock className="w-3.5 h-3.5" />
                             <span>Restore Integrity</span>
                           </button>
                         )}
@@ -501,22 +501,22 @@ export default function BlockVisualizerPage() {
                     </div>
 
                     {/* Middle Cryptographic Hash Ribbons */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 my-2 text-[11px] font-mono">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 my-3 text-xs font-mono">
                       {/* Previous Hash */}
                       <div
                         onMouseEnter={() => setHighlightHash(block.prevHash)}
                         onMouseLeave={() => setHighlightHash(null)}
-                        className={`swing-sunken p-2 transition-all ${
+                        className={`p-3 rounded-lg border transition-all ${
                           highlightHash === block.prevHash
-                            ? 'bg-yellow-100 border-yellow-500'
-                            : 'bg-white'
+                            ? 'bg-amber-50 border-amber-400 shadow-xs'
+                            : 'bg-slate-50 border-slate-200'
                         }`}
                       >
-                        <div className="text-[9px] font-sans font-bold text-gray-500 uppercase flex items-center justify-between">
+                        <div className="text-[10px] font-sans font-bold text-slate-500 uppercase flex items-center justify-between">
                           <span>Previous Block Hash (prevHash)</span>
-                          {block.blockNumber === 0 && <span className="text-gray-400">0x0 (Root)</span>}
+                          {block.blockNumber === 0 && <span className="text-slate-400 font-mono">0x0 (Root)</span>}
                         </div>
-                        <div className="text-[11px] font-bold truncate text-gray-700 mt-0.5">
+                        <div className="text-xs font-bold truncate text-slate-800 mt-1">
                           {block.prevHash}
                         </div>
                       </div>
@@ -525,49 +525,49 @@ export default function BlockVisualizerPage() {
                       <div
                         onMouseEnter={() => setHighlightHash(block.hash)}
                         onMouseLeave={() => setHighlightHash(null)}
-                        className={`swing-sunken p-2 transition-all ${
+                        className={`p-3 rounded-lg border transition-all ${
                           isTampered
-                            ? 'bg-red-50 border-red-500 text-red-900'
+                            ? 'bg-rose-50 border-rose-500 text-rose-950'
                             : highlightHash === block.hash
-                            ? 'bg-yellow-100 border-yellow-500'
-                            : 'bg-white'
+                            ? 'bg-amber-50 border-amber-400 shadow-xs'
+                            : 'bg-slate-50 border-slate-200'
                         }`}
                       >
-                        <div className="text-[9px] font-sans font-bold text-gray-500 uppercase flex items-center justify-between">
+                        <div className="text-[10px] font-sans font-bold text-slate-500 uppercase flex items-center justify-between">
                           <span>Current Block SHA-256 Hash</span>
-                          <span className="text-green-700 font-bold font-sans">
+                          <span className={`font-bold font-sans ${isTampered ? 'text-rose-700' : 'text-emerald-600'}`}>
                             {isTampered ? 'FORGED HASH' : 'VERIFIED PROOF'}
                           </span>
                         </div>
-                        <div className={`text-[11px] font-bold truncate mt-0.5 ${isTampered ? 'text-red-700' : 'text-[#0A246A]'}`}>
+                        <div className={`text-xs font-bold truncate mt-1 ${isTampered ? 'text-rose-700' : 'text-blue-700'}`}>
                           {block.hash}
                         </div>
                       </div>
                     </div>
 
                     {/* Transactions packaged inside this block */}
-                    <div className="border border-[#D4D0C8] bg-white p-2">
-                      <div className="flex items-center justify-between text-[10px] font-bold text-gray-600 mb-1 border-b border-[#EAE8E0] pb-1">
+                    <div className="border border-slate-200 bg-slate-50/50 rounded-lg p-3">
+                      <div className="flex items-center justify-between text-xs font-bold text-slate-600 mb-2 border-b border-slate-200 pb-1.5">
                         <span>Packaged Transactions ({block.transactions.length})</span>
-                        <span className="font-mono">Validator: {block.validatorAddr}</span>
+                        <span className="font-mono text-slate-400 text-[11px]">Validator: {block.validatorAddr}</span>
                       </div>
-                      <div className="space-y-1 text-[11px]">
+                      <div className="space-y-1.5 text-xs">
                         {block.transactions.map((tx, tIdx) => (
-                          <div key={tIdx} className="p-1.5 bg-[#FAF8F5] border border-[#E0DFD8] flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                          <div key={tIdx} className="p-2.5 bg-white border border-slate-200 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-2xs">
                             <div className="space-y-0.5">
-                              <div className="flex items-center gap-1.5">
-                                <span className="px-1 bg-blue-100 text-[#0A246A] border border-blue-200 text-[9px] font-mono font-bold">
+                              <div className="flex items-center gap-2">
+                                <span className="px-1.5 py-0.2 bg-blue-50 text-blue-700 border border-blue-200 text-[10px] font-mono font-bold rounded-md">
                                   {tx.type}
                                 </span>
-                                <span className="font-bold text-gray-900">{tx.desc}</span>
+                                <span className="font-bold text-slate-900">{tx.desc}</span>
                               </div>
                               {tx.details && (
-                                <div className="text-[10px] text-gray-500 italic">
+                                <div className="text-[11px] text-slate-500 italic">
                                   "{tx.details}"
                                 </div>
                               )}
                             </div>
-                            <div className="text-[10px] font-mono text-gray-500 shrink-0">
+                            <div className="text-xs font-mono text-slate-400 shrink-0">
                               {tx.sender} → {tx.receiver}
                             </div>
                           </div>
@@ -578,26 +578,28 @@ export default function BlockVisualizerPage() {
 
                   {/* Cryptographic Link Cable / Connector between Block N and Block N+1 */}
                   {!isLast && (
-                    <div className="flex flex-col items-center justify-center my-1 select-none">
-                      <div className="flex items-center gap-2 px-3 py-1 bg-white border border-[#808080] rounded-xs shadow-xs text-[10px] font-mono">
+                    <div className="flex flex-col items-center justify-center my-2 select-none">
+                      <div className={`flex items-center gap-2 px-3 py-1.5 bg-white border rounded-full shadow-xs text-xs font-mono transition-all ${
+                        isLinkValid ? 'border-emerald-300 text-emerald-800' : 'border-rose-400 text-rose-800 animate-pulse'
+                      }`}>
                         {isLinkValid ? (
                           <>
-                            <LinkIcon className="w-3.5 h-3.5 text-green-600" />
-                            <span className="text-green-800 font-bold">
+                            <LinkIcon className="w-3.5 h-3.5 text-emerald-600" />
+                            <span className="font-semibold">
                               prevHash Match verified: Current Block Hash == Next Block prevHash
                             </span>
-                            <CheckCircle2 className="w-3 h-3 text-green-600" />
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                           </>
                         ) : (
                           <>
-                            <AlertTriangle className="w-3.5 h-3.5 text-red-600 animate-pulse" />
-                            <span className="text-red-800 font-bold uppercase">
+                            <AlertTriangle className="w-3.5 h-3.5 text-rose-600 animate-pulse" />
+                            <span className="font-bold uppercase">
                               CRYPTOGRAPHIC LINK BROKEN! Hash mismatch rejected by PoA Consensus
                             </span>
                           </>
                         )}
                       </div>
-                      <div className={`w-0.5 h-4 ${isLinkValid ? 'bg-green-600' : 'bg-red-600 animate-pulse'}`}></div>
+                      <div className={`w-0.5 h-4 ${isLinkValid ? 'bg-emerald-500' : 'bg-rose-500 animate-pulse'}`}></div>
                     </div>
                   )}
                 </div>
@@ -609,30 +611,30 @@ export default function BlockVisualizerPage() {
 
       {/* ── 4. TAB 2: LIVE BLOCK MINTING SIMULATOR ─────────────────── */}
       {activeTab === 'mint' && (
-        <div className="space-y-3">
-          <div className="swing-raised p-3">
-            <h2 className="text-sm font-bold text-[#0A246A] flex items-center gap-2 mb-1">
-              <Zap className="w-4 h-4 text-amber-600" />
+        <div className="space-y-4">
+          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2 mb-1">
+              <Zap className="w-4 h-4 text-amber-500" />
               <span>Interactive PoA Block Minting & Transaction Packaging Simulator</span>
             </h2>
-            <p className="text-[11px] text-gray-600 leading-relaxed">
+            <p className="text-xs text-slate-500 leading-relaxed">
               In traditional public blockchains like Bitcoin, blocks require high-energy Proof-of-Work mining. In LifeLedger's healthcare consortium, blocks are minted instantly via <strong>Proof-of-Authority (PoA)</strong>: authorized hospital and regulatory nodes cryptographically sign off on the batch with zero transaction fees and guaranteed 2-second finality.
             </p>
 
             {/* Minting Progress Stepper */}
             {isMinting && (
-              <div className="my-3 p-3 bg-white border-2 border-[#0A246A] space-y-2">
-                <div className="text-[11px] font-bold text-[#0A246A] flex items-center justify-between">
+              <div className="my-3.5 p-4 bg-slate-50 border border-blue-500 rounded-xl space-y-2.5">
+                <div className="text-xs font-bold text-blue-900 flex items-center justify-between">
                   <span>MINTING BLOCK #{blocks.length} IN PROGRESS...</span>
                   <span className="font-mono">STAGE {mintStep} / 4</span>
                 </div>
-                <div className="w-full bg-gray-200 h-2 rounded-xs overflow-hidden">
+                <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
                   <div
-                    className="bg-[#0A246A] h-full transition-all duration-300"
+                    className="bg-blue-600 h-full transition-all duration-300 rounded-full"
                     style={{ width: `${(mintStep / 4) * 100}%` }}
                   ></div>
                 </div>
-                <div className="text-[11px] font-mono text-gray-700">
+                <div className="text-xs font-mono text-slate-700">
                   {mintStep === 1 && "▶ 1/4: Collecting pending transactions from consortium Mempool..."}
                   {mintStep === 2 && "▶ 2/4: Computing Merkle Tree root hash of organ transit logs..."}
                   {mintStep === 3 && "▶ 3/4: Collecting multi-party PoA validator digital signatures (Lilavati, NOTTO, Apollo)..."}
@@ -642,104 +644,104 @@ export default function BlockVisualizerPage() {
             )}
 
             {/* Action Bar */}
-            <div className="mt-3 pt-2 border-t border-[#808080] flex items-center justify-between">
-              <div className="text-[11px] text-gray-600">
+            <div className="mt-3.5 pt-3 border-t border-slate-100 flex items-center justify-between">
+              <div className="text-xs text-slate-600">
                 Mempool: <strong>{mempoolTx.length} Verified Transactions</strong> ready to bundle
               </div>
               <button
                 onClick={handleMintNewBlock}
                 disabled={isMinting || mempoolTx.length === 0}
-                className="swing-btn swing-btn-primary py-1.5 px-4 text-xs flex items-center gap-1.5"
+                className="px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-lg shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
               >
-                <Play className="w-3.5 h-3.5 text-green-700" />
+                <Play className="w-3.5 h-3.5" />
                 <span>{isMinting ? "Minting in Progress..." : `Mint Block #${blocks.length} (PoA Consensus)`}</span>
               </button>
             </div>
           </div>
 
           {/* Pending Mempool Transactions */}
-          <fieldset className="swing-etched bg-[#ECE9D8] p-3">
-            <legend className="px-1.5 font-bold text-[11px] text-[#0A246A] bg-[#ECE9D8]">
+          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs space-y-2.5">
+            <div className="text-xs font-bold text-slate-700 uppercase tracking-wider">
               Pending Consortium Transactions (Mempool Queue)
-            </legend>
-            <div className="space-y-2 pt-1">
+            </div>
+            <div className="space-y-2">
               {mempoolTx.map((tx) => (
-                <div key={tx.id} className="p-2.5 bg-white border border-[#808080] flex flex-col md:flex-row md:items-center justify-between gap-2 text-[11px]">
+                <div key={tx.id} className="p-3 bg-slate-50 border border-slate-200 rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-2.5 text-xs">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="px-1.5 py-0.2 bg-amber-100 text-amber-900 border border-amber-300 font-mono font-bold text-[9px]">
+                      <span className="px-2 py-0.5 bg-amber-100 text-amber-900 border border-amber-200 font-mono font-bold text-[10px] rounded-md">
                         PENDING
                       </span>
-                      <span className="font-bold text-gray-900">{tx.title}</span>
+                      <span className="font-bold text-slate-900">{tx.title}</span>
                     </div>
-                    <div className="text-[10px] text-gray-500 font-mono">
+                    <div className="text-[11px] text-slate-500 font-mono">
                       Sender: {tx.sender} → Target: {tx.receiver} | Gas: {tx.gasEstimate}
                     </div>
-                    <div className="text-[10px] text-gray-600 italic">
+                    <div className="text-xs text-slate-600 italic">
                       "{tx.details}"
                     </div>
                   </div>
-                  <div className="flex items-center gap-1 shrink-0">
-                    <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                    <span className="text-[10px] text-green-700 font-bold">PoA Ready</span>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span className="text-xs text-emerald-700 font-bold">PoA Ready</span>
                   </div>
                 </div>
               ))}
             </div>
-          </fieldset>
+          </div>
         </div>
       )}
 
       {/* ── 5. TAB 3: VALIDATOR NODES & POA CONSENSUS ──────────────── */}
       {activeTab === 'network' && (
-        <div className="space-y-3">
-          <div className="swing-raised p-3">
-            <h2 className="text-sm font-bold text-[#0A246A] flex items-center gap-2 mb-1">
-              <Cpu className="w-4 h-4 text-green-700" />
+        <div className="space-y-4">
+          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2 mb-1">
+              <Cpu className="w-4 h-4 text-emerald-600" />
               <span>Consortium Validator Node Topology (Proof-of-Authority Network)</span>
             </h2>
-            <p className="text-[11px] text-gray-600 leading-relaxed">
+            <p className="text-xs text-slate-500 leading-relaxed">
               Unlike anonymous public networks, every node on the LifeLedger network is a legally registered healthcare institution authorized by NOTTO under the Transplantation of Human Organs and Tissues Act (THOTA). Nodes maintain peer-to-peer connections and sign blocks using their private keys.
             </p>
           </div>
 
           {/* Node Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {CONSENSUS_NODES.map((node, i) => {
               const Icon = node.icon;
               return (
-                <div key={i} className="swing-raised p-3 space-y-2 bg-white">
-                  <div className="flex items-start justify-between border-b border-[#D4D0C8] pb-2">
-                    <div className="flex items-center gap-2">
+                <div key={i} className="p-4 bg-white rounded-xl border border-slate-200 shadow-xs space-y-2.5">
+                  <div className="flex items-start justify-between border-b border-slate-100 pb-2.5">
+                    <div className="flex items-center gap-2.5">
                       <div
-                        className="w-8 h-8 rounded-full flex items-center justify-center text-white"
+                        className="w-9 h-9 rounded-lg flex items-center justify-center text-white shadow-2xs"
                         style={{ backgroundColor: node.color }}
                       >
                         <Icon className="w-4 h-4" />
                       </div>
                       <div>
-                        <div className="font-bold text-xs text-gray-900">{node.name}</div>
-                        <div className="text-[10px] text-gray-500">{node.role}</div>
+                        <div className="font-bold text-sm text-slate-900">{node.name}</div>
+                        <div className="text-xs text-slate-500">{node.role}</div>
                       </div>
                     </div>
-                    <span className="px-1.5 py-0.2 bg-green-100 text-green-800 border border-green-300 font-mono font-bold text-[9px] flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-green-600 animate-pulse"></span>
+                    <span className="px-2 py-0.5 bg-emerald-50 text-emerald-800 border border-emerald-200 font-mono font-bold text-[10px] rounded-full flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                       <span>{node.status}</span>
                     </span>
                   </div>
 
-                  <div className="space-y-1 text-[11px]">
+                  <div className="space-y-1.5 text-xs">
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Validator Public Key:</span>
-                      <span className="font-mono text-gray-800 text-[10px]">{node.address}</span>
+                      <span className="text-slate-500">Validator Public Key:</span>
+                      <span className="font-mono text-slate-800 text-[11px]">{node.address}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Consensus Weight:</span>
-                      <span className="font-mono font-bold text-[#0A246A]">25.0% (1 of 4 Signers)</span>
+                      <span className="text-slate-500">Consensus Weight:</span>
+                      <span className="font-mono font-bold text-blue-700">25.0% (1 of 4 Signers)</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Peer Latency:</span>
-                      <span className="font-mono text-green-700">~14ms (P2P Gossip Nominal)</span>
+                      <span className="text-slate-500">Peer Latency:</span>
+                      <span className="font-mono text-emerald-700 font-semibold">~14ms (P2P Gossip Nominal)</span>
                     </div>
                   </div>
                 </div>
@@ -751,54 +753,54 @@ export default function BlockVisualizerPage() {
 
       {/* ── 6. TAB 4: EDUCATIONAL ARCHITECTURE GUIDE ───────────────── */}
       {activeTab === 'guide' && (
-        <div className="swing-raised p-4 space-y-4">
+        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs space-y-4">
           <div>
-            <h2 className="text-sm font-bold text-[#0A246A] flex items-center gap-2 mb-1">
-              <Info className="w-4 h-4 text-purple-700" />
+            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2 mb-1">
+              <Info className="w-4 h-4 text-purple-600" />
               <span>How Blockchain Guarantees Organ Safety & Tamper-Proof Custody</span>
             </h2>
-            <p className="text-[11px] text-gray-600">
+            <p className="text-xs text-slate-500">
               Fundamental principles of cryptographic ledgers applied to human organ donation.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px]">
-            <div className="swing-panel-sunken p-3 space-y-1.5 bg-white">
-              <div className="font-bold text-xs text-[#0A246A] flex items-center gap-1.5">
-                <LinkIcon className="w-4 h-4 text-blue-700" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+            <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+              <div className="font-bold text-sm text-blue-900 flex items-center gap-2">
+                <LinkIcon className="w-4 h-4 text-blue-600" />
                 <span>1. The Cryptographic Hash Chain</span>
               </div>
-              <p className="text-gray-700 leading-relaxed">
-                Each block stores the SHA-256 hash of the block before it (<code className="font-mono text-[#0A246A]">prevHash</code>). This forms an unbroken mathematical chain. If anyone tampers with a single character in Block #1, its hash changes completely (the avalanche effect). Because Block #2 stores Block #1's old hash, the cryptographic link breaks instantly.
+              <p className="text-slate-600 leading-relaxed">
+                Each block stores the SHA-256 hash of the block before it (<code className="font-mono text-blue-700 font-semibold">prevHash</code>). This forms an unbroken mathematical chain. If anyone tampers with a single character in Block #1, its hash changes completely (the avalanche effect). Because Block #2 stores Block #1's old hash, the cryptographic link breaks instantly.
               </p>
             </div>
 
-            <div className="swing-panel-sunken p-3 space-y-1.5 bg-white">
-              <div className="font-bold text-xs text-[#0A246A] flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-green-700" />
+            <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+              <div className="font-bold text-sm text-emerald-900 flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-emerald-600" />
                 <span>2. Proof-of-Authority (PoA) Consensus</span>
               </div>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-slate-600 leading-relaxed">
                 Unlike public cryptocurrencies that waste massive electricity on mining, LifeLedger runs on Proof-of-Authority. Only verified hospitals, procurement agencies, and government directorates are granted private keys to sign transactions. This ensures zero transaction fees and 100% legal compliance with organ transplant regulations.
               </p>
             </div>
 
-            <div className="swing-panel-sunken p-3 space-y-1.5 bg-white">
-              <div className="font-bold text-xs text-[#0A246A] flex items-center gap-1.5">
-                <Activity className="w-4 h-4 text-cyan-700" />
+            <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+              <div className="font-bold text-sm text-cyan-900 flex items-center gap-2">
+                <Activity className="w-4 h-4 text-cyan-600" />
                 <span>3. Real-Time Cold Ischemia Tracking</span>
               </div>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-slate-600 leading-relaxed">
                 Human organs have strict ischemic preservation limits (e.g., hearts: 4-6 hours, kidneys: 24 hours). The smart contract automatically verifies timestamps upon every custody handoff. If an organ exceeds its permissible ischemic limit, the smart contract automatically prevents surgical sign-off and flags the case.
               </p>
             </div>
 
-            <div className="swing-panel-sunken p-3 space-y-1.5 bg-white">
-              <div className="font-bold text-xs text-[#0A246A] flex items-center gap-1.5">
-                <Lock className="w-4 h-4 text-red-700" />
+            <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+              <div className="font-bold text-sm text-rose-900 flex items-center gap-2">
+                <Lock className="w-4 h-4 text-rose-600" />
                 <span>4. Anti-Trafficking Emergency Quarantine</span>
               </div>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-slate-600 leading-relaxed">
                 If an observer flags an illegal commercial organ sale or thermal excursion, authorized regulatory directorates can execute an emergency quarantine transaction. Once quarantined on-chain, all downstream hospital nodes are locked from implanting the organ.
               </p>
             </div>

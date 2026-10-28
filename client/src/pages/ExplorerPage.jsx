@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Activity, ShieldCheck, Database, Check, RefreshCw,
-  Boxes, Server, Lock, Cpu, Globe, ArrowRight, ShieldAlert
-} from 'lucide-react';
+import { Boxes, RefreshCw } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function ExplorerPage() {
@@ -35,100 +32,115 @@ export default function ExplorerPage() {
   };
 
   return (
-    <div className="p-3 max-w-[1300px] mx-auto space-y-3 font-sans">
+    <div className="p-6 max-w-7xl mx-auto space-y-6 font-sans">
       {/* 1. Header Toolbar */}
-      <div className="swing-raised p-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+      <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <div className="text-[12px] font-bold text-[#0A246A] flex items-center gap-1.5">
-            <Boxes className="w-4 h-4 text-[#0A246A]" />
+          <div className="text-base font-bold text-slate-900 flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+              <Boxes className="w-5 h-5" />
+            </div>
             <span>Consortium Distributed EVM Ledger & Node Monitor</span>
           </div>
-          <div className="text-[10px] text-gray-500">
+          <p className="text-xs text-slate-500 mt-1">
             Real-time cryptographic audit trail of organ custody handoffs, ischemic time invariants, and PoA validator consensus
-          </div>
+          </p>
         </div>
 
         <button
           onClick={fetchStats}
-          className="swing-btn"
+          className="px-4 py-2 text-xs font-semibold rounded-lg bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 transition-colors shadow-2xs flex items-center gap-2 cursor-pointer"
         >
-          <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-blue-600' : 'text-slate-500'}`} />
           <span>Refresh Ledger (F5)</span>
         </button>
       </div>
 
       {/* 2. Top Stats Panes */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
-        <div className="swing-panel-sunken p-2">
-          <div className="text-[10px] uppercase font-bold text-gray-600">Smart Contract Address</div>
-          <div className="font-mono font-bold text-[#0A246A] text-[11px] truncate">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="bg-white rounded-xl border border-slate-200/80 p-4 shadow-xs space-y-1">
+          <div className="text-[11px] uppercase tracking-wider font-semibold text-slate-500">Smart Contract Address</div>
+          <div className="font-mono font-bold text-blue-700 text-xs truncate">
             {stats?.network?.smartContractAddress || "0x5FbDB2315678afecb367f032d93F642f64180aa3"}
           </div>
-          <div className="text-[9px] text-gray-500">LifeLedger.sol (Paris EVM)</div>
+          <div className="text-[11px] text-slate-400">LifeLedger.sol (Paris EVM)</div>
         </div>
-        <div className="swing-panel-sunken p-2">
-          <div className="text-[10px] uppercase font-bold text-gray-600">Consortium Network</div>
-          <div className="font-mono font-bold text-blue-800 text-[11px]">
+        <div className="bg-white rounded-xl border border-slate-200/80 p-4 shadow-xs space-y-1">
+          <div className="text-[11px] uppercase tracking-wider font-semibold text-slate-500">Consortium Network</div>
+          <div className="font-mono font-bold text-slate-900 text-xs">
             {stats?.network?.networkName || "Hardhat / Local EVM"} (ID: {stats?.network?.chainId || 1337})
           </div>
-          <div className="text-[9px] text-green-700 font-bold">PoA Consensus: Active</div>
+          <div className="text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
+            <span>PoA Consensus: Active</span>
+          </div>
         </div>
-        <div className="swing-panel-sunken p-2">
-          <div className="text-[10px] uppercase font-bold text-gray-600">Validated Organs</div>
-          <div className="font-mono font-bold text-green-800 text-lg">
+        <div className="bg-white rounded-xl border border-slate-200/80 p-4 shadow-xs space-y-1">
+          <div className="text-[11px] uppercase tracking-wider font-semibold text-slate-500">Validated Organs</div>
+          <div className="font-mono font-bold text-emerald-600 text-2xl">
             {stats?.organs?.total || stats?.batches?.total || 5}
           </div>
-          <div className="text-[9px] text-gray-500">Cryptographically Signed</div>
+          <div className="text-[11px] text-slate-400">Cryptographically Signed</div>
         </div>
-        <div className="swing-panel-sunken p-2">
-          <div className="text-[10px] uppercase font-bold text-gray-600">Active Alert Cases</div>
-          <div className="font-mono font-bold text-red-800 text-lg">
+        <div className="bg-white rounded-xl border border-slate-200/80 p-4 shadow-xs space-y-1">
+          <div className="text-[11px] uppercase tracking-wider font-semibold text-slate-500">Active Alert Cases</div>
+          <div className="font-mono font-bold text-red-600 text-2xl">
             {stats?.investigations?.length || 2}
           </div>
-          <div className="text-[9px] text-red-600">Trafficking / Excursions</div>
+          <div className="text-[11px] text-red-500">Trafficking / Excursions</div>
         </div>
       </div>
 
-      {/* 3. Approved Consortium Stakeholder Nodes (JTable) */}
-      <fieldset className="swing-etched bg-[#ECE9D8] p-2">
-        <legend className="px-1.5 font-bold text-[11px] text-[#0A246A] bg-[#ECE9D8]">
-          Approved Medical Stakeholder Nodes (PoA Authority Validators)
-        </legend>
+      {/* 3. Approved Consortium Stakeholder Nodes (Table) */}
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+        <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+          <h3 className="font-bold text-sm text-slate-900">
+            Approved Medical Stakeholder Nodes (PoA Authority Validators)
+          </h3>
+          <span className="text-xs text-slate-500 font-mono">
+            {participants.length} Active Validators
+          </span>
+        </div>
 
-        <div className="swing-sunken overflow-x-auto max-h-[300px]">
-          <table className="w-full text-left border-collapse text-[11px]">
-            <thead className="sticky top-0 z-10">
-              <tr>
-                <th className="swing-th">Stakeholder Organization</th>
-                <th className="swing-th">Transplant Role</th>
-                <th className="swing-th">Operating Facility</th>
-                <th className="swing-th">Consortium Ethereum Address</th>
-                <th className="swing-th">Status</th>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr className="bg-slate-50/80 text-slate-600 font-semibold border-b border-slate-200">
+                <th className="px-4 py-3">Stakeholder Organization</th>
+                <th className="px-4 py-3">Transplant Role</th>
+                <th className="px-4 py-3">Operating Facility</th>
+                <th className="px-4 py-3">Consortium Ethereum Address</th>
+                <th className="px-4 py-3">Status</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-slate-100">
               {participants.map((p, idx) => (
                 <tr
                   key={p.id || idx}
-                  className={`border-b border-[#E0DFD8] ${idx % 2 === 0 ? 'bg-white' : 'bg-[#F9F8F5]'}`}
+                  className="hover:bg-slate-50/80 transition-colors"
                 >
-                  <td className="p-2 font-bold text-black">{p.name}</td>
-                  <td className="p-2 uppercase font-mono font-bold text-blue-900">{p.role}</td>
-                  <td className="p-2 text-gray-600">{p.location}</td>
-                  <td className="p-2 font-mono text-gray-700">
-                    <div className="flex items-center gap-1.5">
-                      <span>{p.ethAddress}</span>
+                  <td className="px-4 py-3.5 font-semibold text-slate-900">{p.name}</td>
+                  <td className="px-4 py-3.5">
+                    <span className="uppercase font-mono font-bold text-[11px] bg-slate-100 text-slate-800 px-2 py-0.5 rounded border border-slate-200">
+                      {p.role}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3.5 text-slate-600">{p.location}</td>
+                  <td className="px-4 py-3.5 font-mono text-slate-700">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] text-slate-600">{p.ethAddress}</span>
                       <button
                         onClick={() => handleCopy(p.ethAddress, p.id)}
-                        className="swing-btn text-[9px] py-0 px-1"
+                        className="px-2 py-0.5 text-[10px] font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 rounded border border-slate-200 transition-colors cursor-pointer"
                       >
                         {copiedKey === p.id ? "Copied" : "Copy"}
                       </button>
                     </div>
                   </td>
-                  <td className="p-2">
-                    <span className="px-1.5 py-0.5 bg-green-100 border border-green-400 text-green-900 font-mono font-bold text-[10px]">
-                      VALIDATOR ONLINE
+                  <td className="px-4 py-3.5">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono font-semibold text-[11px] rounded-full">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      ONLINE
                     </span>
                   </td>
                 </tr>
@@ -136,37 +148,40 @@ export default function ExplorerPage() {
             </tbody>
           </table>
         </div>
-      </fieldset>
+      </div>
 
       {/* 4. Recent Cryptographic Verifications Log */}
-      <fieldset className="swing-etched bg-[#ECE9D8] p-2">
-        <legend className="px-1.5 font-bold text-[11px] text-[#0A246A] bg-[#ECE9D8]">
-          Recent Cryptographic Verification Queries & Telemetry Pings
-        </legend>
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+        <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+          <h3 className="font-bold text-sm text-slate-900">
+            Recent Cryptographic Verification Queries & Telemetry Pings
+          </h3>
+          <span className="text-xs text-slate-500 font-mono">Audit Log</span>
+        </div>
 
-        <div className="swing-sunken overflow-x-auto max-h-[220px]">
-          <table className="w-full text-left border-collapse text-[11px]">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr>
-                <th className="swing-th">Verification ID</th>
-                <th className="swing-th">Organ Record</th>
-                <th className="swing-th">Timestamp</th>
-                <th className="swing-th">Query Terminal / Device</th>
-                <th className="swing-th">Consortium Result</th>
+              <tr className="bg-slate-50/80 text-slate-600 font-semibold border-b border-slate-200">
+                <th className="px-4 py-3">Verification ID</th>
+                <th className="px-4 py-3">Organ Record</th>
+                <th className="px-4 py-3">Timestamp</th>
+                <th className="px-4 py-3">Query Terminal / Device</th>
+                <th className="px-4 py-3">Consortium Result</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-slate-100">
               {stats?.recentVerifications?.map((v, i) => (
-                <tr key={v.id || i} className={`border-b border-[#E0DFD8] ${i % 2 === 0 ? 'bg-white' : 'bg-[#F9F8F5]'}`}>
-                  <td className="p-2 font-mono text-gray-600">{v.id}</td>
-                  <td className="p-2 font-mono font-bold text-[#0A246A]">{v.organId || v.batchId}</td>
-                  <td className="p-2 text-gray-600 font-mono">{new Date(v.timestamp).toLocaleString()}</td>
-                  <td className="p-2 text-gray-500 text-[10px] truncate max-w-[200px]">{v.device}</td>
-                  <td className="p-2">
-                    <span className={`px-1.5 py-0.5 font-mono font-bold text-[10px] border ${
+                <tr key={v.id || i} className="hover:bg-slate-50/80 transition-colors">
+                  <td className="px-4 py-3.5 font-mono text-slate-500 text-[11px]">{v.id}</td>
+                  <td className="px-4 py-3.5 font-mono font-bold text-blue-700">{v.organId || v.batchId}</td>
+                  <td className="px-4 py-3.5 text-slate-500 font-mono text-[11px]">{new Date(v.timestamp).toLocaleString()}</td>
+                  <td className="px-4 py-3.5 text-slate-600 text-[11px] truncate max-w-[200px]">{v.device}</td>
+                  <td className="px-4 py-3.5">
+                    <span className={`px-2.5 py-0.5 font-mono font-semibold text-[11px] rounded-full border ${
                       v.result === 'GENUINE_AUTHENTIC'
-                        ? 'bg-green-100 text-green-900 border-green-300'
-                        : 'bg-red-100 text-red-900 border-red-300'
+                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                        : 'bg-red-50 text-red-700 border-red-200'
                     }`}>
                       {v.result}
                     </span>
@@ -176,7 +191,7 @@ export default function ExplorerPage() {
             </tbody>
           </table>
         </div>
-      </fieldset>
+      </div>
     </div>
   );
 }

@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-// Subtle GTA V style synthesized HUD tick sound using native Web Audio API
+// Synthesized high-tech HUD audio feedback using native Web Audio API
 function playWheelTick(pitch = 750) {
   try {
     const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -65,7 +65,7 @@ export default function RadialActionWheel({
   const wheelRef = useRef(null);
   const lastIndexRef = useRef(0);
 
-  // 8 GTA V style octant action slots
+  // 8 Stakeholder action slots
   const WHEEL_OPTIONS = useMemo(() => [
     {
       id: 'harvest',
@@ -315,29 +315,29 @@ export default function RadialActionWheel({
       onClick={onClose}
       onMouseMove={handleMouseMove}
     >
-      {/* Top GTA V HUD Banner */}
+      {/* Top Action Wheel HUD Banner */}
       <div
         className="absolute top-5 left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none text-center"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center gap-2 px-3 py-1 bg-amber-500/20 border border-amber-400/60 rounded-sm">
-          <Zap className="w-4 h-4 text-amber-400 animate-pulse" />
-          <span className="font-mono font-black text-amber-400 tracking-widest text-xs uppercase">
-            GTA V QUICK-ACTION WHEEL • LIFELEDGER
+        <div className="flex items-center gap-2 px-3.5 py-1.5 bg-blue-500/10 border border-blue-400/40 rounded-full backdrop-blur-md">
+          <Zap className="w-4 h-4 text-blue-400 animate-pulse" />
+          <span className="font-mono font-bold text-blue-300 tracking-wider text-xs uppercase">
+            QUICK ACTION COMMAND WHEEL • LIFELEDGER
           </span>
-          <span className="bg-amber-400 text-black font-mono font-bold text-[10px] px-1 rounded-xs">
+          <span className="bg-blue-500 text-white font-mono font-bold text-[10px] px-1.5 py-0.2 rounded-full">
             TAB / 1-8
           </span>
         </div>
-        <p className="text-[11px] text-gray-400 font-mono mt-1">
-          Aim cursor toward any slice or press numeric keys <strong className="text-white">[1 - 8]</strong> to select
+        <p className="text-[11px] text-slate-400 font-sans mt-1.5">
+          Aim cursor toward any action or press numeric keys <strong className="text-white font-mono">[1 - 8]</strong> to launch
         </p>
       </div>
 
       {/* Close button top right */}
       <button
         onClick={onClose}
-        className="absolute top-5 right-5 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+        className="absolute top-5 right-5 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
         title="Close Wheel (Esc)"
       >
         <X className="w-5 h-5" />
@@ -357,8 +357,8 @@ export default function RadialActionWheel({
           className="absolute inset-0 pointer-events-auto"
         >
           <defs>
-            {/* Glowing amber filter for active wedge */}
-            <filter id="gta-glow" x="-20%" y="-20%" width="140%" height="140%">
+            {/* Glowing filter for active wedge */}
+            <filter id="action-glow" x="-20%" y="-20%" width="140%" height="140%">
               <feGaussianBlur stdDeviation="6" result="blur" />
               <feComposite in="SourceGraphic" in2="blur" operator="over" />
             </filter>
@@ -386,10 +386,10 @@ export default function RadialActionWheel({
               >
                 <path
                   d={createSlicePath(i)}
-                  fill={isSelected ? 'rgba(245, 158, 11, 0.42)' : 'rgba(18, 22, 31, 0.88)'}
-                  stroke={isSelected ? '#F59E0B' : '#2D3748'}
-                  strokeWidth={isSelected ? '3.5' : '1.5'}
-                  filter={isSelected ? 'url(#gta-glow)' : 'none'}
+                  fill={isSelected ? 'rgba(37, 99, 235, 0.45)' : 'rgba(15, 23, 42, 0.90)'}
+                  stroke={isSelected ? '#3B82F6' : '#334155'}
+                  strokeWidth={isSelected ? '3' : '1.5'}
+                  filter={isSelected ? 'url(#action-glow)' : 'none'}
                   className="transition-colors duration-150"
                 />
               </g>
@@ -402,7 +402,7 @@ export default function RadialActionWheel({
             cy={center}
             r={rInner}
             fill="none"
-            stroke="#F59E0B"
+            stroke="#3B82F6"
             strokeWidth="2"
             strokeDasharray="4 4"
             className="opacity-60"
@@ -414,7 +414,7 @@ export default function RadialActionWheel({
             cy={center}
             r={rOuter}
             fill="none"
-            stroke="#4B5563"
+            stroke="#475569"
             strokeWidth="1.5"
             className="opacity-40"
           />
@@ -448,8 +448,8 @@ export default function RadialActionWheel({
               <div
                 className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${
                   isSelected
-                    ? 'bg-amber-400 text-black shadow-[0_0_15px_#F59E0B]'
-                    : 'bg-black/60 text-gray-300 border border-gray-600'
+                    ? 'bg-blue-600 text-white shadow-[0_0_15px_#2563EB]'
+                    : 'bg-slate-900/80 text-slate-300 border border-slate-700'
                 }`}
               >
                 <IconComponent className="w-5 h-5" />
@@ -457,8 +457,8 @@ export default function RadialActionWheel({
               <span
                 className={`font-mono text-[9px] font-bold mt-1 px-1 rounded-xs transition-colors ${
                   isSelected
-                    ? 'bg-black text-amber-300 border border-amber-400'
-                    : 'text-gray-400'
+                    ? 'bg-slate-900 text-blue-300 border border-blue-400'
+                    : 'text-slate-400'
                 }`}
               >
                 [{opt.number}] {opt.title.split(' ')[0]}
@@ -467,18 +467,18 @@ export default function RadialActionWheel({
           );
         })}
 
-        {/* Center GTA V Weapon HUD Inspection Reticle */}
+        {/* Center Command Reticle */}
         <div
           onClick={() => executeSelection(selectedIndex)}
-          className="absolute w-[184px] h-[184px] rounded-full bg-[#0d1117]/95 border-2 border-amber-400 flex flex-col items-center justify-center p-3 text-center cursor-pointer shadow-[0_0_30px_rgba(245,158,11,0.35)] z-20 group hover:border-amber-300 transition-all"
+          className="absolute w-[184px] h-[184px] rounded-full bg-slate-950/95 border-2 border-blue-500 flex flex-col items-center justify-center p-3 text-center cursor-pointer shadow-[0_0_30px_rgba(37,99,235,0.35)] z-20 group hover:border-blue-400 transition-all"
         >
           {/* Glowing Icon */}
-          <div className="w-10 h-10 rounded-full bg-amber-400/20 border border-amber-400 flex items-center justify-center mb-1 text-amber-400 group-hover:scale-110 transition-transform">
-            <ActiveIcon className="w-5 h-5 text-amber-400" />
+          <div className="w-10 h-10 rounded-full bg-blue-500/20 border border-blue-400 flex items-center justify-center mb-1 text-blue-400 group-hover:scale-110 transition-transform">
+            <ActiveIcon className="w-5 h-5 text-blue-400" />
           </div>
 
           {/* Slot Number & Category */}
-          <div className="text-[9px] font-mono text-amber-400/80 uppercase tracking-widest font-bold">
+          <div className="text-[9px] font-mono text-blue-400/90 uppercase tracking-widest font-bold">
             SLOT {activeOption.number} • {activeOption.category}
           </div>
 
@@ -488,7 +488,7 @@ export default function RadialActionWheel({
           </div>
 
           {/* Click to Select CTA */}
-          <div className="mt-1.5 flex items-center gap-1 px-2 py-0.5 bg-amber-400 text-black font-mono font-bold text-[9px] rounded-xs shadow-xs">
+          <div className="mt-1.5 flex items-center gap-1 px-2.5 py-0.5 bg-blue-600 text-white font-mono font-bold text-[9px] rounded-full shadow-xs">
             <CornerDownLeft className="w-2.5 h-2.5" />
             <span>PRESS ENTER / CLICK</span>
           </div>
@@ -497,21 +497,21 @@ export default function RadialActionWheel({
 
       {/* Bottom Description HUD Panel */}
       <div
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 w-full max-w-lg bg-[#0e1219]/90 border border-amber-400/50 p-3 rounded-sm text-center shadow-xl pointer-events-none"
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 w-full max-w-lg bg-slate-900/90 backdrop-blur-md border border-slate-700/80 p-4 rounded-xl text-center shadow-2xl pointer-events-none"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between text-[10px] font-mono border-b border-gray-700/60 pb-1 mb-1">
-          <span className="text-amber-400 font-bold">
+        <div className="flex items-center justify-between text-[11px] font-mono border-b border-slate-800 pb-1.5 mb-1.5">
+          <span className="text-blue-400 font-bold">
             ACTIVE SELECTION: {activeOption.title.toUpperCase()}
           </span>
-          <span className="text-gray-400">
+          <span className="text-slate-400">
             STAKEHOLDER: <strong className="text-white">{activeOption.role ? activeOption.role.toUpperCase() : 'UNIVERSAL'}</strong>
           </span>
         </div>
-        <p className="text-[12px] text-gray-200 font-sans leading-snug">
+        <p className="text-xs text-slate-300 font-sans leading-relaxed">
           {activeOption.description}
         </p>
-        <div className="flex items-center justify-center gap-3 mt-2 text-[10px] font-mono text-gray-400">
+        <div className="flex items-center justify-center gap-3 mt-2 text-[10px] font-mono text-slate-400">
           <span>[TAB / ESC] Close</span>
           <span>•</span>
           <span>[1-8] Direct Select</span>

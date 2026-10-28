@@ -533,13 +533,13 @@ This document contains the complete manual test suite (**45 test cases across 11
 *LifeLedger Manual Test Suite • 45 Verified Invariants • October 2026 Production Build*
 
 
-### 🎮 Module 12: GTA V Radial Action Wheel Navigation
+### ⚡ Module 12: Radial Quick-Action Command Wheel
 
-#### TC-WHEEL-01: Toggle GTA V Radial Wheel via Tab Key & Q Key
-* **Objective:** Verify pressing `Tab` or `Q` anywhere in the app displays the GTA V weapon wheel overlay.
+#### TC-WHEEL-01: Toggle Radial Quick-Action Wheel via Tab Key & Q Key
+* **Objective:** Verify pressing `Tab` or `Q` anywhere in the app displays the radial command wheel overlay.
 * **Test Steps:**
-  1. From any screen (Dashboard, Verify, or Explorer), press `Tab`.
-  2. Verify circular 8-octant weapon HUD opens with darkened backdrop.
+  1. From any screen (Dashboard, Verify, or Explorer), press `Tab` or click `Action Wheel [Tab]` in the top navbar.
+  2. Verify circular 8-octant radial HUD opens with darkened backdrop and glassmorphism styling.
   3. Press `Tab` or `Esc` again to close.
   4. Press `Q` (when not typing in a text field). Verify wheel opens again.
 * **Expected Result:** Wheel opens and closes instantly with smooth focus trap prevention.

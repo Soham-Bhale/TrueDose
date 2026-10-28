@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, AlertTriangle, ShieldAlert, Send, CheckCircle2, ArrowRight, Building2, MapPin } from 'lucide-react';
+import { X, AlertTriangle, ShieldAlert, CheckCircle2, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function ReportModal({ batchId, organType, isOpen, onClose, onSuccess, onNavigateToAdmin }) {
@@ -61,62 +61,65 @@ export default function ReportModal({ batchId, organType, isOpen, onClose, onSuc
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/40 backdrop-blur-xs">
-      <div className="w-full max-w-xl swing-raised shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
-        {/* Java Window Titlebar */}
-        <div className="swing-titlebar bg-[#8C1A1A]">
-          <div className="flex items-center gap-1.5">
-            <ShieldAlert className="w-3.5 h-3.5 text-yellow-300" />
-            <span className="font-bold text-xs tracking-wide">
-              javax.swing.JDialog: Regulatory Incident & Anti-Trafficking Alert [LifeLedger]
-            </span>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
+      <div className="w-full max-w-xl bg-white rounded-2xl shadow-2xl border border-slate-200/80 overflow-hidden flex flex-col max-h-[92vh]">
+        {/* Modern Modal Header */}
+        <div className="bg-red-950 px-5 py-4 text-white flex items-center justify-between border-b border-red-900">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-red-500/20 border border-red-400/30 flex items-center justify-center text-red-400">
+              <ShieldAlert className="w-5 h-5 text-red-400" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-white tracking-tight">Regulatory Incident Alert</h3>
+              <p className="text-xs text-red-300">Statutory NOTTO / UNOS Anti-Trafficking Alert</p>
+            </div>
           </div>
           <button
             onClick={onClose}
-            className="w-4 h-4 bg-[#ECE9D8] text-black font-bold text-[10px] flex items-center justify-center border border-[#FFFFFF] border-r-[#808080] border-b-[#808080] hover:bg-[#D4D0C8] active:translate-y-px"
+            className="w-8 h-8 rounded-lg bg-red-900/50 text-red-300 hover:text-white hover:bg-red-800 flex items-center justify-center transition-colors"
             title="Close Dialog"
           >
-            ✕
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {submittedReport ? (
-          <div className="p-4 bg-[#ECE9D8] space-y-3">
-            <div className="swing-sunken p-3 bg-[#F0FFF4] border border-green-600 text-[11px] space-y-2">
-              <div className="flex items-center gap-2 text-green-900 font-bold">
-                <CheckCircle2 className="w-5 h-5 text-green-700 shrink-0" />
+          <div className="p-5 bg-slate-50 space-y-4">
+            <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-200 text-xs space-y-2.5">
+              <div className="flex items-center gap-2 text-emerald-900 font-bold text-sm">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
                 <span>REGULATORY INVESTIGATION CASE INITIALIZED</span>
               </div>
-              <p className="text-[#333333]">
+              <p className="text-slate-700">
                 Your incident report has been securely registered in the central audit ledger.
-                Case reference: <strong className="font-mono">{submittedReport.id}</strong>
+                Case reference: <strong className="font-mono text-emerald-900">{submittedReport.id}</strong>
               </p>
-              <div className="text-[10px] bg-white p-2 border border-[#CCCCCC] space-y-0.5">
-                <div><strong>Organ Specimen:</strong> {submittedReport.organId || submittedReport.batchId}</div>
-                <div><strong>Facility:</strong> {submittedReport.storeName}</div>
-                <div><strong>Reported At:</strong> {new Date(submittedReport.timestamp).toLocaleString()}</div>
+              <div className="text-xs bg-white p-3 rounded-lg border border-slate-200 space-y-1">
+                <div><strong className="text-slate-800">Organ Specimen:</strong> {submittedReport.organId || submittedReport.batchId}</div>
+                <div><strong className="text-slate-800">Facility:</strong> {submittedReport.storeName}</div>
+                <div><strong className="text-slate-800">Reported At:</strong> {new Date(submittedReport.timestamp).toLocaleString()}</div>
               </div>
             </div>
 
-            <div className="p-2.5 swing-etched bg-[#ECE9D8] text-[11px] text-[#333333] space-y-1">
-              <strong>Recommended Immediate Action:</strong>
+            <div className="p-3.5 bg-white rounded-xl border border-slate-200 text-xs text-slate-700 space-y-1">
+              <strong className="text-slate-900">Recommended Action:</strong>
               <p>
                 Switch to the <strong>National Regulatory Authority (Admin)</strong> workstation to review the active investigation queue and issue an Emergency Quarantine lock on this organ.
               </p>
             </div>
 
-            <div className="pt-2 flex items-center justify-end gap-2 border-t border-[#808080]">
+            <div className="pt-2 flex items-center justify-end gap-2.5">
               <button
                 type="button"
                 onClick={onClose}
-                className="swing-btn text-xs py-1 px-3"
+                className="px-4 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-100 transition-colors shadow-2xs"
               >
                 Close Dialog
               </button>
               <button
                 type="button"
                 onClick={handleGoToAdmin}
-                className="swing-btn swing-btn-danger text-xs py-1 px-3 flex items-center gap-1 font-bold"
+                className="px-4 py-2 text-xs font-semibold text-white bg-red-600 hover:bg-red-700 rounded-lg shadow-sm transition-all flex items-center gap-1.5"
               >
                 <span>Switch to Regulatory Admin Workstation</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -124,52 +127,52 @@ export default function ReportModal({ batchId, organType, isOpen, onClose, onSuc
             </div>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="p-3 bg-[#ECE9D8] overflow-y-auto space-y-3 flex-1">
+          <form onSubmit={handleSubmit} className="p-5 bg-slate-50 overflow-y-auto space-y-4 flex-1">
             {/* Warning Banner */}
-            <div className="p-2 swing-sunken bg-[#FFFBEB] border border-amber-400 text-[11px] text-amber-950 flex items-start gap-2">
-              <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+            <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-950 flex items-start gap-2.5">
+              <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
               <div>
-                <strong>Statutory Whistleblower Channel:</strong>
-                <p className="text-[10px] text-[#555555]">
-                  Reports trigger an automated compliance alert to NOTTO and UNOS regulatory auditors. Submit when an unverified organ, cold-chain violation, or trafficking breach is detected.
+                <strong className="block text-amber-900 font-semibold">Statutory Whistleblower Channel:</strong>
+                <p className="text-[11px] text-amber-800 mt-0.5">
+                  Reports trigger an automated compliance alert to NOTTO regulatory auditors. Submit when cold-chain breach, unverified specimen, or protocol deviation occurs.
                 </p>
               </div>
             </div>
 
             {error && (
-              <div className="p-2 swing-sunken bg-[#FFF0F0] border border-red-500 text-red-900 text-[11px]">
+              <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-900 text-xs">
                 <strong>Submission Error:</strong> {error}
               </div>
             )}
 
             {/* Target Organ ID */}
-            <fieldset className="p-2.5 swing-etched bg-[#ECE9D8]">
-              <legend className="px-1 text-[11px] font-bold text-[#0A246A]">
+            <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs space-y-2">
+              <div className="text-xs font-semibold text-slate-600 uppercase tracking-wider">
                 1. Target Specimen Under Investigation
-              </legend>
+              </div>
               <div className="flex items-center gap-2">
-                <span className="text-[11px] font-bold text-[#333333]">Organ ID / Barcode:</span>
-                <span className="font-mono font-bold text-[12px] bg-white px-2 py-0.5 border border-[#808080] text-red-900">
+                <span className="text-xs font-semibold text-slate-700">Organ ID:</span>
+                <span className="font-mono font-bold text-xs bg-red-50 text-red-700 px-2.5 py-1 rounded border border-red-200">
                   {targetId}
                 </span>
-                {organType && <span className="text-[11px] text-[#666666]">({organType})</span>}
+                {organType && <span className="text-xs text-slate-500">({organType})</span>}
               </div>
-            </fieldset>
+            </div>
 
             {/* Violation Details */}
-            <fieldset className="p-2.5 swing-etched bg-[#ECE9D8]">
-              <legend className="px-1 text-[11px] font-bold text-[#0A246A]">
-                2. Violation Category & Facility
-              </legend>
-              <div className="space-y-2">
+            <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs space-y-3">
+              <div className="text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                2. Violation Classification & Facility
+              </div>
+              <div className="space-y-3">
                 <div>
-                  <label className="block text-[10px] font-bold text-[#333333] mb-0.5">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
                     Infraction / Breach Classification:
                   </label>
                   <select
                     value={formData.violationCategory}
                     onChange={(e) => setFormData({ ...formData, violationCategory: e.target.value })}
-                    className="swing-input w-full font-bold text-[11px]"
+                    className="w-full px-3 py-2 text-xs font-semibold bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   >
                     <option value="Cold-Chain Thermal Excursion (> 8°C)">Cold-Chain Thermal Excursion (&gt; 8°C)</option>
                     <option value="Suspected Commercial Organ Trafficking">Suspected Commercial Organ Trafficking</option>
@@ -180,23 +183,23 @@ export default function ReportModal({ batchId, organType, isOpen, onClose, onSuc
                   </select>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[10px] font-bold text-[#333333] mb-0.5">
-                      Facility / Operating Hospital Name:
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      Facility / Operating Hospital:
                     </label>
                     <input
                       type="text"
                       required
                       value={formData.facilityName}
                       onChange={(e) => setFormData({ ...formData, facilityName: e.target.value })}
-                      className="swing-input w-full text-[11px]"
+                      className="w-full px-3 py-2 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                       placeholder="e.g. Metro Transplant Wing"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[10px] font-bold text-[#333333] mb-0.5">
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
                       City / Geographic Location:
                     </label>
                     <input
@@ -204,14 +207,14 @@ export default function ReportModal({ batchId, organType, isOpen, onClose, onSuc
                       required
                       value={formData.location}
                       onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                      className="swing-input w-full text-[11px]"
+                      className="w-full px-3 py-2 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                       placeholder="e.g. Mumbai, Maharashtra"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-bold text-[#333333] mb-0.5">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
                     Narrative Description / Observations:
                   </label>
                   <textarea
@@ -219,13 +222,13 @@ export default function ReportModal({ batchId, organType, isOpen, onClose, onSuc
                     required
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="swing-input w-full text-[11px] font-mono"
+                    className="w-full px-3 py-2 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-sans"
                     placeholder="Provide specific telemetry data, seal tampering, or legal inconsistencies..."
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-bold text-[#333333] mb-0.5">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
                     Reporting Officer / Contact Detail:
                   </label>
                   <input
@@ -233,36 +236,36 @@ export default function ReportModal({ batchId, organType, isOpen, onClose, onSuc
                     required
                     value={formData.reporterContact}
                     onChange={(e) => setFormData({ ...formData, reporterContact: e.target.value })}
-                    className="swing-input w-full text-[11px]"
+                    className="w-full px-3 py-2 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   />
                 </div>
               </div>
-            </fieldset>
+            </div>
 
             {/* Footer Action Bar */}
-            <div className="pt-2 flex items-center justify-between border-t border-[#808080]">
-              <div className="text-[10px] text-[#555555]">
+            <div className="pt-2 flex items-center justify-between">
+              <div className="text-xs text-slate-500">
                 Confidential Regulatory Submission
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="swing-btn text-xs py-1 px-3"
+                  className="px-4 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-100 transition-colors shadow-2xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="swing-btn swing-btn-danger text-xs py-1 px-4 flex items-center gap-1.5"
+                  className="px-4 py-2 text-xs font-semibold text-white bg-red-600 hover:bg-red-700 rounded-lg shadow-sm transition-all flex items-center gap-2 disabled:opacity-50"
                 >
                   {loading ? (
                     <span>Registering Case...</span>
                   ) : (
                     <>
-                      <ShieldAlert className="w-3.5 h-3.5 text-red-700" />
-                      <span>OK - Dispatch Regulatory Alert</span>
+                      <ShieldAlert className="w-4 h-4" />
+                      <span>Dispatch Alert</span>
                     </>
                   )}
                 </button>
@@ -271,11 +274,10 @@ export default function ReportModal({ batchId, organType, isOpen, onClose, onSuc
           </form>
         )}
 
-        {/* Java Dialog Status Bar */}
-        <div className="swing-statusbar">
-          <div className="swing-status-pane">JDialog: IncidentReportModal</div>
-          <div className="swing-status-pane">Endpoint: /api/verify/report</div>
-          <div className="swing-status-pane flex-1 text-right">Audit Flag: READY</div>
+        {/* Modal Status Footer */}
+        <div className="bg-slate-100 px-5 py-2 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500 font-mono">
+          <span>LifeLedger Regulatory Channel</span>
+          <span className="text-emerald-700 font-semibold">Audit Flag: READY</span>
         </div>
       </div>
     </div>
